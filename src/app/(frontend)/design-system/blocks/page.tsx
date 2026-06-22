@@ -3,6 +3,7 @@ import React from 'react'
 
 import { galleryEntries } from '@/blocks/gallery-entries'
 
+import { CatalogBrowser } from './CatalogBrowser'
 import { GalleryCard } from './GalleryCard'
 import { ThemeToggle } from '../ThemeToggle'
 
@@ -22,11 +23,18 @@ export default function BlocksGalleryPage() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 gap-l sm:grid-cols-2 lg:grid-cols-3">
+      <CatalogBrowser
+        entries={galleryEntries.map(({ slug, title, description, category }) => ({
+          slug,
+          title,
+          description,
+          category,
+        }))}
+      >
         {galleryEntries.map((entry) => (
           <GalleryCard entry={entry} key={entry.slug} />
         ))}
-      </div>
+      </CatalogBrowser>
     </main>
   )
 }
