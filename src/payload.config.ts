@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { s3Storage } from '@payloadcms/storage-s3'
 import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
@@ -17,6 +18,33 @@ import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// Media storage: S3-compatible adapter (MinIO dev parity / R2 prod / AWS S3),
+// gated on env. When S3_BUCKET + S3_ENDPOINT are unset the adapter stays
+// inactive and Payload falls back to local-disk storage (public/media). The
+// backend swap MinIO -> R2 -> S3 is a credentials-only change — one code path,
+// no per-environment branching.
+const s3Enabled = Boolean(process.env.S3_BUCKET && process.env.S3_ENDPOINT)
+
+const storagePlugins = s3Enabled
+  ? [
+      s3Storage({
+        collections: { media: true },
+        bucket: process.env.S3_BUCKET as string,
+        config: {
+          endpoint: process.env.S3_ENDPOINT,
+          region: process.env.S3_REGION || 'us-east-1',
+          credentials: {
+            accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
+            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
+          },
+          // Path-style addressing: required by MinIO, supported by R2.
+          // AWS S3 (virtual-hosted-style) deployments can drop this.
+          forcePathStyle: true,
+        },
+      }),
+    ]
+  : []
 
 export default buildConfig({
   admin: {
@@ -65,7 +93,7 @@ export default buildConfig({
   collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
-  plugins,
+  plugins: [...plugins, ...storagePlugins],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {
