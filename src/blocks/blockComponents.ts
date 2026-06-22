@@ -18,6 +18,8 @@ import { LogoStrip } from './LogoStrip/config'
 import { LogoStripBlock } from './LogoStrip/Component'
 import { MediaBlock as MediaConfig } from './MediaBlock/config'
 import { MediaBlock } from './MediaBlock/Component'
+import { MediaGallery as MediaGalleryConfig } from './MediaGallery/config'
+import { MediaGalleryBlock } from './MediaGallery/Component'
 
 // Layout-block components have heterogeneous props; RenderBlocks spreads the
 // matching block data into each, so a loose component type is intentional.
@@ -42,4 +44,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [FAQ.slug]: FAQBlock,
   [FeatureSplit.slug]: FeatureSplitBlock,
   [LogoStrip.slug]: LogoStripBlock,
+  [MediaGalleryConfig.slug]: MediaGalleryBlock,
 }

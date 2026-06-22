@@ -9,6 +9,7 @@ import { FeatureSplit } from './FeatureSplit/config'
 import { FormBlock } from './Form/config'
 import { LogoStrip } from './LogoStrip/config'
 import { MediaBlock } from './MediaBlock/config'
+import { MediaGallery } from './MediaGallery/config'
 
 /**
  * Single source of truth for layout-block FIELD CONFIGS. Collections consume
@@ -30,4 +31,5 @@ export const layoutBlocks: Block[] = [
   FAQ,
   FeatureSplit,
   LogoStrip,
+  MediaGallery,
 ]

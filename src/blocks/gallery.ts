@@ -9,6 +9,7 @@ import { featureSplitGallery } from './FeatureSplit/gallery'
 import { formGallery } from './Form/gallery'
 import { logoStripGallery } from './LogoStrip/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
+import { mediaGalleryGallery } from './MediaGallery/gallery'
 
 /**
  * Registry of block gallery entries rendered by `/design-system/blocks`.
@@ -36,4 +37,5 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   faqGallery,
   featureSplitGallery,
   logoStripGallery,
+  mediaGalleryGallery,
 ]

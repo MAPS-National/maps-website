@@ -232,6 +232,7 @@ export interface Page {
     | FAQBlock
     | FeatureSplitBlock
     | LogoStripBlock
+    | MediaGalleryBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1098,6 +1099,41 @@ export interface LogoStripBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaGalleryBlock".
+ */
+export interface MediaGalleryBlock {
+  /**
+   * Optional label above the gallery.
+   */
+  heading?: string | null;
+  /**
+   * Grid: a tiled set. Slider: a horizontal, swipeable track.
+   */
+  layout: 'grid' | 'slider';
+  /**
+   * Number of columns in grid layout (ignored for the slider).
+   */
+  columns: '2' | '3' | '4';
+  /**
+   * Let visitors click an image to view it full-size in an overlay, with next/previous.
+   */
+  enableLightbox?: boolean | null;
+  images?:
+    | {
+        image: number | Media;
+        /**
+         * Shown in the lightbox and used as the alt text fallback.
+         */
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaGallery';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1417,6 +1453,7 @@ export interface PagesSelect<T extends boolean = true> {
         faq?: T | FAQBlockSelect<T>;
         featureSplit?: T | FeatureSplitBlockSelect<T>;
         logoStrip?: T | LogoStripBlockSelect<T>;
+        mediaGallery?: T | MediaGalleryBlockSelect<T>;
       };
   meta?:
     | T
@@ -1659,6 +1696,25 @@ export interface LogoStripBlockSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
             };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaGalleryBlock_select".
+ */
+export interface MediaGalleryBlockSelect<T extends boolean = true> {
+  heading?: T;
+  layout?: T;
+  columns?: T;
+  enableLightbox?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
         id?: T;
       };
   id?: T;
