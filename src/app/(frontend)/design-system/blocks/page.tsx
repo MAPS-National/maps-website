@@ -57,7 +57,7 @@ export default function BlocksGalleryPage() {
         return (
           <section key={slug} id={slug} className="flex scroll-mt-20 flex-col gap-l">
             <div className="flex flex-col gap-xs border-b border-border pb-xs">
-              <h2 className="text-2xl">{title}</h2>
+              <h2 className="text-3xl">{title}</h2>
               {entry?.description && (
                 <p className="max-w-prose text-sm text-content-secondary">{entry.description}</p>
               )}
@@ -81,7 +81,7 @@ export default function BlocksGalleryPage() {
               entry?.variants.map((variant, i) => (
                 <div className="flex flex-col gap-xs" key={i}>
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm font-semibold">{variant.name}</span>
+                    <span className="text-sm font-medium">{variant.name}</span>
                     {variant.description && (
                       <span className="text-xs text-content-secondary">{variant.description}</span>
                     )}
@@ -97,7 +97,7 @@ export default function BlocksGalleryPage() {
 
       <section id="heros" className="flex scroll-mt-20 flex-col gap-l">
         <div className="flex flex-col gap-xs border-b border-border pb-xs">
-          <h2 className="text-2xl">Heros</h2>
+          <h2 className="text-3xl">Heros</h2>
           <p className="max-w-prose text-sm text-content-secondary">
             Page intros rendered above the layout blocks. Heros are a separate <code>hero</code>{' '}
             field (a <code>type</code> select), not layout blocks.
@@ -116,7 +116,7 @@ export default function BlocksGalleryPage() {
             {hero.variants.map((variant, i) => (
               <div className="flex flex-col gap-xs" key={i}>
                 <div className="flex flex-col gap-1">
-                  <span className="text-sm font-semibold">{variant.name}</span>
+                  <span className="text-sm font-medium">{variant.name}</span>
                   {variant.description && (
                     <span className="text-xs text-content-secondary">{variant.description}</span>
                   )}
