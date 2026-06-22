@@ -11,6 +11,7 @@ import { logoStripGallery } from './LogoStrip/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
 import { mediaGalleryGallery } from './MediaGallery/gallery'
 import { pricingTiersGallery } from './PricingTiers/gallery'
+import { timelineGallery } from './Timeline/gallery'
 
 /**
  * Registry of block gallery entries rendered by `/design-system/blocks`.
@@ -40,4 +41,5 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   logoStripGallery,
   mediaGalleryGallery,
   pricingTiersGallery,
+  timelineGallery,
 ]
