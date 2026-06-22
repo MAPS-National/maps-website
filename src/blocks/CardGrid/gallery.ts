@@ -1,44 +1,20 @@
 import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
-/**
- * Gallery sample data for the Card Grid block. Variants are text-only
- * (`mediaType: 'none'`) on purpose: the gallery renders through `next/image`,
- * whose `localPatterns` only permits uploaded media under `/api/media/file/**`,
- * so image/icon examples wait on the shared sample-media strategy (slice #30).
- */
+import { prose, sampleLandscape, sampleSquare } from '@/blocks/gallery-helpers'
 
-type LexicalState = NonNullable<NonNullable<CardGridBlockProps['items']>[number]['body']>
 type CardItem = NonNullable<CardGridBlockProps['items']>[number]
 
-/** Minimal single-paragraph rich-text value for sample copy. */
-const para = (text: string): LexicalState => ({
-  root: {
-    type: 'root',
-    children: [
-      {
-        type: 'paragraph',
-        children: [
-          { type: 'text', detail: 0, format: 0, mode: 'normal', style: '', text, version: 1 },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        textFormat: 0,
-        version: 1,
-      },
-    ],
-    direction: 'ltr',
-    format: '',
-    indent: 0,
-    version: 1,
-  },
-})
-
-const item = (heading: string, body: string, withLink = false): CardItem => ({
+const item = (
+  heading: string,
+  body: string,
+  opts: { withLink?: boolean; icon?: CardItem['icon']; image?: CardItem['image'] } = {},
+): CardItem => ({
   heading,
-  body: para(body),
-  links: withLink
+  body: prose(body),
+  icon: opts.icon,
+  image: opts.image,
+  links: opts.withLink
     ? [{ link: { type: 'custom', url: '#', label: 'Learn more', newTab: false } }]
     : [],
   enableCardLink: false,
@@ -61,14 +37,45 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
           enableHeader: true,
           eyebrow: 'Capabilities',
           heading: 'Everything in one workspace',
-          body: para(
+          body: prose(
             'A consolidated grid that scales from two to four columns and adapts to light and dark themes.',
           ),
         },
         items: [
-          item('Unified records', 'A single source of truth across every team and surface.', true),
-          item('Granular access', 'Role- and plan-aware visibility, enforced server-side.', true),
-          item('Audit trail', 'Every change captured, attributable, and reversible.', true),
+          item('Unified records', 'A single source of truth across every team and surface.', { withLink: true }),
+          item('Granular access', 'Role- and plan-aware visibility, enforced server-side.', { withLink: true }),
+          item('Audit trail', 'Every change captured, attributable, and reversible.', { withLink: true }),
+        ],
+      },
+    },
+    {
+      name: 'Three columns, images',
+      description: 'Image media above each card (uniform aspect-video).',
+      props: {
+        blockType: 'cardGrid',
+        columns: '3',
+        mediaType: 'image',
+        header: { enableHeader: true, heading: 'With imagery' },
+        items: [
+          item('Discovery', 'Map the landscape before committing resources.', { image: sampleLandscape }),
+          item('Delivery', 'Ship in thin, verifiable slices.', { image: sampleLandscape }),
+          item('Support', 'Stay close after launch.', { image: sampleLandscape }),
+        ],
+      },
+    },
+    {
+      name: 'Four columns, icons',
+      description: 'Compact 4-up grid with an icon per card.',
+      props: {
+        blockType: 'cardGrid',
+        columns: '4',
+        mediaType: 'icon',
+        header: { enableHeader: true, heading: 'Why teams switch' },
+        items: [
+          item('Fast', 'Sub-second navigation across large datasets.', { icon: sampleSquare }),
+          item('Secure', 'Encrypted at rest and in transit by default.', { icon: sampleSquare }),
+          item('Open', 'Standards-based APIs, no lock-in.', { icon: sampleSquare }),
+          item('Supported', 'Responsive humans, not just docs.', { icon: sampleSquare }),
         ],
       },
     },
@@ -83,25 +90,6 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         items: [
           item('For operators', 'Day-to-day workflows tuned for speed and fewer clicks.'),
           item('For administrators', 'Governance, provisioning, and policy in one place.'),
-        ],
-      },
-    },
-    {
-      name: 'Four columns, feature list',
-      description: 'Compact 4-up grid for short feature blurbs.',
-      props: {
-        blockType: 'cardGrid',
-        columns: '4',
-        mediaType: 'none',
-        header: {
-          enableHeader: true,
-          heading: 'Why teams switch',
-        },
-        items: [
-          item('Fast', 'Sub-second navigation across large datasets.'),
-          item('Secure', 'Encrypted at rest and in transit by default.'),
-          item('Open', 'Standards-based APIs, no lock-in.'),
-          item('Supported', 'Responsive humans, not just docs.'),
         ],
       },
     },

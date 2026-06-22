@@ -6,6 +6,15 @@ import { galleryBlocks } from '@/blocks/gallery'
 
 import { ThemeToggle } from '../ThemeToggle'
 
+// Section list is derived from the render registry so a newly-registered block
+// surfaces here automatically — with its curated examples if a gallery.ts exists,
+// or a "no example yet" stub otherwise.
+const curated = new Map(galleryBlocks.map((b) => [b.slug, b]))
+const sectionSlugs = [
+  ...galleryBlocks.map((b) => b.slug),
+  ...Object.keys(blockComponents).filter((slug) => !curated.has(slug)),
+]
+
 export default function BlocksGalleryPage() {
   return (
     <main className="container flex flex-col gap-xl py-xl">
@@ -21,27 +30,37 @@ export default function BlocksGalleryPage() {
         </div>
       </header>
 
-      {galleryBlocks.map((block) => {
-        const Component = blockComponents[block.slug]
+      {sectionSlugs.map((slug) => {
+        const entry = curated.get(slug)
+        const hasComponent = slug in blockComponents
+        const Component = blockComponents[slug]
+        const title = entry?.title ?? slug
 
         return (
-          <section key={block.slug} id={block.slug} className="flex flex-col gap-l">
+          <section key={slug} id={slug} className="flex flex-col gap-l">
             <div className="flex flex-col gap-xs border-b border-border pb-xs">
-              <h2 className="text-2xl">{block.title}</h2>
-              {block.description && (
-                <p className="max-w-prose text-sm text-muted-foreground">{block.description}</p>
+              <h2 className="text-2xl">{title}</h2>
+              {entry?.description && (
+                <p className="max-w-prose text-sm text-muted-foreground">{entry.description}</p>
               )}
-              <code className="text-xs text-muted-foreground">slug: {block.slug}</code>
+              <code className="text-xs text-muted-foreground">slug: {slug}</code>
             </div>
 
-            {!Component && (
+            {!hasComponent && (
               <p className="text-content-error text-sm">
-                No component registered for slug “{block.slug}”.
+                No component registered for slug “{slug}”.
               </p>
             )}
 
-            {Component &&
-              block.variants.map((variant, i) => (
+            {hasComponent && !entry && (
+              <p className="text-sm text-muted-foreground">
+                No example yet — add <code className="px-1">{slug}/gallery.ts</code> to document this
+                block.
+              </p>
+            )}
+
+            {hasComponent &&
+              entry?.variants.map((variant, i) => (
                 <div className="flex flex-col gap-xs" key={i}>
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-semibold">{variant.name}</span>
