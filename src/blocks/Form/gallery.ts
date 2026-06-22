@@ -38,6 +38,7 @@ const sampleForm = {
 export const formGallery: GalleryBlock<FormBlockType> = {
   slug: 'formBlock',
   title: 'Form',
+  category: 'form',
   description:
     'Renders a form from the form-builder. Fields, labels, widths and the submit label all come from the form definition.',
   variants: [

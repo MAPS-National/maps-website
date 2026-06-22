@@ -24,6 +24,13 @@ export type GalleryVariant<P = Record<string, unknown>> = {
   props: P
 }
 
+/**
+ * Intent-based category for grouping/filtering in the gallery. Heros are their
+ * own category; the block-vs-hero distinction is carried by `GalleryEntryKind`,
+ * not by category.
+ */
+export type GalleryCategory = 'hero' | 'content' | 'media' | 'cta' | 'data' | 'form'
+
 /** One block's gallery entry. Colocated as `BlockDir/gallery.ts`, one per block. */
 export type GalleryBlock<P = Record<string, unknown>> = {
   /** Config slug — must match `config.slug` and the `blockComponents` key. */
@@ -32,6 +39,8 @@ export type GalleryBlock<P = Record<string, unknown>> = {
   title: string
   /** One-line description of the block's purpose. */
   description?: string
+  /** Intent category for grouping/filtering. Defaults to `'content'` if omitted. */
+  category?: GalleryCategory
   /** Ordered variants to render. */
   variants: GalleryVariant<P>[]
 }
@@ -48,6 +57,33 @@ export type GalleryHero<P = Record<string, unknown>> = {
   title: string
   /** One-line description of when to use this hero. */
   description?: string
+  /** Intent category for grouping/filtering. Defaults to `'hero'` if omitted. */
+  category?: GalleryCategory
   /** Ordered variants to render. */
+  variants: GalleryVariant<P>[]
+}
+
+/** Whether a gallery entry is a layout block or a hero — drives how it renders. */
+export type GalleryEntryKind = 'block' | 'hero'
+
+/**
+ * Unified gallery entry. Blocks and heros are normalized into one shape so the
+ * catalog index and the per-entry detail route can treat them uniformly. Derived
+ * in `gallery-entries.ts` from the render registry + curated `gallery.ts` data.
+ */
+export type GalleryEntry<P = Record<string, unknown>> = {
+  /** URL-safe id, `${kind}.${renderKey}` (e.g. "block.cardGrid", "hero.highImpact"). */
+  slug: string
+  /** Block or hero — selects the render path in `EntryPreview`. */
+  kind: GalleryEntryKind
+  /** Registry key: block `config.slug` (→ `blockComponents`) or hero `type` (→ `RenderHero`). */
+  renderKey: string
+  /** Heading shown for the entry. */
+  title: string
+  /** One-line description of the entry's purpose. */
+  description?: string
+  /** Intent category for grouping/filtering. */
+  category: GalleryCategory
+  /** Ordered variants to render. May be empty for an unstubbed block. */
   variants: GalleryVariant<P>[]
 }

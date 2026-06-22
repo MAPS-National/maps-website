@@ -23,6 +23,7 @@ const mockPost = (
 export const archiveGallery: GalleryBlock<ArchiveBlockProps> = {
   slug: 'archive',
   title: 'Archive',
+  category: 'data',
   description:
     'A grid of post cards. On a real page it queries the Posts collection; here it renders a fixed selection of sample posts.',
   variants: [

@@ -6,6 +6,7 @@ import { prose, sampleLandscape } from '@/blocks/gallery-helpers'
 export const mediaBlockGallery: GalleryBlock<MediaBlockProps> = {
   slug: 'mediaBlock',
   title: 'Media',
+  category: 'media',
   description: 'A single image (or video) rendered full-width through the Media component, with an optional caption.',
   variants: [
     {

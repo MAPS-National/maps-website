@@ -6,6 +6,7 @@ import { heading, paragraph, richText } from '@/blocks/gallery-helpers'
 export const callToActionGallery: GalleryBlock<CTABlockProps> = {
   slug: 'cta',
   title: 'Call to Action',
+  category: 'cta',
   description: 'A bordered banner pairing a short rich-text pitch with one or two action buttons.',
   variants: [
     {

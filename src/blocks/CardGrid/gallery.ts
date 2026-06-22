@@ -23,6 +23,7 @@ const item = (
 export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
   slug: 'cardGrid',
   title: 'Card Grid',
+  category: 'content',
   description:
     'Responsive grid of cards — optional section header, uniform media (image / icon / none), per-card copy, buttons, and an optional whole-card link.',
   variants: [

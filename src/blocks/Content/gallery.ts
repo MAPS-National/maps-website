@@ -14,6 +14,7 @@ const column = (size: Column['size'], head: string, body: string): Column => ({
 export const contentGallery: GalleryBlock<ContentBlockProps> = {
   slug: 'content',
   title: 'Content',
+  category: 'content',
   description: 'A flexible rich-text layout: one or more columns sized in twelfths (full, two-thirds, half, one-third).',
   variants: [
     {
