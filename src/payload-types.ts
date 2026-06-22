@@ -175,6 +175,23 @@ export interface Page {
       };
       [k: string]: unknown;
     } | null;
+    /**
+     * Small tagline shown above the heading on interior-page headers.
+     */
+    eyebrow?: string | null;
+    /**
+     * Optional trail above the heading. The last crumb is the current page — leave its URL empty.
+     */
+    breadcrumbs?:
+      | {
+          label: string;
+          /**
+           * Leave empty for the current page (rendered as plain text).
+           */
+          url?: string | null;
+          id?: string | null;
+        }[]
+      | null;
     links?:
       | {
           link: {
@@ -1172,6 +1189,14 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         type?: T;
         richText?: T;
+        eyebrow?: T;
+        breadcrumbs?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
         links?:
           | T
           | {
