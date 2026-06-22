@@ -3,6 +3,7 @@ import React from 'react'
 
 import type { GalleryEntry } from '@/blocks/gallery-types'
 
+import { CardPreview } from './CardPreview'
 import { EntryPreview } from './[slug]/EntryPreview'
 
 /**
@@ -22,20 +23,9 @@ export const GalleryCard: React.FC<{ entry: GalleryEntry }> = ({ entry }) => {
     <div className="group relative flex flex-col overflow-hidden border border-border/40 bg-background transition-colors hover:border-border">
       <div className="relative h-48 overflow-hidden border-b border-border/40 bg-background">
         {first ? (
-          // Center the scaled canvas in the frame so short blocks aren't
-          // top-anchored. The inner canvas renders at full width and scales
-          // from its center (default origin); flex centering then frames it.
-          <div
-            // `inert` removes the preview's own links/buttons from tab and
-            // pointer order, so the card reads as a single link (React 19).
-            inert
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 flex items-center justify-center"
-          >
-            <div className="w-[1280px] shrink-0 scale-[0.28]">
-              <EntryPreview entry={entry} props={first.props} />
-            </div>
-          </div>
+          <CardPreview>
+            <EntryPreview entry={entry} props={first.props} />
+          </CardPreview>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-content-secondary">
             No preview yet
