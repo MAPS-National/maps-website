@@ -8,8 +8,14 @@ import { CardGrid } from './CardGrid/config'
 import { CardGridBlock } from './CardGrid/Component'
 import { Content } from './Content/config'
 import { ContentBlock } from './Content/Component'
+import { FAQ } from './FAQ/config'
+import { FAQBlock } from './FAQ/Component'
+import { FeatureSplit } from './FeatureSplit/config'
+import { FeatureSplitBlock } from './FeatureSplit/Component'
 import { FormBlock as FormConfig } from './Form/config'
 import { FormBlock } from './Form/Component'
+import { LogoStrip } from './LogoStrip/config'
+import { LogoStripBlock } from './LogoStrip/Component'
 import { MediaBlock as MediaConfig } from './MediaBlock/config'
 import { MediaBlock } from './MediaBlock/Component'
 import { MediaGallery as MediaGalleryConfig } from './MediaGallery/config'
@@ -35,5 +41,8 @@ export const blockComponents: Record<string, BlockComponent> = {
   [Archive.slug]: ArchiveBlock,
   [FormConfig.slug]: FormBlock,
   [CardGrid.slug]: CardGridBlock,
+  [FAQ.slug]: FAQBlock,
+  [FeatureSplit.slug]: FeatureSplitBlock,
+  [LogoStrip.slug]: LogoStripBlock,
   [MediaGalleryConfig.slug]: MediaGalleryBlock,
 }

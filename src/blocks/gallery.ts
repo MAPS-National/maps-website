@@ -4,7 +4,10 @@ import { archiveGallery } from './ArchiveBlock/gallery'
 import { callToActionGallery } from './CallToAction/gallery'
 import { cardGridGallery } from './CardGrid/gallery'
 import { contentGallery } from './Content/gallery'
+import { faqGallery } from './FAQ/gallery'
+import { featureSplitGallery } from './FeatureSplit/gallery'
 import { formGallery } from './Form/gallery'
+import { logoStripGallery } from './LogoStrip/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
 import { mediaGalleryGallery } from './MediaGallery/gallery'
 
@@ -31,5 +34,8 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   mediaBlockGallery,
   archiveGallery,
   formGallery,
+  faqGallery,
+  featureSplitGallery,
+  logoStripGallery,
   mediaGalleryGallery,
 ]

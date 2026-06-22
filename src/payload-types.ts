@@ -175,6 +175,23 @@ export interface Page {
       };
       [k: string]: unknown;
     } | null;
+    /**
+     * Small tagline shown above the heading on interior-page headers.
+     */
+    eyebrow?: string | null;
+    /**
+     * Optional trail above the heading. The last crumb is the current page — leave its URL empty.
+     */
+    breadcrumbs?:
+      | {
+          label: string;
+          /**
+           * Leave empty for the current page (rendered as plain text).
+           */
+          url?: string | null;
+          id?: string | null;
+        }[]
+      | null;
     links?:
       | {
           link: {
@@ -212,6 +229,9 @@ export interface Page {
     | ArchiveBlock
     | FormBlock
     | CardGridBlock
+    | FAQBlock
+    | FeatureSplitBlock
+    | LogoStripBlock
     | MediaGalleryBlock
   )[];
   meta?: {
@@ -899,6 +919,186 @@ export interface CardGridBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQBlock".
+ */
+export interface FAQBlock {
+  header?: {
+    enableHeader?: boolean | null;
+    eyebrow?: string | null;
+    heading?: string | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    links?:
+      | {
+          link: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            url?: string | null;
+            label: string;
+            /**
+             * Choose how the link should be rendered.
+             */
+            appearance?: ('default' | 'outline') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Optional in-page anchor target, e.g. "faq" makes the section reachable at #faq. Must be unique on the page.
+     */
+    anchorId?: string | null;
+  };
+  /**
+   * Stacked: header sits above the questions. Side by side: header in a left column, questions on the right.
+   */
+  layout: 'stacked' | 'sideBySide';
+  items?:
+    | {
+        question: string;
+        answer: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        defaultOpen?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureSplitBlock".
+ */
+export interface FeatureSplitBlock {
+  eyebrow?: string | null;
+  /**
+   * Which side the image sits on (desktop). Alternate it on stacked sections.
+   */
+  imageSide: 'right' | 'left';
+  heading: string;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  image: number | Media;
+  /**
+   * Optional in-page anchor target, e.g. "networking" makes the section reachable at #networking. Must be unique on the page.
+   */
+  anchorId?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureSplit';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoStripBlock".
+ */
+export interface LogoStripBlock {
+  /**
+   * Optional label above the logos, e.g. "Trusted by organizations across the nation".
+   */
+  heading?: string | null;
+  /**
+   * Grid: a static wrapped row. Marquee: a continuous auto-scrolling strip (pauses on hover, respects reduced-motion).
+   */
+  layout: 'grid' | 'marquee';
+  items?:
+    | {
+        logo: number | Media;
+        enableLink?: boolean | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'logoStrip';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "MediaGalleryBlock".
  */
 export interface MediaGalleryBlock {
@@ -1215,6 +1415,14 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         type?: T;
         richText?: T;
+        eyebrow?: T;
+        breadcrumbs?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
         links?:
           | T
           | {
@@ -1242,6 +1450,9 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         cardGrid?: T | CardGridBlockSelect<T>;
+        faq?: T | FAQBlockSelect<T>;
+        featureSplit?: T | FeatureSplitBlockSelect<T>;
+        logoStrip?: T | LogoStripBlockSelect<T>;
         mediaGallery?: T | MediaGalleryBlockSelect<T>;
       };
   meta?:
@@ -1390,6 +1601,101 @@ export interface CardGridBlockSelect<T extends boolean = true> {
               url?: T;
             };
         requiredPlans?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQBlock_select".
+ */
+export interface FAQBlockSelect<T extends boolean = true> {
+  header?:
+    | T
+    | {
+        enableHeader?: T;
+        eyebrow?: T;
+        heading?: T;
+        body?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+        anchorId?: T;
+      };
+  layout?: T;
+  items?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        defaultOpen?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureSplitBlock_select".
+ */
+export interface FeatureSplitBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  imageSide?: T;
+  heading?: T;
+  body?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  image?: T;
+  anchorId?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoStripBlock_select".
+ */
+export interface LogoStripBlockSelect<T extends boolean = true> {
+  heading?: T;
+  layout?: T;
+  items?:
+    | T
+    | {
+        logo?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
   id?: T;
