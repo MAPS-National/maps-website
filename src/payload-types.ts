@@ -231,6 +231,7 @@ export interface Page {
     | CardGridBlock
     | FAQBlock
     | FeatureSplitBlock
+    | LogoStripBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1059,6 +1060,44 @@ export interface FeatureSplitBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoStripBlock".
+ */
+export interface LogoStripBlock {
+  /**
+   * Optional label above the logos, e.g. "Trusted by organizations across the nation".
+   */
+  heading?: string | null;
+  /**
+   * Grid: a static wrapped row. Marquee: a continuous auto-scrolling strip (pauses on hover, respects reduced-motion).
+   */
+  layout: 'grid' | 'marquee';
+  items?:
+    | {
+        logo: number | Media;
+        enableLink?: boolean | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'logoStrip';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1377,6 +1416,7 @@ export interface PagesSelect<T extends boolean = true> {
         cardGrid?: T | CardGridBlockSelect<T>;
         faq?: T | FAQBlockSelect<T>;
         featureSplit?: T | FeatureSplitBlockSelect<T>;
+        logoStrip?: T | LogoStripBlockSelect<T>;
       };
   meta?:
     | T
@@ -1596,6 +1636,31 @@ export interface FeatureSplitBlockSelect<T extends boolean = true> {
       };
   image?: T;
   anchorId?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoStripBlock_select".
+ */
+export interface LogoStripBlockSelect<T extends boolean = true> {
+  heading?: T;
+  layout?: T;
+  items?:
+    | T
+    | {
+        logo?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

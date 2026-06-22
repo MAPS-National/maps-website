@@ -7,6 +7,7 @@ import { Content } from './Content/config'
 import { FAQ } from './FAQ/config'
 import { FeatureSplit } from './FeatureSplit/config'
 import { FormBlock } from './Form/config'
+import { LogoStrip } from './LogoStrip/config'
 import { MediaBlock } from './MediaBlock/config'
 
 /**
@@ -28,4 +29,5 @@ export const layoutBlocks: Block[] = [
   CardGrid,
   FAQ,
   FeatureSplit,
+  LogoStrip,
 ]

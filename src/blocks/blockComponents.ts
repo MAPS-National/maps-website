@@ -14,6 +14,8 @@ import { FeatureSplit } from './FeatureSplit/config'
 import { FeatureSplitBlock } from './FeatureSplit/Component'
 import { FormBlock as FormConfig } from './Form/config'
 import { FormBlock } from './Form/Component'
+import { LogoStrip } from './LogoStrip/config'
+import { LogoStripBlock } from './LogoStrip/Component'
 import { MediaBlock as MediaConfig } from './MediaBlock/config'
 import { MediaBlock } from './MediaBlock/Component'
 
@@ -39,4 +41,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [CardGrid.slug]: CardGridBlock,
   [FAQ.slug]: FAQBlock,
   [FeatureSplit.slug]: FeatureSplitBlock,
+  [LogoStrip.slug]: LogoStripBlock,
 }

@@ -7,6 +7,7 @@ import { contentGallery } from './Content/gallery'
 import { faqGallery } from './FAQ/gallery'
 import { featureSplitGallery } from './FeatureSplit/gallery'
 import { formGallery } from './Form/gallery'
+import { logoStripGallery } from './LogoStrip/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
 
 /**
@@ -34,4 +35,5 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   formGallery,
   faqGallery,
   featureSplitGallery,
+  logoStripGallery,
 ]
