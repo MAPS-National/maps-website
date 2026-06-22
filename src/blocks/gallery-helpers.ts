@@ -61,8 +61,8 @@ export const paragraph = (t: string): ElementNode => ({
   version: 1,
 })
 
-/** A heading node (h2 / h3 / h4). */
-export const heading = (t: string, tag: 'h2' | 'h3' | 'h4' = 'h2'): ElementNode => ({
+/** A heading node (h1–h4). */
+export const heading = (t: string, tag: 'h1' | 'h2' | 'h3' | 'h4' = 'h2'): ElementNode => ({
   type: 'heading',
   tag,
   children: [text(t)],

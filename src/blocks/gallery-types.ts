@@ -35,3 +35,19 @@ export type GalleryBlock<P = Record<string, unknown>> = {
   /** Ordered variants to render. */
   variants: GalleryVariant<P>[]
 }
+
+/**
+ * One hero's gallery entry. Heros are not layout blocks — they live in the
+ * `hero` group field and render through `RenderHero` keyed on `type`, so they
+ * get their own section in the gallery. Colocated in `src/heros/gallery.ts`.
+ */
+export type GalleryHero<P = Record<string, unknown>> = {
+  /** Hero `type` value (e.g. "highImpact") passed to `RenderHero`. */
+  type: string
+  /** Heading shown for the hero, e.g. "High Impact". */
+  title: string
+  /** One-line description of when to use this hero. */
+  description?: string
+  /** Ordered variants to render. */
+  variants: GalleryVariant<P>[]
+}
