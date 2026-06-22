@@ -94,15 +94,62 @@ const media = (file: string, width: number, height: number, alt: string): Media 
   createdAt: '2026-06-22T00:00:00.000Z',
 })
 
-// Real MAPS National event photography from the Webflow export, copied into
-// /public/gallery so it survives a clean checkout (see migration runbook).
-export const sampleLandscape = media(
+// Real MAPS National event photography and partner logos from the Webflow
+// export, copied into /public/gallery so they survive a clean checkout (see
+// migration runbook). A varied set so each block/variant gets its own image.
+
+// Landscape event photos — for full-bleed heros, media blocks, and card grids.
+export const sampleCapitol = media(
   'event-capitol.webp',
   800,
   450,
-  'MAPS National members gathered on the steps of the U.S. Capitol',
+  'MAPS members gathered on the steps of the U.S. Capitol',
 )
-export const sampleSquare = media(
+export const sampleSenate = media(
+  'event-senate.webp',
+  800,
+  534,
+  'A large MAPS gathering in a U.S. Senate reception room',
+)
+export const sampleCityHall = media(
+  'event-cityhall.webp',
+  800,
+  600,
+  'MAPS members on the grand staircase of a city hall',
+)
+export const sampleEop = media(
+  'event-eop.webp',
+  800,
+  600,
+  'A MAPS panel seated before the Executive Office of the President seal',
+)
+export const sampleLibrary = media(
+  'event-library.webp',
+  800,
+  600,
+  'MAPS members gathered outside the Library of Congress',
+)
+export const sampleGeorgetown = media(
+  'event-georgetown.webp',
+  800,
+  600,
+  'A MAPS panel discussion at Georgetown Law',
+)
+export const sampleCia = media(
+  'event-cia.webp',
+  800,
+  600,
+  'MAPS members in the lobby of CIA headquarters',
+)
+export const sampleReception = media(
+  'event-reception.webp',
+  800,
+  600,
+  'MAPS members at an evening reception beside a MAPS banner',
+)
+
+// Square event photos — uniform thumbnails for post cards.
+export const sampleSpeaker = media(
   'event-speaker.webp',
   800,
   800,
@@ -119,4 +166,20 @@ export const sampleNetworking = media(
   800,
   800,
   'MAPS members networking at an evening reception',
+)
+
+// Partner logos — transparent square-ish marks for the icon/partner slots.
+export const logoMlsa = media('logo-mlsa.webp', 500, 500, 'Muslim Law Students Association logo')
+export const logoCmsa = media(
+  'logo-cmsa.webp',
+  1080,
+  1080,
+  'Congressional Muslim Staff Association logo',
+)
+export const logoAmt = media('logo-amt.webp', 185, 162, 'American Muslim Today logo')
+export const logoMaemsa = media(
+  'logo-maemsa.webp',
+  1200,
+  1500,
+  'Muslim American EMS Association patch',
 )

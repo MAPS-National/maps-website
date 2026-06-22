@@ -1,7 +1,7 @@
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
-import { prose, sampleLandscape } from '@/blocks/gallery-helpers'
+import { prose, sampleEop, sampleLibrary } from '@/blocks/gallery-helpers'
 
 export const mediaBlockGallery: GalleryBlock<MediaBlockProps> = {
   slug: 'mediaBlock',
@@ -15,8 +15,8 @@ export const mediaBlockGallery: GalleryBlock<MediaBlockProps> = {
       props: {
         blockType: 'mediaBlock',
         media: {
-          ...sampleLandscape,
-          caption: prose('MAPS National members gathered on the steps of the U.S. Capitol.'),
+          ...sampleEop,
+          caption: prose('A MAPS panel at the Executive Office of the President.'),
         },
       },
     },
@@ -25,7 +25,7 @@ export const mediaBlockGallery: GalleryBlock<MediaBlockProps> = {
       description: 'Bare image with the standard border and radius.',
       props: {
         blockType: 'mediaBlock',
-        media: sampleLandscape,
+        media: sampleLibrary,
       },
     },
   ],

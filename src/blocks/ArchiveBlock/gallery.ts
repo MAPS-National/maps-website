@@ -1,7 +1,7 @@
 import type { Post, ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
-import { prose, sampleLandscape, sampleNetworking, sampleSummit } from '@/blocks/gallery-helpers'
+import { prose, sampleNetworking, sampleSpeaker, sampleSummit } from '@/blocks/gallery-helpers'
 
 // The post Card reads only slug/title/meta/categories; build just those fields
 // and present them as a Post. Avoids a DB round-trip in the gallery.
@@ -10,7 +10,7 @@ const mockPost = (
   slug: string,
   description: string,
   category: string,
-  image = sampleLandscape,
+  image = sampleSpeaker,
 ): { relationTo: 'posts'; value: Post } => ({
   relationTo: 'posts',
   value: {
@@ -43,7 +43,7 @@ export const archiveGallery: GalleryBlock<ArchiveBlockProps> = {
             'capitol-gathering',
             'Public servants from across the country convened in Washington, D.C.',
             'Events',
-            sampleLandscape,
+            sampleSpeaker,
           ),
           mockPost(
             'MAPS Academy training series returns',

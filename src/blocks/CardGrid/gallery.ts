@@ -2,11 +2,14 @@ import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
 import {
+  logoAmt,
+  logoCmsa,
+  logoMaemsa,
+  logoMlsa,
   prose,
-  sampleLandscape,
-  sampleNetworking,
-  sampleSquare,
-  sampleSummit,
+  sampleCia,
+  sampleGeorgetown,
+  sampleReception,
 } from '@/blocks/gallery-helpers'
 
 type CardItem = NonNullable<CardGridBlockProps['items']>[number]
@@ -64,9 +67,9 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         mediaType: 'image',
         header: { enableHeader: true, heading: 'Across the country' },
         items: [
-          item('Annual summit', 'Members convene each year in Washington, D.C.', { image: sampleLandscape }),
-          item('Academy training', 'The MAPS Academy training series for every career level.', { image: sampleSummit }),
-          item('Member receptions', 'Local chapters and federal ERGs gather year-round.', { image: sampleNetworking }),
+          item('Panels & forums', 'Conversations on public service at partner institutions.', { image: sampleGeorgetown }),
+          item('Agency visits', 'Members connect with colleagues across the federal government.', { image: sampleCia }),
+          item('Member receptions', 'Local chapters and federal ERGs gather year-round.', { image: sampleReception }),
         ],
       },
     },
@@ -77,12 +80,12 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         blockType: 'cardGrid',
         columns: '4',
         mediaType: 'icon',
-        header: { enableHeader: true, heading: 'Why members join' },
+        header: { enableHeader: true, heading: 'Our Partners' },
         items: [
-          item('Community', 'A national network of peers and mentors.', { icon: sampleSquare }),
-          item('Advocacy', 'A collective voice on policy and representation.', { icon: sampleSummit }),
-          item('Resources', 'Career support, training, and know-your-rights guidance.', { icon: sampleNetworking }),
-          item('Recognition', 'Celebrating service across federal, state, and local government.', { icon: sampleLandscape }),
+          item('MLSA', 'Muslim Law Students Association.', { icon: logoMlsa }),
+          item('CMSA', 'Congressional Muslim Staff Association.', { icon: logoCmsa }),
+          item('American Muslim Today', 'Community media partner.', { icon: logoAmt }),
+          item('MAEMSA', 'Muslim American EMS Association.', { icon: logoMaemsa }),
         ],
       },
     },

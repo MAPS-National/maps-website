@@ -1,7 +1,15 @@
 import type { Page } from '@/payload-types'
 import type { GalleryHero } from '@/blocks/gallery-types'
 
-import { heading, paragraph, prose, richText, sampleLandscape } from '@/blocks/gallery-helpers'
+import {
+  heading,
+  paragraph,
+  prose,
+  richText,
+  sampleCapitol,
+  sampleCityHall,
+  sampleSenate,
+} from '@/blocks/gallery-helpers'
 
 type HeroData = Page['hero']
 
@@ -20,7 +28,7 @@ const highImpactHeroGallery: GalleryHero<HeroData> = {
       description: 'Default overlay — lifts text contrast over imagery.',
       props: {
         type: 'highImpact',
-        media: sampleLandscape,
+        media: sampleCapitol,
         overlay: 'navy-gradient',
         richText: richText(
           heading('Empowering Muslim American Public Servants', 'h1'),
@@ -36,7 +44,7 @@ const highImpactHeroGallery: GalleryHero<HeroData> = {
       description: 'Overlay disabled — raw image behind the copy.',
       props: {
         type: 'highImpact',
-        media: sampleLandscape,
+        media: sampleSenate,
         overlay: 'none',
         richText: richText(
           heading('Serving the community and the country', 'h1'),
@@ -59,8 +67,8 @@ const mediumImpactHeroGallery: GalleryHero<HeroData> = {
       props: {
         type: 'mediumImpact',
         media: {
-          ...sampleLandscape,
-          caption: prose('MAPS members on the steps of the U.S. Capitol.'),
+          ...sampleCityHall,
+          caption: prose('MAPS members gathered at a city hall reception.'),
         },
         richText: richText(
           heading('Advance your career, serve your community and country', 'h2'),
