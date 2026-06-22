@@ -10,6 +10,8 @@ import { Content } from './Content/config'
 import { ContentBlock } from './Content/Component'
 import { FAQ } from './FAQ/config'
 import { FAQBlock } from './FAQ/Component'
+import { FeatureSplit } from './FeatureSplit/config'
+import { FeatureSplitBlock } from './FeatureSplit/Component'
 import { FormBlock as FormConfig } from './Form/config'
 import { FormBlock } from './Form/Component'
 import { MediaBlock as MediaConfig } from './MediaBlock/config'
@@ -36,4 +38,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [FormConfig.slug]: FormBlock,
   [CardGrid.slug]: CardGridBlock,
   [FAQ.slug]: FAQBlock,
+  [FeatureSplit.slug]: FeatureSplitBlock,
 }
