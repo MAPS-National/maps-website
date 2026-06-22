@@ -233,6 +233,7 @@ export interface Page {
     | FeatureSplitBlock
     | LogoStripBlock
     | MediaGalleryBlock
+    | PricingTiersBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1134,6 +1135,81 @@ export interface MediaGalleryBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricingTiersBlock".
+ */
+export interface PricingTiersBlock {
+  header?: {
+    enableHeader?: boolean | null;
+    heading?: string | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Optional in-page anchor target, e.g. "membership" → #membership.
+     */
+    anchorId?: string | null;
+  };
+  columns: '2' | '3' | '4';
+  plans?:
+    | {
+        name: string;
+        /**
+         * e.g. "Free" or "$25 / year".
+         */
+        price?: string | null;
+        description?: string | null;
+        features?:
+          | {
+              feature: string;
+              id?: string | null;
+            }[]
+          | null;
+        featured?: boolean | null;
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+                /**
+                 * Choose how the link should be rendered.
+                 */
+                appearance?: ('default' | 'outline') | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pricingTiers';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1454,6 +1530,7 @@ export interface PagesSelect<T extends boolean = true> {
         featureSplit?: T | FeatureSplitBlockSelect<T>;
         logoStrip?: T | LogoStripBlockSelect<T>;
         mediaGallery?: T | MediaGalleryBlockSelect<T>;
+        pricingTiers?: T | PricingTiersBlockSelect<T>;
       };
   meta?:
     | T
@@ -1715,6 +1792,53 @@ export interface MediaGalleryBlockSelect<T extends boolean = true> {
     | {
         image?: T;
         caption?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PricingTiersBlock_select".
+ */
+export interface PricingTiersBlockSelect<T extends boolean = true> {
+  header?:
+    | T
+    | {
+        enableHeader?: T;
+        heading?: T;
+        body?: T;
+        anchorId?: T;
+      };
+  columns?: T;
+  plans?:
+    | T
+    | {
+        name?: T;
+        price?: T;
+        description?: T;
+        features?:
+          | T
+          | {
+              feature?: T;
+              id?: T;
+            };
+        featured?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
         id?: T;
       };
   id?: T;
