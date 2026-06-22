@@ -200,6 +200,10 @@ export interface Page {
         }[]
       | null;
     media?: (number | null) | Media;
+    /**
+     * Navy scrim over the hero image for text legibility (brand-token gradient).
+     */
+    overlay?: ('navy-gradient' | 'none') | null;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
@@ -1080,6 +1084,7 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        overlay?: T;
       };
   layout?:
     | T

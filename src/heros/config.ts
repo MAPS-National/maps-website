@@ -67,6 +67,26 @@ export const hero: Field = {
       relationTo: 'media',
       required: true,
     },
+    {
+      name: 'overlay',
+      type: 'select',
+      defaultValue: 'navy-gradient',
+      label: 'Background overlay',
+      admin: {
+        condition: (_, { type } = {}) => type === 'highImpact',
+        description: 'Navy scrim over the hero image for text legibility (brand-token gradient).',
+      },
+      options: [
+        {
+          label: 'Navy gradient',
+          value: 'navy-gradient',
+        },
+        {
+          label: 'None',
+          value: 'none',
+        },
+      ],
+    },
   ],
   label: false,
 }
