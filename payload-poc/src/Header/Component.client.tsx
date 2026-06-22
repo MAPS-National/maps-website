@@ -25,7 +25,10 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   }, [pathname])
 
   useEffect(() => {
-    if (headerTheme && headerTheme !== theme) setTheme(headerTheme)
+    // Follow the header theme a page sets; when none is set (null), fall back to
+    // no override so the header inherits the global theme instead of sticking to
+    // the previous page's value.
+    if (headerTheme !== theme) setTheme(headerTheme ?? null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [headerTheme])
 
@@ -33,7 +36,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
     <header className="container relative z-20   " {...(theme ? { 'data-theme': theme } : {})}>
       <div className="py-8 flex justify-between">
         <Link href="/">
-          <Logo loading="eager" priority="high" className="invert dark:invert-0" />
+          <Logo variant="primary" loading="eager" priority="high" />
         </Link>
         <HeaderNav data={data} />
       </div>
