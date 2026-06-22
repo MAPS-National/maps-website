@@ -5,6 +5,7 @@ import { blockComponents } from '@/blocks/blockComponents'
 import { galleryBlocks } from '@/blocks/gallery'
 import { galleryHeros } from '@/heros/gallery'
 import { RenderHero } from '@/heros/RenderHero'
+import { HeaderThemeProvider } from '@/providers/HeaderTheme'
 import { cn } from '@/utilities/ui'
 
 import { GalleryNav } from './GalleryNav'
@@ -104,7 +105,10 @@ export default function BlocksGalleryPage() {
           </p>
         </div>
 
-        {galleryHeros.map((hero) => (
+        {/* Local header-theme provider absorbs heros' setHeaderTheme() calls
+            (High Impact sets 'dark' on mount) so they don't flip the page header. */}
+        <HeaderThemeProvider>
+          {galleryHeros.map((hero) => (
           <div className="flex scroll-mt-20 flex-col gap-xs" id={`hero-${hero.type}`} key={hero.type}>
             <div className="flex flex-col gap-1">
               <h3 className="text-lg font-semibold">{hero.title}</h3>
@@ -133,8 +137,9 @@ export default function BlocksGalleryPage() {
                 </div>
               </div>
             ))}
-          </div>
-        ))}
+            </div>
+          ))}
+        </HeaderThemeProvider>
         </section>
         </div>
       </div>
