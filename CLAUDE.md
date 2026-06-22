@@ -53,13 +53,13 @@ Phase 3 of the OSS migration runbook: the repeatable contract for turning the ol
 **Classify every needed block (the catalog does this up front):**
 1. **Port** — a Relume source section exists → translate its markup/styles into a block, mapping styles to brand tokens.
 2. **Existing / variant** — no source, but an existing block or hero variant fits. Heros already cover most page intros (`HighImpact`, `MediumImpact`, `LowImpact`, `PostHero`); an interior-page header / "mini-hero" is almost always a `LowImpact` variant — add a `variant`, don't build new.
-3. **Net-new** — no source *and* nothing existing fits → compose from design-system primitives (`src/components/ui` atoms + tokens). Rare; the true gaps.
+3. **Net-new** — no source *and* nothing existing fits → compose from design-system primitives (`src/components/ui` atoms + tokens). The one place `frontend-design` may help — but guard-rail it to the brand tokens (fixed navy/maroon, `tokens.css`); never its generative font/colour choices. Rare; the true gaps.
 
 **Variant vs. new block.** Cluster sections by *intent*, not markup. The same intent (FAQ, CTA, testimonial) rendered differently across pages is **one block** with the differences as fields or a `variant` select — not several near-identical blocks. Fork a new block only when structure/behavior genuinely differs; spacing/colour differences are tokens/props, not new blocks.
 
 **Tokens, never hardcoded values.** All colour/spacing/type comes from `tokens.css` via the shadcn/Tailwind theme (see Theming & design system). Never inline a Webflow hex/px — map it to the nearest token. Base brand navy `#0d1e6c` / maroon `#8b0a03` are fixed.
 
-**Consistency is advisory + HITL.** When porting, check the section against its catalog entry and a `/design-critique` pass (usability / hierarchy / consistency). Surface drift as a recommendation to conform — never silently port a one-off variation, and never auto-apply a recommendation.
+**Consistency is advisory + HITL.** When porting, check the section against its catalog entry and the `design:` review skills — `design:design-critique` (usability / hierarchy / consistency), `design:design-system` (token + variant conformance — flags hardcoded values and near-duplicate variants that should be one block), and `design:accessibility-review` (WCAG / the repo's AAA text pairs). Surface drift as a recommendation to conform — never silently port a one-off variation, and never auto-apply a recommendation.
 
 **Does NOT carry over from Webflow** (rebuild natively, don't port): interactions/animations (Webflow IX2), forms (use the Payload form-builder), CMS collection displays (model as Payload collections + query), and embedded scripts.
 
