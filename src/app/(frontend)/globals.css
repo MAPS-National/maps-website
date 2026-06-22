@@ -147,7 +147,7 @@
 [data-theme='dark'] {
   --background: var(--neutral-darkest);
   --foreground: var(--neutral-lightest);
-  --card: var(--neutral-darker);
+  --card: color-mix(in srgb, var(--neutral-darker) 50%, var(--neutral-dark));
   --card-foreground: var(--neutral-lightest);
   --popover: var(--neutral-darker);
   --popover-foreground: var(--neutral-lightest);
