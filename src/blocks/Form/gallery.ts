@@ -47,7 +47,7 @@ export const formGallery: GalleryBlock<FormBlockType> = {
       description: 'Intro plus name, email, topic, message and a consent checkbox. Submission is inert in the gallery.',
       props: {
         enableIntro: true,
-        introContent: prose('Tell us a little about what you need.') as unknown as FormBlockType['introContent'],
+        introContent: prose('Get in touch with the MAPS team.') as unknown as FormBlockType['introContent'],
         form: sampleForm,
       },
     },

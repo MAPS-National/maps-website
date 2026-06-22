@@ -1,7 +1,7 @@
 import type { Post, ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
-import { prose, sampleLandscape } from '@/blocks/gallery-helpers'
+import { prose, sampleLandscape, sampleNetworking, sampleSummit } from '@/blocks/gallery-helpers'
 
 // The post Card reads only slug/title/meta/categories; build just those fields
 // and present them as a Post. Avoids a DB round-trip in the gallery.
@@ -10,12 +10,13 @@ const mockPost = (
   slug: string,
   description: string,
   category: string,
+  image = sampleLandscape,
 ): { relationTo: 'posts'; value: Post } => ({
   relationTo: 'posts',
   value: {
     title,
     slug,
-    meta: { image: sampleLandscape, description },
+    meta: { image, description },
     categories: [{ title: category }],
   } as unknown as Post,
 })
@@ -33,25 +34,30 @@ export const archiveGallery: GalleryBlock<ArchiveBlockProps> = {
       props: {
         blockType: 'archive',
         populateBy: 'selection',
-        introContent: prose('Recent writing from the team.'),
+        introContent: prose(
+          'Latest updates from MAPS, including statements, press releases, events, and professional development.',
+        ),
         selectedDocs: [
           mockPost(
-            'Designing thin vertical slices',
-            'thin-vertical-slices',
-            'Why we cut tracer bullets through every layer instead of building horizontally.',
-            'Process',
+            'MAPS members gather at the U.S. Capitol',
+            'capitol-gathering',
+            'Public servants from across the country convened in Washington, D.C.',
+            'Events',
+            sampleLandscape,
           ),
           mockPost(
-            'Tokens over hardcoded values',
-            'tokens-over-hardcoded',
-            'Mapping a Webflow export onto a small, themeable token system.',
-            'Design system',
+            'MAPS Academy training series returns',
+            'academy-training-series',
+            'Career support and professional development for every level of government.',
+            'Programs',
+            sampleSummit,
           ),
           mockPost(
-            'Porting sections, not pages',
-            'porting-sections',
-            'A repeatable contract for turning old markup into native blocks.',
-            'Migration',
+            'Building community in public service',
+            'community-in-public-service',
+            'Local chapters and federal employee resource groups continue to grow.',
+            'Membership',
+            sampleNetworking,
           ),
         ],
       },

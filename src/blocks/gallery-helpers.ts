@@ -80,7 +80,7 @@ export const richText = (...nodes: ElementNode[]): RichTextValue => ({
 /** Convenience: a single-paragraph rich-text value. */
 export const prose = (t: string): RichTextValue => richText(paragraph(t))
 
-/** Placeholder Media resource backed by a tracked file in /public/gallery. */
+/** Media resource backed by a tracked file in /public/gallery. */
 const media = (file: string, width: number, height: number, alt: string): Media => ({
   id: 0,
   alt,
@@ -89,15 +89,34 @@ const media = (file: string, width: number, height: number, alt: string): Media 
   height,
   mimeType: 'image/webp',
   filename: file,
-  // Doubles as the next/image cache tag — bump when the placeholder files change.
+  // Doubles as the next/image cache tag — bump when the sample files change.
   updatedAt: '2026-06-22T00:00:00.000Z',
   createdAt: '2026-06-22T00:00:00.000Z',
 })
 
+// Real MAPS National event photography from the Webflow export, copied into
+// /public/gallery so it survives a clean checkout (see migration runbook).
 export const sampleLandscape = media(
-  'placeholder-landscape.webp',
-  1200,
-  675,
-  'Sample landscape placeholder image',
+  'event-capitol.webp',
+  800,
+  450,
+  'MAPS National members gathered on the steps of the U.S. Capitol',
 )
-export const sampleSquare = media('placeholder-square.webp', 600, 600, 'Sample square placeholder image')
+export const sampleSquare = media(
+  'event-speaker.webp',
+  800,
+  800,
+  'A MAPS member addressing attendees from a podium',
+)
+export const sampleSummit = media(
+  'event-summit.webp',
+  800,
+  800,
+  'Attendees seated at the MAPS National annual summit',
+)
+export const sampleNetworking = media(
+  'event-networking.webp',
+  800,
+  800,
+  'MAPS members networking at an evening reception',
+)

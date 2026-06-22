@@ -1,7 +1,13 @@
 import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
-import { prose, sampleLandscape, sampleSquare } from '@/blocks/gallery-helpers'
+import {
+  prose,
+  sampleLandscape,
+  sampleNetworking,
+  sampleSquare,
+  sampleSummit,
+} from '@/blocks/gallery-helpers'
 
 type CardItem = NonNullable<CardGridBlockProps['items']>[number]
 
@@ -36,16 +42,16 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         mediaType: 'none',
         header: {
           enableHeader: true,
-          eyebrow: 'Capabilities',
-          heading: 'Everything in one workspace',
+          eyebrow: 'MAPS Programs',
+          heading: 'Advance your career, serve your community and country',
           body: prose(
-            'A consolidated grid that scales from two to four columns and adapts to light and dark themes.',
+            'Comprehensive support for Muslim American public servants at every level of government.',
           ),
         },
         items: [
-          item('Unified records', 'A single source of truth across every team and surface.', { withLink: true }),
-          item('Granular access', 'Role- and plan-aware visibility, enforced server-side.', { withLink: true }),
-          item('Audit trail', 'Every change captured, attributable, and reversible.', { withLink: true }),
+          item('Community Building', 'Connect with a national network of public servants across government.', { withLink: true }),
+          item('Legal Advocacy', 'Know your rights, understand redress, and navigate processes.', { withLink: true }),
+          item('Policy & Advocacy', 'Initiatives that advance representation in public service.', { withLink: true }),
         ],
       },
     },
@@ -56,11 +62,11 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         blockType: 'cardGrid',
         columns: '3',
         mediaType: 'image',
-        header: { enableHeader: true, heading: 'With imagery' },
+        header: { enableHeader: true, heading: 'Across the country' },
         items: [
-          item('Discovery', 'Map the landscape before committing resources.', { image: sampleLandscape }),
-          item('Delivery', 'Ship in thin, verifiable slices.', { image: sampleLandscape }),
-          item('Support', 'Stay close after launch.', { image: sampleLandscape }),
+          item('Annual summit', 'Members convene each year in Washington, D.C.', { image: sampleLandscape }),
+          item('Academy training', 'The MAPS Academy training series for every career level.', { image: sampleSummit }),
+          item('Member receptions', 'Local chapters and federal ERGs gather year-round.', { image: sampleNetworking }),
         ],
       },
     },
@@ -71,12 +77,12 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         blockType: 'cardGrid',
         columns: '4',
         mediaType: 'icon',
-        header: { enableHeader: true, heading: 'Why teams switch' },
+        header: { enableHeader: true, heading: 'Why members join' },
         items: [
-          item('Fast', 'Sub-second navigation across large datasets.', { icon: sampleSquare }),
-          item('Secure', 'Encrypted at rest and in transit by default.', { icon: sampleSquare }),
-          item('Open', 'Standards-based APIs, no lock-in.', { icon: sampleSquare }),
-          item('Supported', 'Responsive humans, not just docs.', { icon: sampleSquare }),
+          item('Community', 'A national network of peers and mentors.', { icon: sampleSquare }),
+          item('Advocacy', 'A collective voice on policy and representation.', { icon: sampleSummit }),
+          item('Resources', 'Career support, training, and know-your-rights guidance.', { icon: sampleNetworking }),
+          item('Recognition', 'Celebrating service across federal, state, and local government.', { icon: sampleLandscape }),
         ],
       },
     },
@@ -89,8 +95,8 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         mediaType: 'none',
         header: { enableHeader: false },
         items: [
-          item('For operators', 'Day-to-day workflows tuned for speed and fewer clicks.'),
-          item('For administrators', 'Governance, provisioning, and policy in one place.'),
+          item('For federal staffers', 'Employee resource groups and peer support across agencies.'),
+          item('For state & local', 'State committees connecting public servants in your region.'),
         ],
       },
     },

@@ -16,7 +16,7 @@ export const mediaBlockGallery: GalleryBlock<MediaBlockProps> = {
         blockType: 'mediaBlock',
         media: {
           ...sampleLandscape,
-          caption: prose('A placeholder image rendered through the shared Media component.'),
+          caption: prose('MAPS National members gathered on the steps of the U.S. Capitol.'),
         },
       },
     },

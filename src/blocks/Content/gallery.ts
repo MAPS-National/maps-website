@@ -23,8 +23,8 @@ export const contentGallery: GalleryBlock<ContentBlockProps> = {
       props: {
         blockType: 'content',
         columns: [
-          column('half', 'Our approach', 'Thin vertical slices that each cut through every layer, demoable on their own.'),
-          column('half', 'Why it works', 'Smaller increments surface integration risk early and keep review tractable.'),
+          column('half', 'Our mission', 'Empower Muslim American public servants to excel in their careers and serve their communities.'),
+          column('half', 'Our values', 'Community, integrity, and service — building a brighter future through collaboration and mentorship.'),
         ],
       },
     },
@@ -34,9 +34,9 @@ export const contentGallery: GalleryBlock<ContentBlockProps> = {
       props: {
         blockType: 'content',
         columns: [
-          column('oneThird', 'Plan', 'Map the work into independently shippable units.'),
-          column('oneThird', 'Build', 'Implement and verify one slice at a time.'),
-          column('oneThird', 'Review', 'Check each change against the design gates.'),
+          column('oneThird', 'Community', 'A national network of peers, mentors, and allies.'),
+          column('oneThird', 'Advocacy', 'A collective voice on policy and representation.'),
+          column('oneThird', 'Resources', 'Career support, training, and know-your-rights guidance.'),
         ],
       },
     },
@@ -49,11 +49,11 @@ export const contentGallery: GalleryBlock<ContentBlockProps> = {
           {
             size: 'full',
             richText: richText(
-              heading('A single, full-bleed column', 'h2'),
-              paragraph('Use the full width for longer-form copy or a lead-in paragraph before the grid resumes.'),
+              heading('Building a brighter future, together', 'h2'),
+              paragraph('At MAPS, we foster a supportive community for Muslim American public servants, helping them excel in their careers and personal growth.'),
             ),
             enableLink: true,
-            link: { type: 'custom', url: '#', label: 'Read the runbook', newTab: false, appearance: 'default' },
+            link: { type: 'custom', url: '#', label: 'Read our story', newTab: false, appearance: 'default' },
           },
         ],
       },

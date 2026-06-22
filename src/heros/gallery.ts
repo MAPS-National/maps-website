@@ -23,10 +23,12 @@ const highImpactHeroGallery: GalleryHero<HeroData> = {
         media: sampleLandscape,
         overlay: 'navy-gradient',
         richText: richText(
-          heading('Build once, reuse everywhere', 'h1'),
-          paragraph('A native block system ported from the original site and tuned to the brand tokens.'),
+          heading('Empowering Muslim American Public Servants', 'h1'),
+          paragraph(
+            'At MAPS, we foster a supportive community for Muslim American public servants, helping them excel in their careers and personal growth.',
+          ),
         ),
-        links: [link('Get started'), link('Learn more', 'outline')],
+        links: [link('Become a member'), link('Explore programs', 'outline')],
       },
     },
     {
@@ -37,10 +39,10 @@ const highImpactHeroGallery: GalleryHero<HeroData> = {
         media: sampleLandscape,
         overlay: 'none',
         richText: richText(
-          heading('Raw imagery, no scrim', 'h1'),
+          heading('Serving the community and the country', 'h1'),
           paragraph('Use when the image is already dark enough for legible text.'),
         ),
-        links: [link('Get started')],
+        links: [link('Join MAPS')],
       },
     },
   ],
@@ -56,12 +58,15 @@ const mediumImpactHeroGallery: GalleryHero<HeroData> = {
       name: 'With captioned image',
       props: {
         type: 'mediumImpact',
-        media: { ...sampleLandscape, caption: prose('A contained hero image with a caption.') },
+        media: {
+          ...sampleLandscape,
+          caption: prose('MAPS members on the steps of the U.S. Capitol.'),
+        },
         richText: richText(
-          heading('A measured introduction', 'h2'),
-          paragraph('Sets context without taking over the viewport.'),
+          heading('Advance your career, serve your community and country', 'h2'),
+          paragraph('Comprehensive career support resources for public servants at all levels.'),
         ),
-        links: [link('Explore')],
+        links: [link('Explore programs')],
       },
     },
   ],
@@ -78,8 +83,10 @@ const lowImpactHeroGallery: GalleryHero<HeroData> = {
       props: {
         type: 'lowImpact',
         richText: richText(
-          heading('Interior page header', 'h2'),
-          paragraph('A compact lead-in for pages that do not need a full hero.'),
+          heading('Mission, Values & History', 'h2'),
+          paragraph(
+            'MAPS is a 501(c)(3) non-profit building a network of Muslim American public servants across federal, state, and local government.',
+          ),
         ),
       },
     },
