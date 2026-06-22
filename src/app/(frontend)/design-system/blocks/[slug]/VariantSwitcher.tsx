@@ -52,7 +52,7 @@ export const VariantSwitcher: React.FC<{
         <p className="text-sm text-content-secondary">{active.description}</p>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+      <div className="overflow-hidden border border-border/40 bg-background">
         {children.map((child, i) => (
           <div hidden={i !== selected} key={i}>
             {child}

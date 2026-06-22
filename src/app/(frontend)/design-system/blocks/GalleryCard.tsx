@@ -19,8 +19,8 @@ export const GalleryCard: React.FC<{ entry: GalleryEntry }> = ({ entry }) => {
   const first = entry.variants[0]
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm transition-shadow hover:shadow-md">
-      <div className="relative h-48 overflow-hidden border-b border-border bg-surface-secondary">
+    <div className="group relative flex flex-col overflow-hidden border border-border/40 bg-background transition-colors hover:border-border">
+      <div className="relative h-48 overflow-hidden border-b border-border/40 bg-background">
         {first ? (
           <div
             // `inert` removes the preview's own links/buttons from tab and
@@ -40,14 +40,14 @@ export const GalleryCard: React.FC<{ entry: GalleryEntry }> = ({ entry }) => {
 
       <div className="flex items-center justify-between gap-2 p-4">
         <span className="font-medium group-hover:underline">{entry.title}</span>
-        <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-xs text-content-secondary">
+        <span className="shrink-0 border border-border/40 px-2 py-0.5 text-xs text-content-secondary">
           {entry.category}
         </span>
       </div>
 
       <Link
         aria-label={`${entry.title} — view variants`}
-        className="absolute inset-0 z-10 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="absolute inset-0 z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         href={`/design-system/blocks/${entry.slug}`}
       />
     </div>
