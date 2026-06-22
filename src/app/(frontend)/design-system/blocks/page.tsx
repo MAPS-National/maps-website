@@ -7,6 +7,7 @@ import { galleryHeros } from '@/heros/gallery'
 import { RenderHero } from '@/heros/RenderHero'
 import { cn } from '@/utilities/ui'
 
+import { GalleryNav } from './GalleryNav'
 import { ThemeToggle } from '../ThemeToggle'
 
 // Section list is derived from the render registry so a newly-registered block
@@ -41,27 +42,20 @@ export default function BlocksGalleryPage() {
         <div>
           <ThemeToggle />
         </div>
-        <nav aria-label="Gallery sections" className="flex flex-wrap gap-2 pt-xs">
-          {navItems.map((item) => (
-            <a
-              className="rounded-md border border-border px-3 py-1 text-sm text-muted-foreground transition-colors hover:bg-surface-secondary hover:text-foreground"
-              href={item.href}
-              key={item.href}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
       </header>
 
-      {sectionSlugs.map((slug) => {
+      <div className="flex flex-col gap-xl lg:flex-row lg:items-start lg:gap-12">
+        <GalleryNav items={navItems} />
+
+        <div className="flex min-w-0 flex-1 flex-col gap-xl">
+          {sectionSlugs.map((slug) => {
         const entry = curated.get(slug)
         const hasComponent = slug in blockComponents
         const Component = blockComponents[slug]
         const title = entry?.title ?? slug
 
         return (
-          <section key={slug} id={slug} className="flex scroll-mt-8 flex-col gap-l">
+          <section key={slug} id={slug} className="flex scroll-mt-20 flex-col gap-l">
             <div className="flex flex-col gap-xs border-b border-border pb-xs">
               <h2 className="text-2xl">{title}</h2>
               {entry?.description && (
@@ -101,7 +95,7 @@ export default function BlocksGalleryPage() {
         )
       })}
 
-      <section id="heros" className="flex scroll-mt-8 flex-col gap-l">
+      <section id="heros" className="flex scroll-mt-20 flex-col gap-l">
         <div className="flex flex-col gap-xs border-b border-border pb-xs">
           <h2 className="text-2xl">Heros</h2>
           <p className="max-w-prose text-sm text-muted-foreground">
@@ -111,7 +105,7 @@ export default function BlocksGalleryPage() {
         </div>
 
         {galleryHeros.map((hero) => (
-          <div className="flex scroll-mt-8 flex-col gap-xs" id={`hero-${hero.type}`} key={hero.type}>
+          <div className="flex scroll-mt-20 flex-col gap-xs" id={`hero-${hero.type}`} key={hero.type}>
             <div className="flex flex-col gap-1">
               <h3 className="text-lg font-semibold">{hero.title}</h3>
               {hero.description && (
@@ -141,7 +135,9 @@ export default function BlocksGalleryPage() {
             ))}
           </div>
         ))}
-      </section>
+        </section>
+        </div>
+      </div>
     </main>
   )
 }
