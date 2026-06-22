@@ -205,7 +205,7 @@ export interface Page {
      */
     overlay?: ('navy-gradient' | 'none') | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | CardGridBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | CardGridBlock | LogoStripBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -891,6 +891,44 @@ export interface CardGridBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoStripBlock".
+ */
+export interface LogoStripBlock {
+  /**
+   * Optional label above the logos, e.g. "Trusted by organizations across the nation".
+   */
+  heading?: string | null;
+  /**
+   * Grid: a static wrapped row. Marquee: a continuous auto-scrolling strip (pauses on hover, respects reduced-motion).
+   */
+  layout: 'grid' | 'marquee';
+  items?:
+    | {
+        logo: number | Media;
+        enableLink?: boolean | null;
+        link?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'logoStrip';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1199,6 +1237,7 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         cardGrid?: T | CardGridBlockSelect<T>;
+        logoStrip?: T | LogoStripBlockSelect<T>;
       };
   meta?:
     | T
@@ -1346,6 +1385,31 @@ export interface CardGridBlockSelect<T extends boolean = true> {
               url?: T;
             };
         requiredPlans?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoStripBlock_select".
+ */
+export interface LogoStripBlockSelect<T extends boolean = true> {
+  heading?: T;
+  layout?: T;
+  items?:
+    | T
+    | {
+        logo?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
         id?: T;
       };
   id?: T;

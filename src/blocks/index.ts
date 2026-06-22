@@ -5,6 +5,7 @@ import { CallToAction } from './CallToAction/config'
 import { CardGrid } from './CardGrid/config'
 import { Content } from './Content/config'
 import { FormBlock } from './Form/config'
+import { LogoStrip } from './LogoStrip/config'
 import { MediaBlock } from './MediaBlock/config'
 
 /**
@@ -17,4 +18,12 @@ import { MediaBlock } from './MediaBlock/config'
  * Payload config graph and break `payload generate:types`. To add a block,
  * register its config here and its component in `blockComponents.ts`.
  */
-export const layoutBlocks: Block[] = [CallToAction, Content, MediaBlock, Archive, FormBlock, CardGrid]
+export const layoutBlocks: Block[] = [
+  CallToAction,
+  Content,
+  MediaBlock,
+  Archive,
+  FormBlock,
+  CardGrid,
+  LogoStrip,
+]

@@ -5,6 +5,7 @@ import { callToActionGallery } from './CallToAction/gallery'
 import { cardGridGallery } from './CardGrid/gallery'
 import { contentGallery } from './Content/gallery'
 import { formGallery } from './Form/gallery'
+import { logoStripGallery } from './LogoStrip/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
 
 /**
@@ -30,4 +31,5 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   mediaBlockGallery,
   archiveGallery,
   formGallery,
+  logoStripGallery,
 ]

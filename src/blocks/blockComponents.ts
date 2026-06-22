@@ -10,6 +10,8 @@ import { Content } from './Content/config'
 import { ContentBlock } from './Content/Component'
 import { FormBlock as FormConfig } from './Form/config'
 import { FormBlock } from './Form/Component'
+import { LogoStrip } from './LogoStrip/config'
+import { LogoStripBlock } from './LogoStrip/Component'
 import { MediaBlock as MediaConfig } from './MediaBlock/config'
 import { MediaBlock } from './MediaBlock/Component'
 
@@ -33,4 +35,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [Archive.slug]: ArchiveBlock,
   [FormConfig.slug]: FormBlock,
   [CardGrid.slug]: CardGridBlock,
+  [LogoStrip.slug]: LogoStripBlock,
 }
