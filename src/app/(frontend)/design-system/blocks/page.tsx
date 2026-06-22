@@ -87,7 +87,7 @@ export default function BlocksGalleryPage() {
                       <span className="text-xs text-content-secondary">{variant.description}</span>
                     )}
                   </div>
-                  <div className="overflow-hidden rounded-lg border border-border bg-surface-secondary py-10">
+                  <div className="overflow-hidden rounded-xl border border-border bg-background py-10 shadow-sm">
                     <Component {...variant.props} disableInnerContainer />
                   </div>
                 </div>
@@ -127,7 +127,7 @@ export default function BlocksGalleryPage() {
                 </div>
                 <div
                   className={cn(
-                    'overflow-hidden rounded-lg border border-border bg-surface-secondary',
+                    'overflow-hidden rounded-xl border border-border bg-background shadow-sm',
                     // High Impact uses a negative top margin to underlap the fixed
                     // site header; add matching padding so it isn't clipped here.
                     hero.type === 'highImpact' && 'pt-[10.4rem]',
