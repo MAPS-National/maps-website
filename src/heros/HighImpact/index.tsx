@@ -8,7 +8,7 @@ import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 
-export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText }) => {
+export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, overlay, richText }) => {
   const { setHeaderTheme } = useHeaderTheme()
 
   useEffect(() => {
@@ -36,6 +36,12 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText 
           )}
         </div>
       </div>
+      {overlay !== 'none' && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-brand-primary/85 to-brand-primary/65"
+        />
+      )}
       <div className="min-h-[80vh] select-none">
         {media && typeof media === 'object' && (
           <Media fill imgClassName="-z-10 object-cover" priority resource={media} />
