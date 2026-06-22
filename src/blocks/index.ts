@@ -1,0 +1,20 @@
+import type { Block } from 'payload'
+
+import { Archive } from './ArchiveBlock/config'
+import { CallToAction } from './CallToAction/config'
+import { CardGrid } from './CardGrid/config'
+import { Content } from './Content/config'
+import { FormBlock } from './Form/config'
+import { MediaBlock } from './MediaBlock/config'
+
+/**
+ * Single source of truth for layout-block FIELD CONFIGS. Collections consume
+ * this for their `blocks` field (e.g. `Pages.layout`).
+ *
+ * Renderer components are registered alongside in `blockComponents.ts`. The two
+ * are kept in separate modules on purpose: importing React components here would
+ * pull client-only dependencies (next/image, `@payloadcms/ui` styles) into the
+ * Payload config graph and break `payload generate:types`. To add a block,
+ * register its config here and its component in `blockComponents.ts`.
+ */
+export const layoutBlocks: Block[] = [CallToAction, Content, MediaBlock, Archive, FormBlock, CardGrid]
