@@ -40,6 +40,8 @@
   --system-success-light: #ecfdf3;
   --system-error: #b42318;
   --system-error-light: #fef3f2;
+  --system-warning: #b45309;
+  --system-warning-light: #fffbeb;
 
   /* === Radius scale ===
    * Synthesized from values actually used in the export (the Relume radius

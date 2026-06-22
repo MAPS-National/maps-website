@@ -112,19 +112,19 @@
   --chart-1: var(--brand-primary-base);
   --chart-2: var(--brand-secondary-base);
   --chart-3: var(--neutral-base);
-  --chart-4: oklch(82.8% 0.189 84.429deg);
-  --chart-5: oklch(76.9% 0.188 70.08deg);
+  --chart-4: var(--brand-primary-light);
+  --chart-5: var(--brand-secondary-light);
   --radius: var(--rad-md);
-  --sidebar: oklch(98.5% 0 0deg);
-  --sidebar-foreground: oklch(14.5% 0 0deg);
-  --sidebar-primary: oklch(20.5% 0 0deg);
-  --sidebar-primary-foreground: oklch(98.5% 0 0deg);
-  --sidebar-accent: oklch(97% 0 0deg);
-  --sidebar-accent-foreground: oklch(20.5% 0 0deg);
-  --sidebar-border: oklch(92.2% 0 0deg);
-  --sidebar-ring: oklch(70.8% 0 0deg);
+  --sidebar: var(--neutral-white);
+  --sidebar-foreground: var(--neutral-darker);
+  --sidebar-primary: var(--brand-primary-base);
+  --sidebar-primary-foreground: var(--neutral-white);
+  --sidebar-accent: var(--neutral-lightest);
+  --sidebar-accent-foreground: var(--neutral-darker);
+  --sidebar-border: var(--neutral-lighter);
+  --sidebar-ring: var(--brand-primary-light);
   --success: var(--system-success);
-  --warning: oklch(89% 0.1 75deg);
+  --warning: var(--system-warning);
   --error: var(--system-error);
 
   /* === Semantic tiers (Relume background/text/border/link) === */
@@ -162,23 +162,23 @@
   --destructive: color-mix(in srgb, var(--system-error) 72%, black);
   --destructive-foreground: var(--neutral-white);
   --border: var(--neutral-dark);
-  --input: var(--neutral-dark);
-  --ring: var(--brand-primary-light);
+  --input: var(--neutral-base);
+  --ring: var(--brand-primary-lighter);
   --chart-1: var(--brand-primary-light);
   --chart-2: var(--brand-secondary-light);
   --chart-3: var(--neutral-light);
-  --chart-4: oklch(62.7% 0.265 303.9deg);
-  --chart-5: oklch(64.5% 0.246 16.439deg);
-  --sidebar: oklch(20.5% 0 0deg);
-  --sidebar-foreground: oklch(98.5% 0 0deg);
-  --sidebar-primary: oklch(48.8% 0.243 264.376deg);
-  --sidebar-primary-foreground: oklch(98.5% 0 0deg);
-  --sidebar-accent: oklch(26.9% 0 0deg);
-  --sidebar-accent-foreground: oklch(98.5% 0 0deg);
-  --sidebar-border: oklch(26.9% 0 0deg);
-  --sidebar-ring: oklch(43.9% 0 0deg);
+  --chart-4: var(--brand-primary-lighter);
+  --chart-5: var(--brand-secondary-lighter);
+  --sidebar: var(--neutral-darkest);
+  --sidebar-foreground: var(--neutral-lightest);
+  --sidebar-primary: var(--brand-primary-light);
+  --sidebar-primary-foreground: var(--brand-primary-darkest);
+  --sidebar-accent: var(--neutral-darker);
+  --sidebar-accent-foreground: var(--neutral-lightest);
+  --sidebar-border: var(--neutral-dark);
+  --sidebar-ring: var(--brand-primary-light);
   --success: var(--system-success);
-  --warning: oklch(35% 0.08 70deg);
+  --warning: var(--system-warning);
   --error: var(--system-error);
 
   /* === Semantic tiers — dark reconciliation ===
@@ -289,4 +289,14 @@ html {
 html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
+}
+
+/*
+ * Accessible focus indicator (WCAG 2.4.7 / 1.4.11).
+ * Unlayered so it overrides shadcn's low-opacity focus utilities; uses the
+ * brand ring colour at full opacity for a clearly visible ring in both themes.
+ */
+:where(a, button, input, select, textarea, summary, [role='button'], [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
