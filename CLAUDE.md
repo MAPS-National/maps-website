@@ -44,6 +44,25 @@ This is the Payload Website Template: **one Next.js app serves both the public s
 
 **Path aliases:** `@/*` → `src/*`, `@payload-config` → `src/payload.config.ts`.
 
+## Section porting (migration → blocks)
+
+Phase 3 of the OSS migration runbook: the repeatable contract for turning the old Webflow/Relume site into native Payload blocks. Source sections live in `migration/_extracted/` (the gitignored Webflow export, Client-First/Relume class naming). The canonical, de-duplicated list of what to build is the **block catalog** (`docs/migration/block-catalog.md`) — **port against the catalog, not page-by-page.**
+
+**Input → output contract.** One catalog block → one native Payload block: a colocated `config.ts` (field schema) + `Component.tsx` (React) matching the existing `src/blocks/*` shape. Register it — add to the collection's `blocks` array, handle it in `RenderBlocks` — then run `npm run generate:types` and `npm run generate:importmap`.
+
+**Classify every needed block (the catalog does this up front):**
+1. **Port** — a Relume source section exists → translate its markup/styles into a block, mapping styles to brand tokens.
+2. **Existing / variant** — no source, but an existing block or hero variant fits. Heros already cover most page intros (`HighImpact`, `MediumImpact`, `LowImpact`, `PostHero`); an interior-page header / "mini-hero" is almost always a `LowImpact` variant — add a `variant`, don't build new.
+3. **Net-new** — no source *and* nothing existing fits → compose from design-system primitives (`src/components/ui` atoms + tokens). Rare; the true gaps.
+
+**Variant vs. new block.** Cluster sections by *intent*, not markup. The same intent (FAQ, CTA, testimonial) rendered differently across pages is **one block** with the differences as fields or a `variant` select — not several near-identical blocks. Fork a new block only when structure/behavior genuinely differs; spacing/colour differences are tokens/props, not new blocks.
+
+**Tokens, never hardcoded values.** All colour/spacing/type comes from `tokens.css` via the shadcn/Tailwind theme (see Theming & design system). Never inline a Webflow hex/px — map it to the nearest token. Base brand navy `#0d1e6c` / maroon `#8b0a03` are fixed.
+
+**Consistency is advisory + HITL.** When porting, check the section against its catalog entry and a `/design-critique` pass (usability / hierarchy / consistency). Surface drift as a recommendation to conform — never silently port a one-off variation, and never auto-apply a recommendation.
+
+**Does NOT carry over from Webflow** (rebuild natively, don't port): interactions/animations (Webflow IX2), forms (use the Payload form-builder), CMS collection displays (model as Payload collections + query), and embedded scripts.
+
 ## Theming & design system
 
 Custom work layered on the template's shadcn/Tailwind-v4 setup.
