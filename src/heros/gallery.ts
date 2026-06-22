@@ -84,7 +84,7 @@ const lowImpactHeroGallery: GalleryHero<HeroData> = {
   type: 'lowImpact',
   title: 'Low Impact',
   description:
-    'Mini-header for interior pages: a constrained rich-text intro, no media. The default for section and landing-page headers.',
+    'Mini-header for interior pages: a constrained rich-text intro, no media. Optional eyebrow, breadcrumb trail, and up to two CTAs. The default for section and landing-page headers.',
   variants: [
     {
       name: 'Text only',
@@ -96,6 +96,25 @@ const lowImpactHeroGallery: GalleryHero<HeroData> = {
             'MAPS is a 501(c)(3) non-profit building a network of Muslim American public servants across federal, state, and local government.',
           ),
         ),
+      },
+    },
+    {
+      name: 'Eyebrow, breadcrumb & CTAs',
+      description: 'Full interior-page header: trail, tagline, intro, and actions.',
+      props: {
+        type: 'lowImpact',
+        eyebrow: 'Member Portal',
+        breadcrumbs: [
+          { label: 'Member Portal', url: '#' },
+          { label: 'Professional Development' },
+        ],
+        richText: richText(
+          heading('Recent MAPS Academy Programs', 'h2'),
+          paragraph(
+            'Browse our collection of recorded sessions from internal and public career programs.',
+          ),
+        ),
+        links: [link('Browse the catalog'), link('Back to portal', 'outline')],
       },
     },
   ],

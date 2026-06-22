@@ -53,6 +53,40 @@ export const hero: Field = {
       }),
       label: false,
     },
+    {
+      name: 'eyebrow',
+      type: 'text',
+      admin: {
+        condition: (_, { type } = {}) => type === 'lowImpact',
+        description: 'Small tagline shown above the heading on interior-page headers.',
+      },
+      label: 'Eyebrow',
+    },
+    {
+      name: 'breadcrumbs',
+      type: 'array',
+      admin: {
+        condition: (_, { type } = {}) => type === 'lowImpact',
+        description:
+          'Optional trail above the heading. The last crumb is the current page — leave its URL empty.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'label',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'url',
+          type: 'text',
+          admin: {
+            description: 'Leave empty for the current page (rendered as plain text).',
+          },
+        },
+      ],
+      label: 'Breadcrumbs',
+    },
     linkGroup({
       overrides: {
         maxRows: 2,

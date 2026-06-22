@@ -4,6 +4,7 @@ import { Archive } from './ArchiveBlock/config'
 import { CallToAction } from './CallToAction/config'
 import { CardGrid } from './CardGrid/config'
 import { Content } from './Content/config'
+import { FAQ } from './FAQ/config'
 import { FeatureSplit } from './FeatureSplit/config'
 import { FormBlock } from './Form/config'
 import { MediaBlock } from './MediaBlock/config'
@@ -25,5 +26,6 @@ export const layoutBlocks: Block[] = [
   Archive,
   FormBlock,
   CardGrid,
+  FAQ,
   FeatureSplit,
 ]
