@@ -89,8 +89,9 @@ const media = (file: string, width: number, height: number, alt: string): Media 
   height,
   mimeType: 'image/webp',
   filename: file,
-  updatedAt: '2026-01-01T00:00:00.000Z',
-  createdAt: '2026-01-01T00:00:00.000Z',
+  // Doubles as the next/image cache tag — bump when the placeholder files change.
+  updatedAt: '2026-06-22T00:00:00.000Z',
+  createdAt: '2026-06-22T00:00:00.000Z',
 })
 
 export const sampleLandscape = media(
