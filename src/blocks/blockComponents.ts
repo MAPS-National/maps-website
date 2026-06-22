@@ -8,6 +8,8 @@ import { CardGrid } from './CardGrid/config'
 import { CardGridBlock } from './CardGrid/Component'
 import { ComparisonTable } from './ComparisonTable/config'
 import { ComparisonTableBlock } from './ComparisonTable/Component'
+import { ContactDetails } from './ContactDetails/config'
+import { ContactDetailsBlock } from './ContactDetails/Component'
 import { Content } from './Content/config'
 import { ContentBlock } from './Content/Component'
 import { FAQ } from './FAQ/config'
@@ -54,4 +56,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [PricingTiers.slug]: PricingTiersBlock,
   [Timeline.slug]: TimelineBlock,
   [ComparisonTable.slug]: ComparisonTableBlock,
+  [ContactDetails.slug]: ContactDetailsBlock,
 }
