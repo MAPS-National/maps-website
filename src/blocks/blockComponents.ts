@@ -6,6 +6,8 @@ import { CallToAction } from './CallToAction/config'
 import { CallToActionBlock } from './CallToAction/Component'
 import { CardGrid } from './CardGrid/config'
 import { CardGridBlock } from './CardGrid/Component'
+import { ComparisonTable } from './ComparisonTable/config'
+import { ComparisonTableBlock } from './ComparisonTable/Component'
 import { Content } from './Content/config'
 import { ContentBlock } from './Content/Component'
 import { FAQ } from './FAQ/config'
@@ -51,4 +53,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [MediaGalleryConfig.slug]: MediaGalleryBlock,
   [PricingTiers.slug]: PricingTiersBlock,
   [Timeline.slug]: TimelineBlock,
+  [ComparisonTable.slug]: ComparisonTableBlock,
 }

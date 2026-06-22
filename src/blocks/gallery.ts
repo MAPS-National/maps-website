@@ -3,6 +3,7 @@ import type { GalleryBlock } from './gallery-types'
 import { archiveGallery } from './ArchiveBlock/gallery'
 import { callToActionGallery } from './CallToAction/gallery'
 import { cardGridGallery } from './CardGrid/gallery'
+import { comparisonTableGallery } from './ComparisonTable/gallery'
 import { contentGallery } from './Content/gallery'
 import { faqGallery } from './FAQ/gallery'
 import { featureSplitGallery } from './FeatureSplit/gallery'
@@ -42,4 +43,5 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   mediaGalleryGallery,
   pricingTiersGallery,
   timelineGallery,
+  comparisonTableGallery,
 ]

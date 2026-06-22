@@ -235,6 +235,7 @@ export interface Page {
     | MediaGalleryBlock
     | PricingTiersBlock
     | TimelineBlock
+    | ComparisonTableBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1268,6 +1269,65 @@ export interface TimelineBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ComparisonTableBlock".
+ */
+export interface ComparisonTableBlock {
+  header?: {
+    enableHeader?: boolean | null;
+    heading?: string | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Optional in-page anchor target, e.g. "payments" → #payments.
+     */
+    anchorId?: string | null;
+  };
+  /**
+   * The compared options. Cells in each row line up with these, left to right.
+   */
+  columns?:
+    | {
+        label: string;
+        icon?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  rows?:
+    | {
+        label: string;
+        /**
+         * One cell per column, in the same order as the columns above.
+         */
+        cells?:
+          | {
+              type: 'check' | 'cross' | 'text' | 'image';
+              text?: string | null;
+              image?: (number | null) | Media;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'comparisonTable';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1590,6 +1650,7 @@ export interface PagesSelect<T extends boolean = true> {
         mediaGallery?: T | MediaGalleryBlockSelect<T>;
         pricingTiers?: T | PricingTiersBlockSelect<T>;
         timeline?: T | TimelineBlockSelect<T>;
+        comparisonTable?: T | ComparisonTableBlockSelect<T>;
       };
   meta?:
     | T
@@ -1922,6 +1983,43 @@ export interface TimelineBlockSelect<T extends boolean = true> {
         date?: T;
         title?: T;
         body?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ComparisonTableBlock_select".
+ */
+export interface ComparisonTableBlockSelect<T extends boolean = true> {
+  header?:
+    | T
+    | {
+        enableHeader?: T;
+        heading?: T;
+        body?: T;
+        anchorId?: T;
+      };
+  columns?:
+    | T
+    | {
+        label?: T;
+        icon?: T;
+        id?: T;
+      };
+  rows?:
+    | T
+    | {
+        label?: T;
+        cells?:
+          | T
+          | {
+              type?: T;
+              text?: T;
+              image?: T;
+              id?: T;
+            };
         id?: T;
       };
   id?: T;

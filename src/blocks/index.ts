@@ -3,6 +3,7 @@ import type { Block } from 'payload'
 import { Archive } from './ArchiveBlock/config'
 import { CallToAction } from './CallToAction/config'
 import { CardGrid } from './CardGrid/config'
+import { ComparisonTable } from './ComparisonTable/config'
 import { Content } from './Content/config'
 import { FAQ } from './FAQ/config'
 import { FeatureSplit } from './FeatureSplit/config'
@@ -36,4 +37,5 @@ export const layoutBlocks: Block[] = [
   MediaGallery,
   PricingTiers,
   Timeline,
+  ComparisonTable,
 ]
