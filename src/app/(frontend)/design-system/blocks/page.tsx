@@ -1,32 +1,10 @@
 import type { Metadata } from 'next'
 import React from 'react'
 
-import { blockComponents } from '@/blocks/blockComponents'
-import { galleryBlocks } from '@/blocks/gallery'
-import { galleryHeros } from '@/heros/gallery'
-import { RenderHero } from '@/heros/RenderHero'
-import { HeaderThemeProvider } from '@/providers/HeaderTheme'
-import { cn } from '@/utilities/ui'
+import { galleryEntries } from '@/blocks/gallery-entries'
 
-import { GalleryNav } from './GalleryNav'
+import { GalleryCard } from './GalleryCard'
 import { ThemeToggle } from '../ThemeToggle'
-
-// Section list is derived from the render registry so a newly-registered block
-// surfaces here automatically — with its curated examples if a gallery.ts exists,
-// or a "no example yet" stub otherwise.
-const curated = new Map(galleryBlocks.map((b) => [b.slug, b]))
-const sectionSlugs = [
-  ...galleryBlocks.map((b) => b.slug),
-  ...Object.keys(blockComponents).filter((slug) => !curated.has(slug)),
-]
-
-// Nav is derived from the same lists the page renders, so adding a block or hero
-// updates it with no nav edit.
-const navItems = [
-  ...sectionSlugs.map((slug) => ({ href: `#${slug}`, label: curated.get(slug)?.title ?? slug })),
-  { href: '#heros', label: 'Heros' },
-  ...galleryHeros.map((h) => ({ href: `#hero-${h.type}`, label: h.title })),
-]
 
 export default function BlocksGalleryPage() {
   return (
@@ -35,9 +13,8 @@ export default function BlocksGalleryPage() {
         <div className="flex flex-col gap-xs">
           <h1 className="text-4xl">Blocks Gallery</h1>
           <p className="max-w-prose text-content-secondary">
-            Every layout block and hero rendered with sample data, in both themes. The sample data
-            and variant list for each live beside it in{' '}
-            <code className="px-1">gallery.ts</code>.
+            Every layout block and hero, rendered with sample data. Open one to switch between its
+            variants in light or dark.
           </p>
         </div>
         <div>
@@ -45,103 +22,10 @@ export default function BlocksGalleryPage() {
         </div>
       </header>
 
-      <div className="flex flex-col gap-xl lg:flex-row lg:items-start lg:gap-12">
-        <GalleryNav items={navItems} />
-
-        <div className="flex min-w-0 flex-1 flex-col gap-xl">
-          {sectionSlugs.map((slug) => {
-        const entry = curated.get(slug)
-        const hasComponent = slug in blockComponents
-        const Component = blockComponents[slug]
-        const title = entry?.title ?? slug
-
-        return (
-          <section key={slug} id={slug} className="flex scroll-mt-20 flex-col gap-l">
-            <div className="flex flex-col gap-xs border-b border-border pb-xs">
-              <h2 className="text-3xl">{title}</h2>
-              {entry?.description && (
-                <p className="max-w-prose text-sm text-content-secondary">{entry.description}</p>
-              )}
-              <code className="text-xs text-content-secondary">slug: {slug}</code>
-            </div>
-
-            {!hasComponent && (
-              <p className="text-content-error text-sm">
-                No component registered for slug “{slug}”.
-              </p>
-            )}
-
-            {hasComponent && !entry && (
-              <p className="text-sm text-content-secondary">
-                No example yet — add <code className="px-1">{slug}/gallery.ts</code> to document this
-                block.
-              </p>
-            )}
-
-            {hasComponent &&
-              entry?.variants.map((variant, i) => (
-                <div className="flex flex-col gap-xs" key={i}>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm font-medium">{variant.name}</span>
-                    {variant.description && (
-                      <span className="text-xs text-content-secondary">{variant.description}</span>
-                    )}
-                  </div>
-                  <div className="overflow-hidden rounded-xl border border-border bg-background py-10 shadow-sm">
-                    <Component {...variant.props} disableInnerContainer />
-                  </div>
-                </div>
-              ))}
-          </section>
-        )
-      })}
-
-      <section id="heros" className="flex scroll-mt-20 flex-col gap-l">
-        <div className="flex flex-col gap-xs border-b border-border pb-xs">
-          <h2 className="text-3xl">Heros</h2>
-          <p className="max-w-prose text-sm text-content-secondary">
-            Page intros rendered above the layout blocks. Heros are a separate <code>hero</code>{' '}
-            field (a <code>type</code> select), not layout blocks.
-          </p>
-        </div>
-
-        {/* Local header-theme provider absorbs heros' setHeaderTheme() calls
-            (High Impact sets 'dark' on mount) so they don't flip the page header. */}
-        <HeaderThemeProvider>
-          {galleryHeros.map((hero) => (
-          <div className="flex scroll-mt-20 flex-col gap-xs" id={`hero-${hero.type}`} key={hero.type}>
-            <div className="flex flex-col gap-1">
-              <h3 className="text-lg font-semibold">{hero.title}</h3>
-              {hero.description && (
-                <p className="max-w-prose text-xs text-content-secondary">{hero.description}</p>
-              )}
-            </div>
-
-            {hero.variants.map((variant, i) => (
-              <div className="flex flex-col gap-xs" key={i}>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm font-medium">{variant.name}</span>
-                  {variant.description && (
-                    <span className="text-xs text-content-secondary">{variant.description}</span>
-                  )}
-                </div>
-                <div
-                  className={cn(
-                    'overflow-hidden rounded-xl border border-border bg-background shadow-sm',
-                    // High Impact uses a negative top margin to underlap the fixed
-                    // site header; add matching padding so it isn't clipped here.
-                    hero.type === 'highImpact' && 'pt-[10.4rem]',
-                  )}
-                >
-                  <RenderHero {...variant.props} />
-                </div>
-              </div>
-            ))}
-            </div>
-          ))}
-        </HeaderThemeProvider>
-        </section>
-        </div>
+      <div className="grid grid-cols-1 gap-l sm:grid-cols-2 lg:grid-cols-3">
+        {galleryEntries.map((entry) => (
+          <GalleryCard entry={entry} key={entry.slug} />
+        ))}
       </div>
     </main>
   )
