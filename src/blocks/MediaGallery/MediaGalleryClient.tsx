@@ -35,6 +35,7 @@ export const MediaGalleryClient: React.FC<{
   const triggerRef = useRef<HTMLElement | null>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const trackRef = useRef<HTMLUListElement>(null)
+  const wasOpenRef = useRef(false)
 
   const isSlider = layout === 'slider'
 
@@ -47,19 +48,24 @@ export const MediaGalleryClient: React.FC<{
     [lightbox],
   )
 
-  const close = useCallback(() => {
-    setOpenIndex(null)
-    triggerRef.current?.focus()
-  }, [])
+  const close = useCallback(() => setOpenIndex(null), [])
 
   const step = useCallback(
     (delta: number) => setOpenIndex((i) => (i === null ? i : (i + delta + images.length) % images.length)),
     [images.length],
   )
 
+  // Manage focus across open/close transitions. Restoring focus to the trigger
+  // must happen in an effect (after the dialog has unmounted) — doing it in the
+  // close handler runs before React removes the dialog, so the browser resets
+  // focus to <body> instead.
   useEffect(() => {
-    if (openIndex === null) return
-    closeRef.current?.focus()
+    const isOpen = openIndex !== null
+    if (isOpen && !wasOpenRef.current) closeRef.current?.focus()
+    else if (!isOpen && wasOpenRef.current) triggerRef.current?.focus()
+    wasOpenRef.current = isOpen
+
+    if (!isOpen) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close()
       else if (e.key === 'ArrowRight') step(1)
@@ -72,32 +78,6 @@ export const MediaGalleryClient: React.FC<{
   const scrollByPage = (dir: number) => {
     const el = trackRef.current
     if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' })
-  }
-
-  const Thumb: React.FC<{ image: GalleryImage; index: number }> = ({ image, index }) => {
-    const inner = (
-      <NextImage
-        alt={image.alt}
-        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        fill
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        src={image.src}
-      />
-    )
-    const wrapperCls = 'group relative block aspect-[4/3] w-full overflow-hidden bg-surface-secondary'
-
-    return lightbox ? (
-      <button
-        aria-label={`View image ${index + 1}${image.caption ? `: ${image.caption}` : ''}`}
-        className={cn(wrapperCls, 'cursor-zoom-in')}
-        onClick={(e) => open(index, e.currentTarget)}
-        type="button"
-      >
-        {inner}
-      </button>
-    ) : (
-      <div className={wrapperCls}>{inner}</div>
-    )
   }
 
   return (
@@ -113,7 +93,7 @@ export const MediaGalleryClient: React.FC<{
                 className="w-[78%] shrink-0 snap-start sm:w-[46%] lg:w-[31%]"
                 key={i}
               >
-                <Thumb image={image} index={i} />
+                <Thumb image={image} index={i} lightbox={lightbox} onOpen={open} />
               </li>
             ))}
           </ul>
@@ -142,7 +122,7 @@ export const MediaGalleryClient: React.FC<{
         <ul className={cn('grid grid-cols-1 gap-4', gridCols[columns] ?? gridCols['3'])}>
           {images.map((image, i) => (
             <li key={i}>
-              <Thumb image={image} index={i} />
+              <Thumb image={image} index={i} lightbox={lightbox} onOpen={open} />
             </li>
           ))}
         </ul>
@@ -208,6 +188,43 @@ export const MediaGalleryClient: React.FC<{
         </div>
       )}
     </>
+  )
+}
+
+/**
+ * A single gallery tile. Hoisted to module scope (not nested in the parent) so
+ * its component identity is stable across the parent's re-renders — otherwise
+ * every lightbox open/close would remount all tiles, detaching the button the
+ * lightbox captured for focus restoration.
+ */
+const Thumb: React.FC<{
+  image: GalleryImage
+  index: number
+  lightbox: boolean
+  onOpen: (index: number, el: HTMLElement) => void
+}> = ({ image, index, lightbox, onOpen }) => {
+  const inner = (
+    <NextImage
+      alt={image.alt}
+      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      fill
+      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      src={image.src}
+    />
+  )
+  const wrapperCls = 'group relative block aspect-[4/3] w-full overflow-hidden bg-surface-secondary'
+
+  return lightbox ? (
+    <button
+      aria-label={`View image ${index + 1}${image.caption ? `: ${image.caption}` : ''}`}
+      className={cn(wrapperCls, 'cursor-zoom-in')}
+      onClick={(e) => onOpen(index, e.currentTarget)}
+      type="button"
+    >
+      {inner}
+    </button>
+  ) : (
+    <div className={wrapperCls}>{inner}</div>
   )
 }
 
