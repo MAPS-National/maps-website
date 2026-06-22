@@ -4,12 +4,14 @@ import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { CardGridBlock } from '@/blocks/CardGrid/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
+  cardGrid: CardGridBlock,
   content: ContentBlock,
   cta: CallToActionBlock,
   formBlock: FormBlock,

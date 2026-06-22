@@ -205,7 +205,7 @@ export interface Page {
      */
     overlay?: ('navy-gradient' | 'none') | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | CardGridBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -787,6 +787,110 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardGridBlock".
+ */
+export interface CardGridBlock {
+  header?: {
+    enableHeader?: boolean | null;
+    eyebrow?: string | null;
+    heading?: string | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Optional in-page anchor target, e.g. "resources" makes the section reachable at #resources. Must be unique on the page.
+     */
+    anchorId?: string | null;
+  };
+  columns: '2' | '3' | '4';
+  /**
+   * Media is uniform across the grid: every card shows an image, an icon, or none.
+   */
+  mediaType: 'none' | 'icon' | 'image';
+  items?:
+    | {
+        icon?: (number | null) | Media;
+        image?: (number | null) | Media;
+        heading: string;
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+                /**
+                 * Choose how the link should be rendered.
+                 */
+                appearance?: ('default' | 'outline') | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        enableCardLink?: boolean | null;
+        cardLink?: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null);
+          url?: string | null;
+        };
+        /**
+         * Membership plan IDs that may see this card (gated server-side). Leave empty to show to everyone.
+         */
+        requiredPlans?: string[] | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cardGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1094,6 +1198,7 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        cardGrid?: T | CardGridBlockSelect<T>;
       };
   meta?:
     | T
@@ -1190,6 +1295,59 @@ export interface FormBlockSelect<T extends boolean = true> {
   form?: T;
   enableIntro?: T;
   introContent?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardGridBlock_select".
+ */
+export interface CardGridBlockSelect<T extends boolean = true> {
+  header?:
+    | T
+    | {
+        enableHeader?: T;
+        eyebrow?: T;
+        heading?: T;
+        body?: T;
+        anchorId?: T;
+      };
+  columns?: T;
+  mediaType?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        image?: T;
+        heading?: T;
+        body?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+        enableCardLink?: T;
+        cardLink?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+            };
+        requiredPlans?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
