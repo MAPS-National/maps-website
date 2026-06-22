@@ -55,7 +55,7 @@ export const GalleryNav: React.FC<{ items: GalleryNavItem[] }> = ({ items }) => 
               'shrink-0 whitespace-nowrap rounded-md px-3 py-2.5 text-sm transition-colors lg:shrink',
               isActive
                 ? 'bg-surface-secondary font-medium text-foreground'
-                : 'text-muted-foreground hover:bg-surface-secondary hover:text-foreground',
+                : 'text-content-secondary hover:bg-surface-secondary hover:text-foreground',
             )}
             href={item.href}
             key={item.href}

@@ -33,7 +33,7 @@ export default function BlocksGalleryPage() {
       <header className="flex flex-col gap-s">
         <div className="flex flex-col gap-xs">
           <h1 className="text-4xl">Blocks Gallery</h1>
-          <p className="max-w-prose text-muted-foreground">
+          <p className="max-w-prose text-content-secondary">
             Every layout block and hero rendered with sample data, in both themes. The sample data
             and variant list for each live beside it in{' '}
             <code className="px-1">gallery.ts</code>.
@@ -59,9 +59,9 @@ export default function BlocksGalleryPage() {
             <div className="flex flex-col gap-xs border-b border-border pb-xs">
               <h2 className="text-2xl">{title}</h2>
               {entry?.description && (
-                <p className="max-w-prose text-sm text-muted-foreground">{entry.description}</p>
+                <p className="max-w-prose text-sm text-content-secondary">{entry.description}</p>
               )}
-              <code className="text-xs text-muted-foreground">slug: {slug}</code>
+              <code className="text-xs text-content-secondary">slug: {slug}</code>
             </div>
 
             {!hasComponent && (
@@ -71,7 +71,7 @@ export default function BlocksGalleryPage() {
             )}
 
             {hasComponent && !entry && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-content-secondary">
                 No example yet — add <code className="px-1">{slug}/gallery.ts</code> to document this
                 block.
               </p>
@@ -83,7 +83,7 @@ export default function BlocksGalleryPage() {
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-semibold">{variant.name}</span>
                     {variant.description && (
-                      <span className="text-xs text-muted-foreground">{variant.description}</span>
+                      <span className="text-xs text-content-secondary">{variant.description}</span>
                     )}
                   </div>
                   <div className="overflow-hidden rounded-lg border border-border bg-background py-10">
@@ -98,7 +98,7 @@ export default function BlocksGalleryPage() {
       <section id="heros" className="flex scroll-mt-20 flex-col gap-l">
         <div className="flex flex-col gap-xs border-b border-border pb-xs">
           <h2 className="text-2xl">Heros</h2>
-          <p className="max-w-prose text-sm text-muted-foreground">
+          <p className="max-w-prose text-sm text-content-secondary">
             Page intros rendered above the layout blocks. Heros are a separate <code>hero</code>{' '}
             field (a <code>type</code> select), not layout blocks.
           </p>
@@ -109,7 +109,7 @@ export default function BlocksGalleryPage() {
             <div className="flex flex-col gap-1">
               <h3 className="text-lg font-semibold">{hero.title}</h3>
               {hero.description && (
-                <p className="max-w-prose text-xs text-muted-foreground">{hero.description}</p>
+                <p className="max-w-prose text-xs text-content-secondary">{hero.description}</p>
               )}
             </div>
 
@@ -118,7 +118,7 @@ export default function BlocksGalleryPage() {
                 <div className="flex flex-col gap-1">
                   <span className="text-sm font-semibold">{variant.name}</span>
                   {variant.description && (
-                    <span className="text-xs text-muted-foreground">{variant.description}</span>
+                    <span className="text-xs text-content-secondary">{variant.description}</span>
                   )}
                 </div>
                 <div
