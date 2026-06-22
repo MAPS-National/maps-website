@@ -236,6 +236,7 @@ export interface Page {
     | PricingTiersBlock
     | TimelineBlock
     | ComparisonTableBlock
+    | ContactDetailsBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1328,6 +1329,49 @@ export interface ComparisonTableBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactDetailsBlock".
+ */
+export interface ContactDetailsBlock {
+  heading?: string | null;
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  items?:
+    | {
+        icon: 'email' | 'phone' | 'location' | 'clock' | 'link';
+        /**
+         * Optional small label above the value, e.g. "Email".
+         */
+        label?: string | null;
+        /**
+         * The address, email, phone, or text. Line breaks are preserved.
+         */
+        value: string;
+        /**
+         * Leave empty to auto-link email and phone values. Set explicitly for a custom link.
+         */
+        href?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactDetails';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1651,6 +1695,7 @@ export interface PagesSelect<T extends boolean = true> {
         pricingTiers?: T | PricingTiersBlockSelect<T>;
         timeline?: T | TimelineBlockSelect<T>;
         comparisonTable?: T | ComparisonTableBlockSelect<T>;
+        contactDetails?: T | ContactDetailsBlockSelect<T>;
       };
   meta?:
     | T
@@ -2020,6 +2065,25 @@ export interface ComparisonTableBlockSelect<T extends boolean = true> {
               image?: T;
               id?: T;
             };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactDetailsBlock_select".
+ */
+export interface ContactDetailsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        value?: T;
+        href?: T;
         id?: T;
       };
   id?: T;
