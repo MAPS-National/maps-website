@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import './tokens.css';
 
 @config '../../../tailwind.config.mjs';
 
@@ -19,6 +20,7 @@
   h6 {
     font-weight: unset;
     font-size: unset;
+    font-family: var(--font-heading);
   }
 }
 
@@ -44,7 +46,8 @@
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 86rem;
   --font-mono: var(--font-geist-mono);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-heading);
 }
 
 @layer utilities {
@@ -87,31 +90,31 @@
 }
 
 :root {
-  --background: oklch(100% 0 0deg);
-  --foreground: oklch(14.5% 0 0deg);
-  --card: oklch(96.5% 0.005 265deg);
-  --card-foreground: oklch(14.5% 0 0deg);
-  --popover: oklch(100% 0 0deg);
-  --popover-foreground: oklch(14.5% 0 0deg);
-  --primary: oklch(20.5% 0 0deg);
-  --primary-foreground: oklch(98.5% 0 0deg);
-  --secondary: oklch(97% 0 0deg);
-  --secondary-foreground: oklch(20.5% 0 0deg);
-  --muted: oklch(97% 0 0deg);
-  --muted-foreground: oklch(55.6% 0 0deg);
-  --accent: oklch(97% 0 0deg);
-  --accent-foreground: oklch(20.5% 0 0deg);
-  --destructive: oklch(57.7% 0.245 27.325deg);
-  --destructive-foreground: oklch(57.7% 0.245 27.325deg);
-  --border: oklch(92.2% 0 0deg);
-  --input: oklch(92.2% 0 0deg);
-  --ring: oklch(70.8% 0 0deg);
-  --chart-1: oklch(64.6% 0.222 41.116deg);
-  --chart-2: oklch(60% 0.118 184.704deg);
-  --chart-3: oklch(39.8% 0.07 227.392deg);
+  --background: var(--neutral-white);
+  --foreground: var(--neutral-darker);
+  --card: var(--neutral-white);
+  --card-foreground: var(--neutral-darker);
+  --popover: var(--neutral-white);
+  --popover-foreground: var(--neutral-darker);
+  --primary: var(--brand-primary-base);
+  --primary-foreground: var(--neutral-white);
+  --secondary: var(--neutral-lightest);
+  --secondary-foreground: var(--neutral-darker);
+  --muted: var(--neutral-lightest);
+  --muted-foreground: var(--neutral-base);
+  --accent: var(--neutral-lightest);
+  --accent-foreground: var(--neutral-darker);
+  --destructive: color-mix(in srgb, var(--system-error) 80%, black);
+  --destructive-foreground: var(--neutral-white);
+  --border: var(--neutral-lighter);
+  --input: var(--neutral-lighter);
+  --ring: var(--brand-primary-light);
+  --chart-1: var(--brand-primary-base);
+  --chart-2: var(--brand-secondary-base);
+  --chart-3: var(--neutral-base);
   --chart-4: oklch(82.8% 0.189 84.429deg);
   --chart-5: oklch(76.9% 0.188 70.08deg);
-  --radius: 0.625rem;
+  --radius: var(--rad-md);
   --sidebar: oklch(98.5% 0 0deg);
   --sidebar-foreground: oklch(14.5% 0 0deg);
   --sidebar-primary: oklch(20.5% 0 0deg);
@@ -120,34 +123,50 @@
   --sidebar-accent-foreground: oklch(20.5% 0 0deg);
   --sidebar-border: oklch(92.2% 0 0deg);
   --sidebar-ring: oklch(70.8% 0 0deg);
-  --success: oklch(78% 0.08 200deg);
+  --success: var(--system-success);
   --warning: oklch(89% 0.1 75deg);
-  --error: oklch(75% 0.15 25deg);
+  --error: var(--system-error);
+
+  /* === Semantic tiers (Relume background/text/border/link) === */
+  --surface-secondary: var(--neutral-lightest);
+  --surface-tertiary: var(--neutral-light);
+  --surface-alternate: var(--neutral-black);
+  --surface-success: var(--system-success-light);
+  --surface-error: var(--system-error-light);
+  --content-secondary: var(--neutral-dark);
+  --content-alternate: var(--neutral-white);
+  --content-success: color-mix(in srgb, var(--system-success) 75%, black);
+  --content-error: color-mix(in srgb, var(--system-error) 80%, black);
+  --border-strong: var(--neutral-darker);
+  --border-alternate: var(--neutral-white);
+  --link: var(--brand-primary-base);
+  --link-secondary: var(--neutral-dark);
+  --link-alternate: var(--neutral-white);
 }
 
 [data-theme='dark'] {
-  --background: oklch(14.5% 0 0deg);
-  --foreground: oklch(98.5% 0 0deg);
-  --card: oklch(17% 0 0deg);
-  --card-foreground: oklch(98.5% 0 0deg);
-  --popover: oklch(14.5% 0 0deg);
-  --popover-foreground: oklch(98.5% 0 0deg);
-  --primary: oklch(98.5% 0 0deg);
-  --primary-foreground: oklch(20.5% 0 0deg);
-  --secondary: oklch(26.9% 0 0deg);
-  --secondary-foreground: oklch(98.5% 0 0deg);
-  --muted: oklch(26.9% 0 0deg);
-  --muted-foreground: oklch(70.8% 0 0deg);
-  --accent: oklch(26.9% 0 0deg);
-  --accent-foreground: oklch(98.5% 0 0deg);
-  --destructive: oklch(39.6% 0.141 25.723deg);
-  --destructive-foreground: oklch(63.7% 0.237 25.331deg);
-  --border: oklch(26.9% 0 0deg);
-  --input: oklch(26.9% 0 0deg);
-  --ring: oklch(43.9% 0 0deg);
-  --chart-1: oklch(48.8% 0.243 264.376deg);
-  --chart-2: oklch(69.6% 0.17 162.48deg);
-  --chart-3: oklch(76.9% 0.188 70.08deg);
+  --background: var(--neutral-darkest);
+  --foreground: var(--neutral-lightest);
+  --card: var(--neutral-darker);
+  --card-foreground: var(--neutral-lightest);
+  --popover: var(--neutral-darker);
+  --popover-foreground: var(--neutral-lightest);
+  --primary: var(--brand-primary-lighter);
+  --primary-foreground: var(--brand-primary-darkest);
+  --secondary: var(--neutral-dark);
+  --secondary-foreground: var(--neutral-white);
+  --muted: var(--neutral-darker);
+  --muted-foreground: var(--neutral-light);
+  --accent: var(--neutral-darker);
+  --accent-foreground: var(--neutral-lightest);
+  --destructive: color-mix(in srgb, var(--system-error) 72%, black);
+  --destructive-foreground: var(--neutral-white);
+  --border: var(--neutral-dark);
+  --input: var(--neutral-dark);
+  --ring: var(--brand-primary-light);
+  --chart-1: var(--brand-primary-light);
+  --chart-2: var(--brand-secondary-light);
+  --chart-3: var(--neutral-light);
   --chart-4: oklch(62.7% 0.265 303.9deg);
   --chart-5: oklch(64.5% 0.246 16.439deg);
   --sidebar: oklch(20.5% 0 0deg);
@@ -158,9 +177,29 @@
   --sidebar-accent-foreground: oklch(98.5% 0 0deg);
   --sidebar-border: oklch(26.9% 0 0deg);
   --sidebar-ring: oklch(43.9% 0 0deg);
-  --success: oklch(28% 0.1 200deg);
+  --success: var(--system-success);
   --warning: oklch(35% 0.08 70deg);
-  --error: oklch(45% 0.1 25deg);
+  --error: var(--system-error);
+
+  /* === Semantic tiers — dark reconciliation ===
+   * "alternate" inverts (a light section on a dark site); neutral tiers shift
+   * up the scale; success/error surfaces are tinted toward the dark background
+   * and their text is lightened for contrast. */
+  --surface-secondary: var(--neutral-darker);
+  --surface-tertiary: var(--neutral-dark);
+  --surface-alternate: var(--neutral-lightest);
+  --surface-success: color-mix(in srgb, var(--system-success) 16%, var(--neutral-darkest));
+  --surface-error: color-mix(in srgb, var(--system-error) 16%, var(--neutral-darkest));
+  --content-secondary: var(--neutral-light);
+  --content-alternate: var(--neutral-darkest);
+  --content-success: color-mix(in srgb, var(--system-success) 50%, white);
+  --content-error: color-mix(in srgb, var(--system-error) 50%, white);
+  --border-strong: var(--neutral-light);
+  --border-alternate: var(--neutral-darkest);
+  --link: color-mix(in srgb, var(--brand-primary-light) 45%, white);
+  --link-secondary: var(--neutral-light);
+  --link-alternate: var(--neutral-darkest);
+  /* dark links/buttons tuned for AAA contrast on dark surfaces */
 }
 
 @theme inline {
@@ -188,10 +227,21 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xs: var(--rad-xs);
+  --radius-sm: var(--rad-sm);
+  --radius-md: var(--rad-md);
+  --radius-lg: var(--rad-lg);
+  --radius-xl: var(--rad-xl);
+  --radius-pill: var(--rad-pill);
+  --spacing-xxs: var(--space-xxs);
+  --spacing-xs: var(--space-xs);
+  --spacing-s: var(--space-s);
+  --spacing-m: var(--space-m);
+  --spacing-l: var(--space-l);
+  --spacing-xl: var(--space-xl);
+  --spacing-xxl: var(--space-xxl);
+  --spacing-huge: var(--space-huge);
+  --spacing-xhuge: var(--space-xhuge);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -203,6 +253,23 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-error: var(--error);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-tertiary: var(--surface-tertiary);
+  --color-surface-alternate: var(--surface-alternate);
+  --color-surface-success: var(--surface-success);
+  --color-surface-error: var(--surface-error);
+  --color-content-secondary: var(--content-secondary);
+  --color-content-alternate: var(--content-alternate);
+  --color-content-success: var(--content-success);
+  --color-content-error: var(--content-error);
+  --color-border-strong: var(--border-strong);
+  --color-border-alternate: var(--border-alternate);
+  --color-link: var(--link);
+  --color-link-secondary: var(--link-secondary);
+  --color-link-alternate: var(--link-alternate);
+  /* Brand accent colors — apply intentionally (not the neutral shadcn --secondary) */
+  --color-brand-primary: var(--brand-primary-base);
+  --color-brand-secondary: var(--brand-secondary-base);
 }
 
 @layer base {
@@ -211,6 +278,7 @@
   }
   body {
     @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+    font-family: var(--font-body);
   }
 }
 
