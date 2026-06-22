@@ -12,6 +12,8 @@ import { FormBlock as FormConfig } from './Form/config'
 import { FormBlock } from './Form/Component'
 import { MediaBlock as MediaConfig } from './MediaBlock/config'
 import { MediaBlock } from './MediaBlock/Component'
+import { MediaGallery as MediaGalleryConfig } from './MediaGallery/config'
+import { MediaGalleryBlock } from './MediaGallery/Component'
 
 // Layout-block components have heterogeneous props; RenderBlocks spreads the
 // matching block data into each, so a loose component type is intentional.
@@ -33,4 +35,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [Archive.slug]: ArchiveBlock,
   [FormConfig.slug]: FormBlock,
   [CardGrid.slug]: CardGridBlock,
+  [MediaGalleryConfig.slug]: MediaGalleryBlock,
 }

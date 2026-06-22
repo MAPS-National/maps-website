@@ -6,6 +6,7 @@ import { CardGrid } from './CardGrid/config'
 import { Content } from './Content/config'
 import { FormBlock } from './Form/config'
 import { MediaBlock } from './MediaBlock/config'
+import { MediaGallery } from './MediaGallery/config'
 
 /**
  * Single source of truth for layout-block FIELD CONFIGS. Collections consume
@@ -17,4 +18,12 @@ import { MediaBlock } from './MediaBlock/config'
  * Payload config graph and break `payload generate:types`. To add a block,
  * register its config here and its component in `blockComponents.ts`.
  */
-export const layoutBlocks: Block[] = [CallToAction, Content, MediaBlock, Archive, FormBlock, CardGrid]
+export const layoutBlocks: Block[] = [
+  CallToAction,
+  Content,
+  MediaBlock,
+  Archive,
+  FormBlock,
+  CardGrid,
+  MediaGallery,
+]

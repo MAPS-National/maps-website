@@ -205,7 +205,15 @@ export interface Page {
      */
     overlay?: ('navy-gradient' | 'none') | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | CardGridBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | CardGridBlock
+    | MediaGalleryBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -891,6 +899,41 @@ export interface CardGridBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaGalleryBlock".
+ */
+export interface MediaGalleryBlock {
+  /**
+   * Optional label above the gallery.
+   */
+  heading?: string | null;
+  /**
+   * Grid: a tiled set. Slider: a horizontal, swipeable track.
+   */
+  layout: 'grid' | 'slider';
+  /**
+   * Number of columns in grid layout (ignored for the slider).
+   */
+  columns: '2' | '3' | '4';
+  /**
+   * Let visitors click an image to view it full-size in an overlay, with next/previous.
+   */
+  enableLightbox?: boolean | null;
+  images?:
+    | {
+        image: number | Media;
+        /**
+         * Shown in the lightbox and used as the alt text fallback.
+         */
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaGallery';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1199,6 +1242,7 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         cardGrid?: T | CardGridBlockSelect<T>;
+        mediaGallery?: T | MediaGalleryBlockSelect<T>;
       };
   meta?:
     | T
@@ -1346,6 +1390,25 @@ export interface CardGridBlockSelect<T extends boolean = true> {
               url?: T;
             };
         requiredPlans?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaGalleryBlock_select".
+ */
+export interface MediaGalleryBlockSelect<T extends boolean = true> {
+  heading?: T;
+  layout?: T;
+  columns?: T;
+  enableLightbox?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
         id?: T;
       };
   id?: T;

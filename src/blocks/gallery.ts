@@ -6,6 +6,7 @@ import { cardGridGallery } from './CardGrid/gallery'
 import { contentGallery } from './Content/gallery'
 import { formGallery } from './Form/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
+import { mediaGalleryGallery } from './MediaGallery/gallery'
 
 /**
  * Registry of block gallery entries rendered by `/design-system/blocks`.
@@ -30,4 +31,5 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   mediaBlockGallery,
   archiveGallery,
   formGallery,
+  mediaGalleryGallery,
 ]
