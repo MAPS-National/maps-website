@@ -61,7 +61,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
 
           return (
             <div
-              className="flex h-full flex-col rounded-lg border bg-card p-6"
+              className="flex h-full flex-col rounded-lg border bg-card p-6 dark:bg-secondary"
               data-required-plans={
                 Array.isArray(requiredPlans) && requiredPlans.length > 0
                   ? requiredPlans.join(',')
