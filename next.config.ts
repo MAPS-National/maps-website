@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
       {
         pathname: '/api/media/file/**',
       },
+      {
+        // Static placeholder images used by the internal blocks gallery
+        // (/design-system/blocks). See src/blocks/gallery-helpers.ts.
+        pathname: '/gallery/**',
+      },
     ],
     qualities: [100],
     remotePatterns: [

@@ -48,7 +48,11 @@ export default function StyleGuidePage() {
       <header className="flex flex-col gap-xs">
         <h1 className="text-4xl">Design System</h1>
         <p className="text-muted-foreground">
-          Design tokens — brand palette, radius, typography, spacing, semantic tiers.
+          Design tokens — brand palette, radius, typography, spacing, semantic tiers. See the{' '}
+          <a className="text-link underline" href="/design-system/blocks">
+            blocks gallery
+          </a>{' '}
+          for every layout block and hero rendered with sample data.
         </p>
         <div>
           <ThemeToggle />
