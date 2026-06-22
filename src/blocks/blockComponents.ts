@@ -20,6 +20,8 @@ import { MediaBlock as MediaConfig } from './MediaBlock/config'
 import { MediaBlock } from './MediaBlock/Component'
 import { MediaGallery as MediaGalleryConfig } from './MediaGallery/config'
 import { MediaGalleryBlock } from './MediaGallery/Component'
+import { PricingTiers } from './PricingTiers/config'
+import { PricingTiersBlock } from './PricingTiers/Component'
 
 // Layout-block components have heterogeneous props; RenderBlocks spreads the
 // matching block data into each, so a loose component type is intentional.
@@ -45,4 +47,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [FeatureSplit.slug]: FeatureSplitBlock,
   [LogoStrip.slug]: LogoStripBlock,
   [MediaGalleryConfig.slug]: MediaGalleryBlock,
+  [PricingTiers.slug]: PricingTiersBlock,
 }
