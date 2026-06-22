@@ -88,7 +88,7 @@ Every page intro maps onto an **existing hero**; none needs a new component. The
 
 ## 6. Consistency recommendations (advisory — HITL to accept)
 
-The `/design-critique` consistency lens. These are *recommendations to standardize on migration*, not auto-applied.
+The `design:` review lens — `design:design-critique` (consistency / hierarchy), `design:design-system` (token + variant conformance), `design:accessibility-review` (WCAG / AAA). These are *recommendations to standardize on migration*, not auto-applied.
 
 1. **Mini-hero rendered 4+ ways** — `section_content` h2 (board/advisory/state-committees), `content_component` h1 (mission), `doneate_header-component` h1 (partners), breadcrumb embedded-in-section h2 (maps-academy-vids), no-breadcrumb (new-york-state). → **one LowImpact variant**, consistent heading level, optional breadcrumb.
 2. **Blog listing under 4 class names**, identical structure → **one ArchiveBlock**.
