@@ -50,7 +50,7 @@ Work an item top to bottom. Steps 6–8 are the gates that distinguish a *port* 
 
 5. **Generate types & verify the build.** Run `npm run generate:types`, then `npx tsc --noEmit` (0 errors). Run `generate:importmap` only if you added a custom admin component. Revert any CRLF-only churn in `importMap.js` / `payload-types.ts` before committing. **Schema-drift caution:** with `push: true` and one shared dev DB, a renamed field/table can make drizzle-kit prompt interactively and hang the headless dev server — merge block PRs promptly and watch for it (see [references/block-anatomy.md#schema-drift](references/block-anatomy.md#schema-drift)).
 
-6. **Cross-check the live site.** Compare the rendered block against its counterpart on `https://mapsnational.webflow.io/` — structure / content / interactions via `WebFetch`, visual fidelity (overlay, spacing, contrast, photo shape, card affordances) via a Preview screenshot or browser. The export is the source of truth; live is **reference only** — capture differences as consistency notes, never a silent override. Method + a worked illustration in [references/live-cross-check.md](references/live-cross-check.md).
+6. **Cross-check the live site.** Compare the rendered block against its counterpart on `https://mapsnational.webflow.io/` — structure / content / interactions via `WebFetch`, visual fidelity (overlay, spacing, contrast, photo shape, card affordances) via a Preview screenshot or browser. **URL fidelity counts too:** when the block lands on a page, that page's slug must mirror the source's folder URL exactly (e.g. `about-us/board-leadership`, not a flattened `board-leadership`). The export is the source of truth; live is **reference only** — capture differences as consistency notes, never a silent override. Method + a worked illustration in [references/live-cross-check.md](references/live-cross-check.md).
 
 7. **Run the design gates (advisory / HITL).** On the rendered output, optionally run the three `design:` skills and fold their findings into the consistency notes. Degrade gracefully if the plugin is absent.
    - **`design:design-critique`** — usability / hierarchy / consistency.
@@ -58,7 +58,7 @@ Work an item top to bottom. Steps 6–8 are the gates that distinguish a *port* 
    - **`design:accessibility-review`** — WCAG; gates the repo's mandated **AAA** text pairs.
    See [references/design-gates.md](references/design-gates.md).
 
-8. **Emit consistency notes & verify.** Produce a short **Consistency notes** list (format in [references/design-gates.md](references/design-gates.md#consistency-notes)) — each item: what drifts from the catalog/source/live, and the recommendation to conform. **Surface, never auto-apply.** Confirm the block renders in `/design-system/blocks/block.<slug>` (both themes, every variant) and on its real page.
+8. **Emit consistency notes & verify.** Produce a short **Consistency notes** list (format in [references/design-gates.md](references/design-gates.md#consistency-notes)) — each item: what drifts from the catalog/source/live, and the recommendation to conform. **Surface, never auto-apply.** Confirm the block renders in `/design-system/blocks/block.<slug>` (both themes, every variant) and on its real page **at the source's URL path**. Nested page URLs are supported: the front-end `[...slug]` catch-all matches a page's full slug, and the Pages `slugField` is configured to preserve `/`, so a page slug like `about-us/board-leadership` serves at that exact path. Seed placement pages idempotently (match by slug, upsert) rather than via the destructive admin "seed database" button — see `scripts/seed-about-pages.ts`.
 
 ## Worked examples (canonical, already in the tree)
 
@@ -76,7 +76,7 @@ These prove the two halves of the path; read them as reference implementations.
 - [ ] `generate:types` clean; `tsc --noEmit` 0 errors; importmap/types churn reverted.
 - [ ] Live cross-check done; design gates run (or noted absent).
 - [ ] **Consistency notes** emitted (drift → recommendation, HITL).
-- [ ] Renders in the showroom (both themes, all variants) and on its page.
+- [ ] Renders in the showroom (both themes, all variants) and on its page **at the source's exact URL path** (nested slugs supported).
 
 ## Reference files
 

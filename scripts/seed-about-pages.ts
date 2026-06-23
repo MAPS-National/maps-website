@@ -82,7 +82,7 @@ const run = async () => {
 
   const pages = [
     {
-      slug: 'board-leadership',
+      slug: 'about-us/board-leadership',
       title: 'Board & Leadership',
       hero: {
         type: 'lowImpact' as const,
@@ -97,7 +97,7 @@ const run = async () => {
       layout: [teamBlock('grouped', 'medium', boardCats)],
     },
     {
-      slug: 'advisory-council',
+      slug: 'about-us/advisory-council',
       title: 'Advisory Council',
       hero: {
         type: 'lowImpact' as const,
@@ -112,7 +112,7 @@ const run = async () => {
       layout: [teamBlock('grouped', 'airy', advisoryCats)],
     },
     {
-      slug: 'state-committees',
+      slug: 'about-us/state-committees',
       title: 'State Committees',
       hero: {
         type: 'lowImpact' as const,

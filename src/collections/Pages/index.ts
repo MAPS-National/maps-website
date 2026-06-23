@@ -113,7 +113,19 @@ export const Pages: CollectionConfig<'pages'> = {
         position: 'sidebar',
       },
     },
-    slugField(),
+    // Allow `/` in slugs so pages can mirror the source site's folder URLs
+    // (e.g. "about-us/board-leadership"), served by the catch-all route. Same as
+    // the default slugify, only the slash is preserved.
+    slugField({
+      slugify: ({ valueToSlugify }) =>
+        typeof valueToSlugify === 'string'
+          ? valueToSlugify
+              .trim()
+              .replace(/ /g, '-')
+              .replace(/[^\w/-]+/g, '')
+              .toLowerCase()
+          : valueToSlugify,
+    }),
   ],
   hooks: {
     afterChange: [revalidatePage],

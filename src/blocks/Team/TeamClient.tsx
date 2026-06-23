@@ -162,47 +162,50 @@ export const TeamClient: React.FC<{
               <CloseIcon />
             </button>
 
-            <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left">
-              <Photo className="size-32 shrink-0 sm:size-40" member={openMember} />
-              <div className="min-w-0">
-                <h3 className="font-serif text-2xl font-semibold">{openMember.name}</h3>
-                {openMember.jobTitle && <p className="mt-1 text-primary">{openMember.jobTitle}</p>}
-                {openMember.jobTitleSecondary && (
-                  <p className="text-primary">{openMember.jobTitleSecondary}</p>
-                )}
-                {openMember.categories.length > 0 && (
-                  <p className="mt-1 text-sm text-content-secondary">
-                    {openMember.categories.map((c) => c.label).join(' · ')}
-                  </p>
-                )}
-                {(openMember.email || openMember.linkedin) && (
-                  <div className="mt-4 flex items-center justify-center gap-3.5 sm:justify-start">
-                    {openMember.linkedin && (
-                      <a
-                        aria-label={`${openMember.name} on LinkedIn`}
-                        className="text-content-secondary transition-colors hover:text-primary"
-                        href={openMember.linkedin}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        <LinkedInIcon />
-                      </a>
-                    )}
-                    {openMember.email && (
-                      <a
-                        aria-label={`Email ${openMember.name}`}
-                        className="text-content-secondary transition-colors hover:text-primary"
-                        href={`mailto:${openMember.email}`}
-                      >
-                        <EmailIcon />
-                      </a>
-                    )}
-                  </div>
-                )}
-              </div>
+            {/* Photo floats so the identity and bio flow up beside it — a short
+                bio reads without a gap, a long one wraps past the photo. */}
+            <div className="text-center sm:text-left">
+              <Photo
+                className="mx-auto mb-4 size-28 sm:float-left sm:mx-0 sm:mb-2 sm:mr-6 sm:size-32"
+                member={openMember}
+              />
+              <h3 className="font-serif text-2xl font-semibold">{openMember.name}</h3>
+              {openMember.jobTitle && <p className="mt-1 text-primary">{openMember.jobTitle}</p>}
+              {openMember.jobTitleSecondary && (
+                <p className="text-primary">{openMember.jobTitleSecondary}</p>
+              )}
+              {openMember.categories.length > 0 && (
+                <p className="mt-1 text-sm text-content-secondary">
+                  {openMember.categories.map((c) => c.label).join(' · ')}
+                </p>
+              )}
+              {(openMember.email || openMember.linkedin) && (
+                <div className="mt-4 flex items-center justify-center gap-3.5 sm:justify-start">
+                  {openMember.linkedin && (
+                    <a
+                      aria-label={`${openMember.name} on LinkedIn`}
+                      className="text-content-secondary transition-colors hover:text-primary"
+                      href={openMember.linkedin}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <LinkedInIcon />
+                    </a>
+                  )}
+                  {openMember.email && (
+                    <a
+                      aria-label={`Email ${openMember.name}`}
+                      className="text-content-secondary transition-colors hover:text-primary"
+                      href={`mailto:${openMember.email}`}
+                    >
+                      <EmailIcon />
+                    </a>
+                  )}
+                </div>
+              )}
+              {openMember.bio && <div className="mt-4 text-left">{openMember.bio}</div>}
+              <div className="clear-both" />
             </div>
-
-            {openMember.bio && <div className="mt-6 text-left">{openMember.bio}</div>}
           </div>
         </div>
       )}

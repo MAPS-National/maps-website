@@ -39,8 +39,21 @@ const toMember = (doc: Team, allowed: Set<number> | null): TeamMember => {
     ...(hasPhoto
       ? { photoSrc: getMediaUrl(photo.url!, photo.updatedAt), photoAlt: photo.alt || doc.name }
       : {}),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(hasBio ? { bio: <RichText data={bio as any} enableGutter={false} enableProse /> } : {}),
+    ...(hasBio
+      ? {
+          bio: (
+            <RichText
+              // Bios run long; tighten type + paragraph spacing so the modal
+              // fits without a scrollbar where possible.
+              className="prose-p:my-3 prose-p:text-[0.95rem] prose-p:leading-relaxed prose-li:my-1"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              data={bio as any}
+              enableGutter={false}
+              enableProse
+            />
+          ),
+        }
+      : {}),
   }
 }
 
