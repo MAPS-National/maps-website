@@ -30,8 +30,10 @@ export async function generateStaticParams() {
     ?.filter((doc) => {
       return doc.slug !== 'home'
     })
+    // Catch-all route: a slug may be a nested path ("about-us/board-leadership"),
+    // so split it into segments.
     .map(({ slug }) => {
-      return { slug }
+      return { slug: (slug ?? '').split('/') }
     })
 
   return params
@@ -39,15 +41,20 @@ export async function generateStaticParams() {
 
 type Args = {
   params: Promise<{
-    slug?: string
+    // Catch-all gives an array of path segments; the root re-export passes none.
+    slug?: string[]
   }>
 }
 
+/** Join catch-all segments back into the stored slug ("a/b"), defaulting to home. */
+const resolveSlug = (segments?: string[]): string =>
+  segments?.length ? segments.map(decodeURIComponent).join('/') : 'home'
+
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = 'home' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
+  const { slug: segments } = await paramsPromise
+  const decodedSlug = resolveSlug(segments)
+  const slug = decodedSlug
   const url = '/' + decodedSlug
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
@@ -81,11 +88,9 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = 'home' } = await paramsPromise
-  // Decode to support slugs with special characters
-  const decodedSlug = decodeURIComponent(slug)
+  const { slug: segments } = await paramsPromise
   const page = await queryPageBySlug({
-    slug: decodedSlug,
+    slug: resolveSlug(segments),
   })
 
   return generateMeta({ doc: page })

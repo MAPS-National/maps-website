@@ -15,12 +15,16 @@ const toTab = (c: number | TeamCategory): { value: string; label: string } | nul
   return { value: c.slug || String(c.id), label: c.title }
 }
 
-const toMember = (doc: Team): TeamMember => {
+const toMember = (doc: Team, allowed: Set<number> | null): TeamMember => {
   const photo = doc.photo
   const hasPhoto = photo && typeof photo === 'object' && photo.url
   const bio = doc.bio
   const hasBio = bio && typeof bio === 'object' && 'root' in bio
   const categories = (doc.categories || [])
+    // When the block filters to specific groups, only surface those groups on
+    // the member — otherwise a cross-listed person spawns stray off-topic
+    // sections (e.g. a board member who also sits on a state committee).
+    .filter((c) => !allowed || allowed.has(typeof c === 'object' ? c.id : c))
     .map(toTab)
     .filter((c): c is { value: string; label: string } => Boolean(c))
 
@@ -35,8 +39,21 @@ const toMember = (doc: Team): TeamMember => {
     ...(hasPhoto
       ? { photoSrc: getMediaUrl(photo.url!, photo.updatedAt), photoAlt: photo.alt || doc.name }
       : {}),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(hasBio ? { bio: <RichText data={bio as any} enableGutter={false} enableProse /> } : {}),
+    ...(hasBio
+      ? {
+          bio: (
+            <RichText
+              // Bios run long; tighten type + paragraph spacing so the modal
+              // fits without a scrollbar where possible.
+              className="prose-p:my-3 prose-p:text-[0.95rem] prose-p:leading-relaxed prose-li:my-1"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              data={bio as any}
+              enableGutter={false}
+              enableProse
+            />
+          ),
+        }
+      : {}),
   }
 }
 
@@ -49,6 +66,10 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
   const { categories, density, header, layout, limit, populateBy, selectedMembers } = props
 
   let docs: Team[] = []
+  let allowed: Set<number> | null = null
+  // Group display order, taken from the editor's category selection. Built from
+  // the resolved category objects so it lines up with each member's group value.
+  let groupOrder: string[] | undefined
 
   if (populateBy === 'selection') {
     docs = (selectedMembers || [])
@@ -56,6 +77,16 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
       .filter((m): m is Team => Boolean(m))
   } else {
     const categoryIds = (categories || []).map((c) => (typeof c === 'object' ? c.id : c))
+    if (categoryIds.length > 0) {
+      allowed = new Set(categoryIds)
+      // Display order from the resolved category objects (populated at depth ≥ 1).
+      const resolved = (categories || []).filter(
+        (c): c is TeamCategory => typeof c === 'object' && c !== null,
+      )
+      if (resolved.length === categoryIds.length) {
+        groupOrder = resolved.map((c) => c.slug || String(c.id))
+      }
+    }
     const payload = await getPayload({ config: configPromise })
     const result = await payload.find({
       collection: 'team',
@@ -67,7 +98,7 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
     docs = result.docs
   }
 
-  const members = docs.map(toMember)
+  const members = docs.map((d) => toMember(d, allowed))
   if (members.length === 0) return null
 
   const showHeader = header?.enableHeader
@@ -92,6 +123,7 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
 
         <TeamClient
           density={density ?? 'medium'}
+          groupOrder={groupOrder}
           layout={layout ?? 'grouped'}
           members={members}
         />
