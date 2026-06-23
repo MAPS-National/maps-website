@@ -1,0 +1,121 @@
+import type { Block } from 'payload'
+
+import { FixedToolbarFeature, InlineToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+
+const introEditor = lexicalEditor({
+  features: ({ rootFeatures }) => [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()],
+})
+
+/**
+ * Map + Location Cards — a list of locations (name, address, contact, link)
+ * alongside an optional embedded map.
+ *
+ * Map provider decision (#70): Google Maps Embed API (a plain iframe, no JS SDK
+ * or extra dependency), keyed by NEXT_PUBLIC_GOOGLE_MAPS_API_KEY. The key is
+ * env-gated exactly like the S3 adapter — when it's unset the map is omitted and
+ * the block degrades to cards-only with no error. `enableMap` lets an editor opt
+ * out of the map even when a key is configured. Locations are inline array
+ * fields (there's no Webflow CMS source for them), not a separate collection.
+ */
+export const MapLocationCards: Block = {
+  slug: 'mapLocationCards',
+  interfaceName: 'MapLocationCardsBlock',
+  fields: [
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'eyebrow',
+          type: 'text',
+          label: 'Eyebrow / tagline',
+          admin: { width: '50%' },
+        },
+        {
+          name: 'heading',
+          type: 'text',
+          admin: { width: '50%' },
+        },
+      ],
+    },
+    {
+      name: 'intro',
+      type: 'richText',
+      editor: introEditor,
+      label: 'Intro text',
+    },
+    {
+      name: 'enableMap',
+      type: 'checkbox',
+      defaultValue: true,
+      label: 'Show map',
+      admin: {
+        description:
+          'Renders an embedded map when a Google Maps API key is configured. With no key, the block shows cards only regardless of this setting.',
+      },
+    },
+    {
+      name: 'mapQuery',
+      type: 'text',
+      label: 'Map center',
+      admin: {
+        condition: (_, siblingData) => Boolean(siblingData?.enableMap),
+        description:
+          'What the map centers on, e.g. an address or "MAPS National, Washington DC". Defaults to the first location’s address.',
+      },
+    },
+    {
+      name: 'locations',
+      type: 'array',
+      minRows: 1,
+      labels: { plural: 'Locations', singular: 'Location' },
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'address',
+          type: 'textarea',
+          admin: { description: 'Shown on the card and used as the map center fallback.' },
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'phone',
+              type: 'text',
+              admin: { width: '50%' },
+            },
+            {
+              name: 'email',
+              type: 'text',
+              admin: { width: '50%' },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'linkLabel',
+              type: 'text',
+              label: 'Link label',
+              admin: { width: '50%' },
+            },
+            {
+              name: 'linkUrl',
+              type: 'text',
+              label: 'Link URL',
+              admin: { width: '50%' },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  labels: {
+    plural: 'Map + Location Cards',
+    singular: 'Map + Location Cards',
+  },
+}

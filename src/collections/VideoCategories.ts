@@ -6,13 +6,13 @@ import { legacyItemId } from '../fields/legacyItemId'
 import { slugField } from 'payload'
 
 /**
- * Team Categories — the groups a Team member belongs to (Board of Directors,
- * Advisory Council, the state committees, etc.). A member can be in several, so
- * Team references this with a `hasMany` relationship. Mirrors the Webflow "Team
- * Categories" CMS collection. `order` controls section order on directory pages.
+ * Video Categories — the topic groupings for Academy Videos (the "MAPS Academy
+ * Video Categories" Webflow CMS collection). AcademyVideos references this with
+ * a `hasMany` relationship; `order` controls the filter-bar order on the videos
+ * block. Same shape as TeamCategories.
  */
-export const TeamCategories: CollectionConfig = {
-  slug: 'team-categories',
+export const VideoCategories: CollectionConfig = {
+  slug: 'video-categories',
   access: {
     create: authenticated,
     delete: authenticated,
@@ -38,7 +38,7 @@ export const TeamCategories: CollectionConfig = {
       defaultValue: 0,
       admin: {
         position: 'sidebar',
-        description: 'Lower numbers sort first on directory pages.',
+        description: 'Lower numbers sort first in the filter bar.',
       },
     },
     slugField({

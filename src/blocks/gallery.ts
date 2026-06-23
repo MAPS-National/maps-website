@@ -1,5 +1,6 @@
 import type { GalleryBlock } from './gallery-types'
 
+import { academyVideosGallery } from './AcademyVideos/gallery'
 import { archiveGallery } from './ArchiveBlock/gallery'
 import { callToActionGallery } from './CallToAction/gallery'
 import { cardGridGallery } from './CardGrid/gallery'
@@ -10,10 +11,12 @@ import { faqGallery } from './FAQ/gallery'
 import { featureSplitGallery } from './FeatureSplit/gallery'
 import { formGallery } from './Form/gallery'
 import { logoStripGallery } from './LogoStrip/gallery'
+import { mapLocationCardsGallery } from './MapLocationCards/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
 import { mediaGalleryGallery } from './MediaGallery/gallery'
 import { pricingTiersGallery } from './PricingTiers/gallery'
 import { teamGallery } from './Team/gallery'
+import { testimonialsGallery } from './Testimonials/gallery'
 import { timelineGallery } from './Timeline/gallery'
 
 /**
@@ -48,4 +51,7 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   comparisonTableGallery,
   contactDetailsGallery,
   teamGallery,
+  testimonialsGallery,
+  academyVideosGallery,
+  mapLocationCardsGallery,
 ]
