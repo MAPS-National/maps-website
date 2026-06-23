@@ -1,6 +1,6 @@
 # Block catalog — Webflow/Relume → Payload
 
-> **Phase 3 (#19) — draft for review.** The de-duplicated, page-driven source of truth for what blocks to build. The section-port skill (#18) and Phase 4 port **against this catalog, not page-by-page.** Authoring contract: see "Section porting" in [CLAUDE.md](../../CLAUDE.md).
+> **Phase 3 (#19) — draft for review.** The de-duplicated, page-driven source of truth for what blocks to build. The payload-webflow-section-port skill (#18) and Phase 4 port **against this catalog, not page-by-page.** Authoring contract: see "Section porting" in [CLAUDE.md](../../CLAUDE.md).
 
 **Source:** Webflow/Relume export at `migration/_extracted/` (gitignored), ~30 content pages + CMS templates. **Method:** every page's sections inventoried, grouped by *intent* (not markup), classified, and checked for cross-page consistency.
 
@@ -111,4 +111,4 @@ The `design:` review lens — `design:design-critique` (consistency / hierarchy)
 6. Long tail: **PricingTiers**, **ComparisonTable**, **Timeline**, **MapLocationCards**, **ContactDetails**.
 7. CMS: **Events**, **Testimonials**, **AcademyVideos**.
 
-> The worked example for the section-port skill (#18) should be **CardGrid** or **FAQ** — highest reuse, real variants, exercises the full port → register → render path.
+> The worked example for the payload-webflow-section-port skill (#18) should be **CardGrid** or **FAQ** — highest reuse, real variants, exercises the full port → register → render path.
