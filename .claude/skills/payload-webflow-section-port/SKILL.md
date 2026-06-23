@@ -1,5 +1,5 @@
 ---
-name: section-port
+name: payload-webflow-section-port
 description: Port one Webflow/Relume source section into one native Payload block, end-to-end. Use this whenever migrating a section from the gitignored migration/ export into a block, building or revising a block from the block catalog (docs/migration/block-catalog.md), translating Relume/Client-First markup to brand tokens, or whenever the user says "port this section", "turn this into a block", "build the <X> block", or works through Phase 3/4 of the migration. Covers the port path: classify → trace source → build config + component (+ gallery) → register in both registries → generate types → cross-check the live site → run the design gates → emit consistency notes. Reach for it even when the user names a specific block (FAQ, CardGrid, FeatureSplit, LogoStrip, …) rather than the word "port". Not for net-new blocks with no source section, nor for standing up a new CMS collection (Team / Events / Testimonials) — those are handed off; the query-and-render block that *displays* a collection is in scope.
 ---
 
