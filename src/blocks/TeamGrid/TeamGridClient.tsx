@@ -253,11 +253,11 @@ const Card: React.FC<{
   onOpen: (id: string, el: HTMLElement) => void
 }> = ({ member, onOpen }) => (
   <button
-    className="group flex w-full flex-col rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary"
+    className="group flex w-full flex-col items-center rounded-lg border border-border bg-card p-4 text-center transition-colors hover:border-primary"
     onClick={(e) => onOpen(member.id, e.currentTarget)}
     type="button"
   >
-    <Photo className="w-full" member={member} />
+    <Photo className="w-full max-w-44" member={member} />
     <span className="mt-4 font-semibold transition-colors group-hover:text-primary">
       {member.name}
     </span>
