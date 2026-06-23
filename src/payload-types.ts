@@ -71,6 +71,8 @@ export interface Config {
     posts: Post;
     media: Media;
     categories: Category;
+    'team-categories': TeamCategory;
+    team: Team;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -93,6 +95,8 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    'team-categories': TeamCategoriesSelect<false> | TeamCategoriesSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -1372,6 +1376,81 @@ export interface ContactDetailsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-categories".
+ */
+export interface TeamCategory {
+  id: number;
+  title: string;
+  /**
+   * Lower numbers sort first on directory pages.
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  /**
+   * Primary role, e.g. "President, MAPS Texas".
+   */
+  jobTitle?: string | null;
+  /**
+   * Optional second role or affiliation.
+   */
+  jobTitleSecondary?: string | null;
+  /**
+   * Groups this member belongs to. Drives the on-page filter.
+   */
+  categories?: (number | TeamCategory)[] | null;
+  photo?: (number | null) | Media;
+  /**
+   * Shown in the member detail modal.
+   */
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  email?: string | null;
+  linkedin?: string | null;
+  /**
+   * Within-group sort; lower numbers first.
+   */
+  order?: number | null;
+  /**
+   * Tie-breaker sort for a second group.
+   */
+  orderSecondary?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1575,6 +1654,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'team-categories';
+        value: number | TeamCategory;
+      } | null)
+    | ({
+        relationTo: 'team';
+        value: number | Team;
       } | null)
     | ({
         relationTo: 'users';
@@ -2231,6 +2318,38 @@ export interface CategoriesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-categories_select".
+ */
+export interface TeamCategoriesSelect<T extends boolean = true> {
+  title?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T;
+  jobTitle?: T;
+  jobTitleSecondary?: T;
+  categories?: T;
+  photo?: T;
+  bio?: T;
+  email?: T;
+  linkedin?: T;
+  order?: T;
+  orderSecondary?: T;
+  generateSlug?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
