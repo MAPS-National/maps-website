@@ -85,7 +85,7 @@ export const TeamGridBlock: React.FC<TeamGridBlockProps & { id?: string }> = asy
             </p>
           )}
           {header?.heading && (
-            <h2 className="text-3xl font-semibold md:text-4xl">{header.heading}</h2>
+            <h2 className="text-4xl font-semibold md:text-5xl">{header.heading}</h2>
           )}
           {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
         </div>

@@ -113,7 +113,10 @@ export const TeamGridClient: React.FC<{
       {layout === 'grouped' && groups.length > 0 ? (
         groups.map((g) => (
           <div className="mb-14 last:mb-0" key={g.value}>
-            <h3 className="mb-6 text-2xl font-semibold md:text-3xl">{g.label}</h3>
+            <h3 className="mb-6 flex items-center gap-3 text-2xl font-semibold md:text-3xl">
+              <span aria-hidden="true" className="h-7 w-1 rounded-full bg-primary" />
+              {g.label}
+            </h3>
             <Grid columns={columns} members={g.members} onOpen={open} />
           </div>
         ))
@@ -253,12 +256,18 @@ const Card: React.FC<{
   onOpen: (id: string, el: HTMLElement) => void
 }> = ({ member, onOpen }) => (
   <button
-    className="group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-primary"
+    className="group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-xl"
     onClick={(e) => onOpen(member.id, e.currentTarget)}
     type="button"
   >
-    <Photo className="w-full" member={member} />
-    <span className="px-4 pt-4 font-semibold transition-colors group-hover:text-primary">
+    <span className="relative block overflow-hidden">
+      <Photo className="w-full transition-transform duration-500 group-hover:scale-105" member={member} />
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center gap-1.5 bg-gradient-to-t from-black/70 via-black/25 to-transparent px-4 pb-3 pt-10 text-sm font-medium text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        View bio
+        <ArrowIcon />
+      </span>
+    </span>
+    <span className="px-4 pt-4 text-lg font-semibold transition-colors group-hover:text-primary">
       {member.name}
     </span>
     {member.jobTitle && (
@@ -338,5 +347,23 @@ const EmailIcon: React.FC = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <path d="m22 6c0-1.1-.9-2-2-2h-16c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2zm-2 0-8 5-8-5zm0 12h-16v-10l8 5 8-5z" />
+  </svg>
+)
+
+const ArrowIcon: React.FC = () => (
+  <svg
+    aria-hidden="true"
+    className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
+    fill="none"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M5 12h14M13 6l6 6-6 6"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+    />
   </svg>
 )
