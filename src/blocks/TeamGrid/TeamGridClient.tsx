@@ -38,16 +38,17 @@ const initials = (name: string): string =>
     .join('')
 
 /**
- * Interactive surface for the Team grid: a category filter tab bar and a card
- * grid, with a per-member bio modal. The modal is a focus-managed dialog
- * (Esc / backdrop to close, focus sent to the close button on open and restored
- * to the opening card on close).
+ * Interactive surface for the Team grid, with a per-member bio modal. Two
+ * layouts: `grouped` stacks a labelled section per category (matching the live
+ * site); `tabs` shows one grid with a category filter bar. The modal is a
+ * focus-managed dialog (Esc / backdrop to close, focus sent to the close button
+ * on open and restored to the opening card on close).
  */
 export const TeamGridClient: React.FC<{
   columns: string
-  enableFilter: boolean
+  layout: 'grouped' | 'tabs'
   members: TeamMember[]
-}> = ({ columns, enableFilter, members }) => {
+}> = ({ columns, layout, members }) => {
   const [active, setActive] = useState<string>('all')
   const [openId, setOpenId] = useState<string | null>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
@@ -61,7 +62,19 @@ export const TeamGridClient: React.FC<{
     return Array.from(seen, ([value, label]) => ({ value, label }))
   }, [members])
 
-  const showTabs = enableFilter && tabs.length > 1
+  const showTabs = layout === 'tabs' && tabs.length > 1
+
+  // Grouped layout: one section per group, in tab order, members preserved.
+  const groups = useMemo(
+    () =>
+      tabs
+        .map((t) => ({
+          ...t,
+          members: members.filter((m) => m.categories.some((c) => c.value === t.value)),
+        }))
+        .filter((g) => g.members.length > 0),
+    [tabs, members],
+  )
 
   const visible = useMemo(
     () =>
@@ -97,27 +110,31 @@ export const TeamGridClient: React.FC<{
 
   return (
     <>
-      {showTabs && (
-        <div className="mb-8 flex flex-wrap gap-2" role="tablist">
-          <FilterTab active={active === 'all'} label="All" onClick={() => setActive('all')} />
-          {tabs.map((t) => (
-            <FilterTab
-              active={active === t.value}
-              key={t.value}
-              label={t.label}
-              onClick={() => setActive(t.value)}
-            />
-          ))}
-        </div>
+      {layout === 'grouped' && groups.length > 0 ? (
+        groups.map((g) => (
+          <div className="mb-14 last:mb-0" key={g.value}>
+            <h3 className="mb-6 text-2xl font-semibold md:text-3xl">{g.label}</h3>
+            <Grid columns={columns} members={g.members} onOpen={open} />
+          </div>
+        ))
+      ) : (
+        <>
+          {showTabs && (
+            <div className="mb-8 flex flex-wrap gap-2" role="tablist">
+              <FilterTab active={active === 'all'} label="All" onClick={() => setActive('all')} />
+              {tabs.map((t) => (
+                <FilterTab
+                  active={active === t.value}
+                  key={t.value}
+                  label={t.label}
+                  onClick={() => setActive(t.value)}
+                />
+              ))}
+            </div>
+          )}
+          <Grid columns={columns} members={visible} onOpen={open} />
+        </>
       )}
-
-      <ul className={cn('grid grid-cols-1 gap-6', gridCols[columns] ?? gridCols['3'])}>
-        {visible.map((m) => (
-          <li key={m.id}>
-            <Card member={m} onOpen={open} />
-          </li>
-        ))}
-      </ul>
 
       {openMember && (
         <div
@@ -141,9 +158,7 @@ export const TeamGridClient: React.FC<{
             </button>
 
             <div className="flex flex-col gap-6 sm:flex-row">
-              <div className="shrink-0">
-                <Avatar member={openMember} size={120} />
-              </div>
+              <Photo className="w-full shrink-0 sm:w-40" member={openMember} />
               <div className="min-w-0">
                 <h3 className="text-2xl font-semibold">{openMember.name}</h3>
                 {openMember.jobTitle && <p className="mt-1 text-primary">{openMember.jobTitle}</p>}
@@ -156,23 +171,25 @@ export const TeamGridClient: React.FC<{
                   </p>
                 )}
                 {(openMember.email || openMember.linkedin) && (
-                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                    {openMember.email && (
-                      <a
-                        className="text-primary hover:underline"
-                        href={`mailto:${openMember.email}`}
-                      >
-                        {openMember.email}
-                      </a>
-                    )}
+                  <div className="mt-4 flex items-center gap-3.5">
                     {openMember.linkedin && (
                       <a
-                        className="text-primary hover:underline"
+                        aria-label={`${openMember.name} on LinkedIn`}
+                        className="text-content-secondary transition-colors hover:text-primary"
                         href={openMember.linkedin}
                         rel="noopener noreferrer"
                         target="_blank"
                       >
-                        LinkedIn
+                        <LinkedInIcon />
+                      </a>
+                    )}
+                    {openMember.email && (
+                      <a
+                        aria-label={`Email ${openMember.name}`}
+                        className="text-content-secondary transition-colors hover:text-primary"
+                        href={`mailto:${openMember.email}`}
+                      >
+                        <EmailIcon />
                       </a>
                     )}
                   </div>
@@ -209,21 +226,38 @@ const FilterTab: React.FC<{ active: boolean; label: string; onClick: () => void 
   </button>
 )
 
+/** A responsive card grid of members. Shared by both layouts. */
+const Grid: React.FC<{
+  columns: string
+  members: TeamMember[]
+  onOpen: (id: string, el: HTMLElement) => void
+}> = ({ columns, members, onOpen }) => (
+  <ul className={cn('grid grid-cols-1 gap-6', gridCols[columns] ?? gridCols['3'])}>
+    {members.map((m) => (
+      <li key={m.id}>
+        <Card member={m} onOpen={onOpen} />
+      </li>
+    ))}
+  </ul>
+)
+
 /**
- * One member card. Hoisted to module scope so its identity is stable across the
- * parent's re-renders (filtering / modal toggles) — otherwise cards would remount
- * and detach the button captured for focus restoration. See MediaGallery's Thumb.
+ * One member card — square headshot, name + title beneath, left-aligned (live
+ * site). The whole card opens the bio modal. Hoisted to module scope so its
+ * identity is stable across the parent's re-renders (filtering / modal toggles)
+ * — otherwise cards would remount and detach the button captured for focus
+ * restoration. See MediaGallery's Thumb.
  */
 const Card: React.FC<{
   member: TeamMember
   onOpen: (id: string, el: HTMLElement) => void
 }> = ({ member, onOpen }) => (
   <button
-    className="group flex w-full flex-col items-center rounded-lg border border-border bg-card p-5 text-center transition-colors hover:border-primary"
+    className="group flex w-full flex-col rounded-lg border border-border bg-card p-4 text-left transition-colors hover:border-primary"
     onClick={(e) => onOpen(member.id, e.currentTarget)}
     type="button"
   >
-    <Avatar member={member} size={112} />
+    <Photo className="w-full" member={member} />
     <span className="mt-4 font-semibold transition-colors group-hover:text-primary">
       {member.name}
     </span>
@@ -233,19 +267,21 @@ const Card: React.FC<{
   </button>
 )
 
-/** Headshot, or initials on a brand-tinted disc when no photo is set. */
-const Avatar: React.FC<{ member: TeamMember; size: number }> = ({ member, size }) => {
+/** Square (1:1) rounded headshot, or initials on a brand tint when no photo. */
+const Photo: React.FC<{ className?: string; member: TeamMember }> = ({ className, member }) => {
   if (member.photoSrc) {
     return (
       <span
-        className="relative block overflow-hidden rounded-full bg-surface-secondary"
-        style={{ height: size, width: size }}
+        className={cn(
+          'relative block aspect-square overflow-hidden rounded-lg bg-surface-secondary',
+          className,
+        )}
       >
         <NextImage
           alt={member.photoAlt || member.name}
           className="object-cover"
           fill
-          sizes={`${size}px`}
+          sizes="(max-width: 640px) 100vw, 320px"
           src={member.photoSrc}
         />
       </span>
@@ -254,8 +290,10 @@ const Avatar: React.FC<{ member: TeamMember; size: number }> = ({ member, size }
   return (
     <span
       aria-hidden="true"
-      className="flex items-center justify-center rounded-full bg-primary/10 font-semibold text-primary"
-      style={{ height: size, width: size, fontSize: size / 3 }}
+      className={cn(
+        'flex aspect-square items-center justify-center rounded-lg bg-primary/10 text-3xl font-semibold text-primary',
+        className,
+      )}
     >
       {initials(member.name)}
     </span>
@@ -271,5 +309,35 @@ const CloseIcon: React.FC = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+)
+
+// Social glyphs lifted verbatim from the live site (mapsnational.webflow.io) so
+// the directory's icons match the source exactly.
+const LinkedInIcon: React.FC = () => (
+  <svg
+    aria-hidden="true"
+    className="size-6"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      clipRule="evenodd"
+      d="M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3ZM8 18C8.27614 18 8.5 17.7761 8.5 17.5V10.5C8.5 10.2239 8.27614 10 8 10H6.5C6.22386 10 6 10.2239 6 10.5V17.5C6 17.7761 6.22386 18 6.5 18H8ZM7.25 9C6.42157 9 5.75 8.32843 5.75 7.5C5.75 6.67157 6.42157 6 7.25 6C8.07843 6 8.75 6.67157 8.75 7.5C8.75 8.32843 8.07843 9 7.25 9ZM17.5 18C17.7761 18 18 17.7761 18 17.5V12.9C18.0325 11.3108 16.8576 9.95452 15.28 9.76C14.177 9.65925 13.1083 10.1744 12.5 11.1V10.5C12.5 10.2239 12.2761 10 12 10H10.5C10.2239 10 10 10.2239 10 10.5V17.5C10 17.7761 10.2239 18 10.5 18H12C12.2761 18 12.5 17.7761 12.5 17.5V13.75C12.5 12.9216 13.1716 12.25 14 12.25C14.8284 12.25 15.5 12.9216 15.5 13.75V17.5C15.5 17.7761 15.7239 18 16 18H17.5Z"
+      fillRule="evenodd"
+    />
+  </svg>
+)
+
+const EmailIcon: React.FC = () => (
+  <svg
+    aria-hidden="true"
+    className="size-6"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="m22 6c0-1.1-.9-2-2-2h-16c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2zm-2 0-8 5-8-5zm0 12h-16v-10l8 5 8-5z" />
   </svg>
 )

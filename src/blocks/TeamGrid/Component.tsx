@@ -48,7 +48,7 @@ const toMember = (doc: Team): TeamMember => {
  * tabs and the modal dialog.
  */
 export const TeamGridBlock: React.FC<TeamGridBlockProps & { id?: string }> = async (props) => {
-  const { categories, columns, enableFilter, header, limit, populateBy, selectedMembers } = props
+  const { categories, columns, header, layout, limit, populateBy, selectedMembers } = props
 
   let docs: Team[] = []
 
@@ -63,7 +63,7 @@ export const TeamGridBlock: React.FC<TeamGridBlockProps & { id?: string }> = asy
       collection: 'team',
       depth: 1,
       limit: limit && limit > 0 ? limit : 0,
-      sort: 'name',
+      sort: 'order',
       ...(categoryIds.length > 0 ? { where: { categories: { in: categoryIds } } } : {}),
     })
     docs = result.docs
@@ -93,7 +93,7 @@ export const TeamGridBlock: React.FC<TeamGridBlockProps & { id?: string }> = asy
 
       <TeamGridClient
         columns={columns ?? '3'}
-        enableFilter={enableFilter ?? true}
+        layout={layout ?? 'grouped'}
         members={members}
       />
     </section>

@@ -81,13 +81,14 @@ export const teamGridGallery: GalleryBlock<TeamGridBlockProps> = {
     'A filterable directory of people from the Team collection — card grid with a per-member bio modal. On a real page it queries the collection; here it renders a fixed set of sample members.',
   variants: [
     {
-      name: 'Filterable grid',
-      description: 'Three columns with the group filter tabs (board / advisory / state committees).',
+      name: 'Grouped sections',
+      description:
+        'A labelled section per group (board / advisory / state committees), all visible — the live-site layout.',
       props: {
         blockType: 'teamGrid',
         populateBy: 'selection',
         columns: '3',
-        enableFilter: true,
+        layout: 'grouped',
         header: {
           enableHeader: true,
           eyebrow: 'Our people',
@@ -98,13 +99,13 @@ export const teamGridGallery: GalleryBlock<TeamGridBlockProps> = {
       },
     },
     {
-      name: 'No filter, four columns',
-      description: 'Compact four-column grid with the filter bar hidden.',
+      name: 'Filter tabs',
+      description: 'One four-column grid with the group filter tab bar.',
       props: {
         blockType: 'teamGrid',
         populateBy: 'selection',
         columns: '4',
-        enableFilter: false,
+        layout: 'tabs',
         selectedMembers: members,
       },
     },

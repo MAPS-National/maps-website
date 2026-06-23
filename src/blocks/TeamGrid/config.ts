@@ -88,14 +88,20 @@ export const TeamGrid: Block = {
           ],
         },
         {
-          name: 'enableFilter',
-          type: 'checkbox',
-          defaultValue: true,
-          label: 'Show category filter',
+          name: 'layout',
+          type: 'select',
+          defaultValue: 'grouped',
+          label: 'Layout',
+          required: true,
           admin: {
             width: '50%',
-            description: 'Adds a tab bar that filters the grid by group (board, advisory, …).',
+            description:
+              'Grouped: a labelled section per group (board, advisory, …), all visible. Tabs: one grid with a category filter bar.',
           },
+          options: [
+            { label: 'Grouped sections', value: 'grouped' },
+            { label: 'Filter tabs', value: 'tabs' },
+          ],
         },
       ],
     },
