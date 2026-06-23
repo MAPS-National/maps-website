@@ -1,5 +1,6 @@
 import type { Block } from 'payload'
 
+import { AcademyVideos } from './AcademyVideos/config'
 import { Archive } from './ArchiveBlock/config'
 import { CallToAction } from './CallToAction/config'
 import { CardGrid } from './CardGrid/config'
@@ -10,10 +11,12 @@ import { FAQ } from './FAQ/config'
 import { FeatureSplit } from './FeatureSplit/config'
 import { FormBlock } from './Form/config'
 import { LogoStrip } from './LogoStrip/config'
+import { MapLocationCards } from './MapLocationCards/config'
 import { MediaBlock } from './MediaBlock/config'
 import { MediaGallery } from './MediaGallery/config'
 import { PricingTiers } from './PricingTiers/config'
 import { Team } from './Team/config'
+import { Testimonials } from './Testimonials/config'
 import { Timeline } from './Timeline/config'
 
 /**
@@ -42,4 +45,7 @@ export const layoutBlocks: Block[] = [
   ComparisonTable,
   ContactDetails,
   Team,
+  Testimonials,
+  AcademyVideos,
+  MapLocationCards,
 ]

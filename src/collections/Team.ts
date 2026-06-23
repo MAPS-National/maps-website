@@ -37,6 +37,7 @@ export const Team: CollectionConfig<'team'> = {
       name: 'name',
       type: 'text',
       required: true,
+      maxLength: 256, // Webflow "Name" PlainText limit (#104)
     },
     {
       type: 'row',

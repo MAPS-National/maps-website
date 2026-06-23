@@ -12,6 +12,8 @@
  * returns an array of page definitions. The runner upserts each by slug.
  */
 
+import 'dotenv/config'
+
 import configPromise from '@payload-config'
 import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
 import type { Payload } from 'payload'
@@ -134,10 +136,152 @@ const aboutUsSlice: PageSlice = async (payload) => {
 }
 
 // ---------------------------------------------------------------------------
+// Slice: Phase 4 block showcase (epic #64 — #71 / #72 / #73 page placement)
+//
+// The Testimonials and AcademyVideos collections are empty until the Phase 5
+// import, so this slice first seeds a little sample data (idempotent by slug —
+// #71 ships on hand-entered/seed data) and then places all three Phase 4 blocks
+// on one published page. Full per-page placement is Phase 6 (epic #66); this
+// just satisfies the "placed on at least one Page" acceptance for the blocks.
+
+const quote = (value: string) => richText(paragraph(value))
+
+const upsertBySlug = async (
+  payload: Payload,
+  collection: 'testimonials' | 'academy-videos' | 'video-categories',
+  slug: string,
+  data: Record<string, unknown>,
+): Promise<number> => {
+  const context = { disableRevalidate: true }
+  const existing = await payload.find({
+    collection,
+    where: { slug: { equals: slug } },
+    limit: 1,
+    depth: 0,
+  })
+  const payload_ = { ...data, slug } as never
+  if (existing.docs[0]) {
+    await payload.update({ collection, id: existing.docs[0].id, data: payload_, context })
+    return existing.docs[0].id as number
+  }
+  const created = await payload.create({ collection, data: payload_, context })
+  return created.id as number
+}
+
+const phase4ShowcaseSlice: PageSlice = async (payload) => {
+  // Testimonials — a mix of both types so the block's type filter has something
+  // to scope.
+  await upsertBySlug(payload, 'testimonials', 'amina-r', {
+    author: 'Amina R.',
+    role: 'Program graduate',
+    type: 'programs',
+    quote: quote(
+      'The MAPS Academy gave me a roadmap into public service I didn’t know existed — and the network to act on it.',
+    ),
+  })
+  await upsertBySlug(payload, 'testimonials', 'yusuf-k', {
+    author: 'Yusuf K.',
+    role: 'Federal fellow',
+    type: 'career',
+    quote: quote(
+      'Help reconstructing my resume was the difference between an interview and a rejection. I start at the agency next month.',
+    ),
+  })
+  await upsertBySlug(payload, 'testimonials', 'layla-h', {
+    author: 'Layla H.',
+    role: 'Policy analyst',
+    type: 'career',
+    quote: quote('I came in unsure how to translate my background into a government role. I left with a plan and three referrals.'),
+  })
+
+  // Academy videos under two categories.
+  const fundamentals = await upsertBySlug(payload, 'video-categories', 'fundamentals', {
+    title: 'Fundamentals & Career Entry',
+    order: 0,
+  })
+  const pathways = await upsertBySlug(payload, 'video-categories', 'pathways', {
+    title: 'Executive & Senior Pathways',
+    order: 1,
+  })
+  await upsertBySlug(payload, 'academy-videos', 'cfr-fellowship-info-session', {
+    title: 'Pipelines into Foreign Policy — CFR Fellowship & Term Member Programs',
+    videoUrl: 'https://www.youtube.com/watch?v=9brMSH0HuBc',
+    description: 'An info session on the Council on Foreign Relations fellowship and term-member tracks.',
+    categories: [pathways],
+    order: 0,
+  })
+  await upsertBySlug(payload, 'academy-videos', 'breaking-into-public-service', {
+    title: 'Breaking into Public Service: Where to Start',
+    videoUrl: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+    description: 'The entry points, timelines, and first moves for a public-service career.',
+    categories: [fundamentals],
+    order: 1,
+  })
+
+  return [
+    {
+      slug: 'phase-4-blocks',
+      title: 'Phase 4 — Block Showcase',
+      _status: 'published',
+      hero: {
+        type: 'lowImpact',
+        eyebrow: 'Internal',
+        richText: richText(
+          heading('Phase 4 — Block Showcase'),
+          paragraph(
+            'Live placement of the Phase 4 collection-backed blocks: testimonials, academy videos, and map + location cards.',
+          ),
+        ),
+      },
+      layout: [
+        {
+          blockType: 'testimonials',
+          variant: 'grid',
+          type: 'all',
+          populateBy: 'collection',
+          limit: 0,
+          eyebrow: 'In their words',
+          heading: 'What our community says',
+        },
+        {
+          blockType: 'academyVideos',
+          populateBy: 'collection',
+          limit: 0,
+          eyebrow: 'MAPS Academy',
+          heading: 'Watch & learn',
+        },
+        {
+          blockType: 'mapLocationCards',
+          enableMap: true,
+          heading: 'Our chapters',
+          mapQuery: 'Washington, DC',
+          locations: [
+            {
+              name: 'MAPS National',
+              address: '1100 13th St NW\nWashington, DC 20005',
+              phone: '(202) 555-0142',
+              email: 'hello@example.org',
+              linkLabel: 'Get directions',
+              linkUrl: 'https://maps.google.com',
+            },
+            {
+              name: 'MAPS New York',
+              address: '120 Broadway\nNew York, NY 10271',
+              email: 'ny@example.org',
+            },
+          ],
+        },
+      ],
+    },
+  ] as unknown as PageData[]
+}
+
+// ---------------------------------------------------------------------------
 // Registry — add new slices here
 
 const PAGE_SLICES: PageSlice[] = [
   aboutUsSlice,
+  phase4ShowcaseSlice,
   // future page slices register here
 ]
 
