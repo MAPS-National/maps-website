@@ -27,6 +27,8 @@ The Next.js + Payload application lives at the **repository root** — `package.
 
 Requires a local PostgreSQL instance; connection via `DATABASE_URL` in `.env`. The Postgres adapter runs with `push: true` in development (schema auto-syncs, no migrations needed); use migrations (`payload migrate:create` / `migrate`) for production. Seed the DB from the admin panel's "seed database" button (destructive — drops and repopulates).
 
+**Cross-branch schema drift (dev gotcha).** With `push: true` and one shared dev DB, switching between feature branches that each add fields/blocks accumulates columns/tables in the DB that the current branch's config doesn't define. When a new block introduces a table while an old branch's table is now orphaned, drizzle-kit can't tell create from rename and **prompts interactively** ("Is X created or renamed from another table?", or a data-loss y/N). The headless dev server (Claude Preview) has no TTY to answer, so it **hangs holding the DB** — every DB-backed route (`/`, `/api/*`) stalls for tens of seconds while DB-free routes (the `/design-system/blocks` showroom) stay fast. That symptom = schema-push prompt, not slow rendering. Keep `master` ⊇ the dev DB schema: **merge block PRs promptly** (or build one block per branch and merge before the next) so the schema never diverges. The preview window auto-loads `/`, so a stalled `/` freezes it (and screenshots time out).
+
 ## Architecture
 
 This is the Payload Website Template: **one Next.js app serves both the public site and the Payload admin + API**, split by route groups under `src/app/`:
@@ -36,7 +38,15 @@ This is the Payload Website Template: **one Next.js app serves both the public s
 
 **Payload config (`src/payload.config.ts`) is the backbone.** It wires the Postgres adapter, collections (`Pages`, `Posts`, `Media`, `Categories`, `Users`), globals (`Header`, `Footer`), the Lexical editor, and plugins (`src/plugins/index.ts`: SEO, search, redirects, form-builder, nested-docs, plus revalidation/redirect hooks).
 
-**Layout builder.** Pages and Posts are composed of **blocks** (`src/blocks/`) and **heros** (`src/heros/`), rendered by `RenderBlocks` / `RenderHero`. Each block colocates its Payload field schema (`config.ts`) with its React component (`Component.tsx`). To add a block: define its config, add it to the collection's `blocks` array, and handle it in `RenderBlocks`.
+**Layout builder.** Pages and Posts are composed of **blocks** (`src/blocks/`) and **heros** (`src/heros/`), rendered by `RenderBlocks` / `RenderHero`. Each block colocates its Payload field schema (`config.ts`) with its React component (`Component.tsx`).
+
+Blocks use a **two-registry split**, and both must be updated to add a block:
+- `src/blocks/index.ts` exports `layoutBlocks` (field configs only) — collections consume this for their `layout` field.
+- `src/blocks/blockComponents.ts` maps each config's `slug` → React component — `RenderBlocks` reads this map (there is no hand-edited switch).
+
+They are kept separate **on purpose**: `index.ts` must never import React components, or client-only deps (`next/image`, `@payloadcms/ui`) get pulled into the Payload config graph and break `generate:types`. So: a server-rendered block can `import` the config but not the component into config-side code. To add a block — write `config.ts` + `Component.tsx`, register the config in `index.ts` and the component in `blockComponents.ts`, then run `generate:types`. A block that needs client interactivity (state, listeners) keeps a `'use client'` child component the server `Component.tsx` renders (see `MediaGallery`), since the config graph stays server-only.
+
+**Blocks gallery (showroom).** `/design-system/blocks` is an internal, noindexed catalog that renders every block and hero with sample data in both themes, derived from the render registry. Each block colocates a `gallery.ts` (title, category, ordered `variants` of sample props) registered in `src/blocks/gallery.ts`; heros do the same in `src/heros/gallery.ts`. Detail routes (`[slug]/`) toggle variants client-side. Add a `gallery.ts` when you add a block — a registered block with none still appears as a "no example yet" stub.
 
 **Generated files — do not hand-edit:**
 - `src/payload-types.ts` — regenerate with `generate:types` after config changes.
@@ -48,7 +58,7 @@ This is the Payload Website Template: **one Next.js app serves both the public s
 
 Phase 3 of the OSS migration runbook: the repeatable contract for turning the old Webflow/Relume site into native Payload blocks. Source sections live in `migration/_extracted/` (the gitignored Webflow export, Client-First/Relume class naming). The canonical, de-duplicated list of what to build is the **block catalog** (`docs/migration/block-catalog.md`) — **port against the catalog, not page-by-page.**
 
-**Input → output contract.** One catalog block → one native Payload block: a colocated `config.ts` (field schema) + `Component.tsx` (React) matching the existing `src/blocks/*` shape. Register it — add to the collection's `blocks` array, handle it in `RenderBlocks` — then run `npm run generate:types` and `npm run generate:importmap`.
+**Input → output contract.** One catalog block → one native Payload block: a colocated `config.ts` (field schema) + `Component.tsx` (React) matching the existing `src/blocks/*` shape, plus a `gallery.ts` for the showroom. Register it in both `src/blocks/index.ts` and `src/blocks/blockComponents.ts` (see Layout builder), then run `npm run generate:types`. `generate:importmap` only changes when a block adds a custom **admin** component — for plain field/render blocks it reports "No new imports"; revert its spurious CRLF-only diff if it churns. Use real brand assets copied into tracked `public/` (e.g. `public/gallery/`) — `migration/` is gitignored, so anything referenced from it won't survive a clean checkout.
 
 **Classify every needed block (the catalog does this up front):**
 1. **Port** — a Relume source section exists → translate its markup/styles into a block, mapping styles to brand tokens.
