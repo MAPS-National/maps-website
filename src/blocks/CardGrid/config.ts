@@ -114,7 +114,7 @@ export const CardGrid: Block = {
           type: 'upload',
           relationTo: 'media',
           admin: {
-            condition: (_, __, { blockData } = {}) => blockData?.mediaType === 'icon',
+            condition: (_, __, { blockData }) => blockData?.mediaType === 'icon',
           },
         },
         {
@@ -122,7 +122,7 @@ export const CardGrid: Block = {
           type: 'upload',
           relationTo: 'media',
           admin: {
-            condition: (_, __, { blockData } = {}) => blockData?.mediaType === 'image',
+            condition: (_, __, { blockData }) => blockData?.mediaType === 'image',
           },
         },
         {
