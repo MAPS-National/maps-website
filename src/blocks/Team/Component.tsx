@@ -2,20 +2,19 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 
-import type { Team, TeamCategory, TeamGridBlock as TeamGridBlockProps } from '@/payload-types'
+import type { Team, TeamCategory, TeamBlock as TeamBlockProps } from '@/payload-types'
 
 import RichText from '@/components/RichText'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
-import { TeamGridClient, type TeamMember } from './TeamGridClient'
+import { TeamClient, type TeamMember } from './TeamClient'
 
-/** Resolve a category relationship value to a {value,label} tab descriptor. */
+/** Resolve a category relationship value to a {value,label} descriptor. */
 const toTab = (c: number | TeamCategory): { value: string; label: string } | null => {
   if (typeof c !== 'object') return null
   return { value: c.slug || String(c.id), label: c.title }
 }
 
-/** Map a resolved Team doc to the serializable descriptor the client renders. */
 const toMember = (doc: Team): TeamMember => {
   const photo = doc.photo
   const hasPhoto = photo && typeof photo === 'object' && photo.url
@@ -42,13 +41,12 @@ const toMember = (doc: Team): TeamMember => {
 }
 
 /**
- * Team directory — a filterable grid of people sourced from the Team collection,
- * each opening a bio modal. The block resolves Team docs to plain descriptors
- * here (server side) and hands them to a client component that owns the filter
- * tabs and the modal dialog.
+ * Team — an editorial directory sourced from the Team collection. The block
+ * resolves Team docs to plain descriptors here (server side) and hands them to a
+ * client component that owns the layout (grouped / tabs) and the bio modal.
  */
-export const TeamGridBlock: React.FC<TeamGridBlockProps & { id?: string }> = async (props) => {
-  const { categories, columns, header, layout, limit, populateBy, selectedMembers } = props
+export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (props) => {
+  const { categories, density, header, layout, limit, populateBy, selectedMembers } = props
 
   let docs: Team[] = []
 
@@ -76,26 +74,28 @@ export const TeamGridBlock: React.FC<TeamGridBlockProps & { id?: string }> = asy
   const anchorId = header?.anchorId || undefined
 
   return (
-    <section className="container" id={anchorId}>
-      {showHeader && (header?.eyebrow || header?.heading || header?.body) && (
-        <div className="mb-10 max-w-2xl">
-          {header?.eyebrow && (
-            <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary">
-              {header.eyebrow}
-            </p>
-          )}
-          {header?.heading && (
-            <h2 className="text-4xl font-semibold md:text-5xl">{header.heading}</h2>
-          )}
-          {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
-        </div>
-      )}
+    <section className="container py-20 md:py-28" id={anchorId}>
+      <div className="mx-auto max-w-5xl">
+        {showHeader && (header?.eyebrow || header?.heading || header?.body) && (
+          <div className="mb-12 max-w-2xl">
+            {header?.eyebrow && (
+              <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary">
+                {header.eyebrow}
+              </p>
+            )}
+            {header?.heading && (
+              <h2 className="font-serif text-4xl font-semibold md:text-5xl">{header.heading}</h2>
+            )}
+            {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
+          </div>
+        )}
 
-      <TeamGridClient
-        columns={columns ?? '3'}
-        layout={layout ?? 'grouped'}
-        members={members}
-      />
+        <TeamClient
+          density={density ?? 'medium'}
+          layout={layout ?? 'grouped'}
+          members={members}
+        />
+      </div>
     </section>
   )
 }

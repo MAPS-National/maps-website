@@ -7,15 +7,13 @@ const introEditor = lexicalEditor({
 })
 
 /**
- * Team grid — renders the Team collection as a filterable card grid with a
- * per-member bio modal. On a real page it queries the `team` collection
- * (optionally limited); a curated selection mode lets an editor pin specific
- * people (and lets the showroom render sample members without a DB round-trip),
- * mirroring the Archive block.
+ * Team — an editorial directory of the Team collection: chromeless circular
+ * headshots floating on the page, each opening a bio modal. Two layouts: grouped
+ * (a labelled section per category) or tabs (one grid with a category filter bar).
  */
-export const TeamGrid: Block = {
-  slug: 'teamGrid',
-  interfaceName: 'TeamGridBlock',
+export const Team: Block = {
+  slug: 'team',
+  interfaceName: 'TeamBlock',
   fields: [
     {
       name: 'header',
@@ -75,19 +73,6 @@ export const TeamGrid: Block = {
       type: 'row',
       fields: [
         {
-          name: 'columns',
-          type: 'select',
-          defaultValue: '3',
-          label: 'Columns',
-          required: true,
-          admin: { width: '50%' },
-          options: [
-            { label: 'Two', value: '2' },
-            { label: 'Three', value: '3' },
-            { label: 'Four', value: '4' },
-          ],
-        },
-        {
           name: 'layout',
           type: 'select',
           defaultValue: 'grouped',
@@ -96,11 +81,28 @@ export const TeamGrid: Block = {
           admin: {
             width: '50%',
             description:
-              'Grouped: a labelled section per group (board, advisory, …), all visible. Tabs: one grid with a category filter bar.',
+              'Grouped: a labelled section per category, all visible. Tabs: one grid with a category filter bar.',
           },
           options: [
             { label: 'Grouped sections', value: 'grouped' },
             { label: 'Filter tabs', value: 'tabs' },
+          ],
+        },
+        {
+          name: 'density',
+          type: 'select',
+          defaultValue: 'medium',
+          label: 'Density',
+          required: true,
+          admin: {
+            width: '50%',
+            description:
+              'People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk.',
+          },
+          options: [
+            { label: 'Airy — boards & leadership', value: 'airy' },
+            { label: 'Medium — general team page', value: 'medium' },
+            { label: 'Compact — large committees', value: 'compact' },
           ],
         },
       ],
@@ -148,7 +150,7 @@ export const TeamGrid: Block = {
     },
   ],
   labels: {
-    plural: 'Team Grids',
-    singular: 'Team Grid',
+    plural: 'Team',
+    singular: 'Team',
   },
 }

@@ -26,8 +26,8 @@ import { MediaGallery as MediaGalleryConfig } from './MediaGallery/config'
 import { MediaGalleryBlock } from './MediaGallery/Component'
 import { PricingTiers } from './PricingTiers/config'
 import { PricingTiersBlock } from './PricingTiers/Component'
-import { TeamGrid } from './TeamGrid/config'
-import { TeamGridBlock } from './TeamGrid/Component'
+import { Team } from './Team/config'
+import { TeamBlock } from './Team/Component'
 import { Timeline } from './Timeline/config'
 import { TimelineBlock } from './Timeline/Component'
 
@@ -59,5 +59,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [Timeline.slug]: TimelineBlock,
   [ComparisonTable.slug]: ComparisonTableBlock,
   [ContactDetails.slug]: ContactDetailsBlock,
-  [TeamGrid.slug]: TeamGridBlock,
+  [Team.slug]: TeamBlock,
 }

@@ -1,9 +1,9 @@
-import type { Media, Team, TeamCategory, TeamGridBlock as TeamGridBlockProps } from '@/payload-types'
+import type { Media, Team, TeamCategory, TeamBlock as TeamBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
 import { prose } from '@/blocks/gallery-helpers'
 
-// Mirror the Webflow Team Categories the directory filters on.
+// Mirror the Webflow Team Categories the directory groups/filters on.
 const cat = (title: string, slug: string): TeamCategory =>
   ({ id: slug, title, slug }) as unknown as TeamCategory
 
@@ -36,10 +36,10 @@ const portrait = (file: string, name: string): Media => {
   } as unknown as Media
 }
 
-// The card + modal read name/job title/categories/photo/bio; build just those and
-// present them as Team docs. Selection mode avoids a DB round-trip here. Contact
-// fields are varied (some both, some one, some none) to exercise the conditional
-// LinkedIn/email icons. Names/photos are real members; titles/groups are demo.
+// The avatar + modal read name/job title/categories/photo/bio; build just those
+// and present them as Team docs. Selection mode avoids a DB round-trip here.
+// Contact fields are varied (some both, some one, some none) to exercise the
+// conditional LinkedIn/email icons. Names/photos are real members; titles are demo.
 const member = (
   name: string,
   jobTitle: string,
@@ -102,39 +102,56 @@ const members: Team[] = [
   member('Zunera Ahmed', 'Committee Member', [txState], 'zunera-ahmed.png'),
 ]
 
-export const teamGridGallery: GalleryBlock<TeamGridBlockProps> = {
-  slug: 'teamGrid',
-  title: 'Team Grid',
+const groupedHeader = {
+  enableHeader: true,
+  eyebrow: 'Our people',
+  heading: 'Leadership & committees',
+  body: prose('The board, advisors, and state directors behind the network.'),
+}
+
+export const teamGallery: GalleryBlock<TeamBlockProps> = {
+  slug: 'team',
+  title: 'Team',
   category: 'data',
   description:
-    'A filterable directory of people from the Team collection — card grid with a per-member bio modal. On a real page it queries the collection; here it renders a fixed set of sample members.',
+    'An editorial directory of the Team collection — chromeless circular portraits with serif names, each opening a bio modal. Grouped into labelled category sections, or one grid with a category filter bar. On a real page it queries the collection; here it renders a fixed set of sample members.',
   variants: [
     {
-      name: 'Grouped sections',
+      name: 'Grouped — medium',
       description:
-        'A labelled section per group (board / advisory / state committees), all visible — the live-site layout.',
+        'Default. A labelled section per group, all visible. Typical about-us with several committees (~15–25 people).',
       props: {
-        blockType: 'teamGrid',
+        blockType: 'team',
         populateBy: 'selection',
-        columns: '4',
         layout: 'grouped',
-        header: {
-          enableHeader: true,
-          eyebrow: 'Our people',
-          heading: 'Leadership & committees',
-          body: prose('The board, advisors, and state directors behind the network.'),
-        },
+        density: 'medium',
+        header: groupedHeader,
+        selectedMembers: members,
+      },
+    },
+    {
+      name: 'Grouped — airy',
+      description:
+        'Fewer per row, more whitespace — for a board, exec team, or single-group page where each person carries weight.',
+      props: {
+        blockType: 'team',
+        populateBy: 'selection',
+        layout: 'grouped',
+        density: 'airy',
+        header: { ...groupedHeader, eyebrow: 'Our board', heading: 'Board of Directors' },
         selectedMembers: members,
       },
     },
     {
       name: 'Filter tabs',
-      description: 'One four-column grid with the group filter tab bar.',
+      description:
+        'One grid with a category filter bar instead of stacked sections — for pages that prefer filtering to scrolling.',
       props: {
-        blockType: 'teamGrid',
+        blockType: 'team',
         populateBy: 'selection',
-        columns: '4',
         layout: 'tabs',
+        density: 'compact',
+        header: groupedHeader,
         selectedMembers: members,
       },
     },

@@ -241,7 +241,7 @@ export interface Page {
     | TimelineBlock
     | ComparisonTableBlock
     | ContactDetailsBlock
-    | TeamGridBlock
+    | TeamBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1377,9 +1377,9 @@ export interface ContactDetailsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TeamGridBlock".
+ * via the `definition` "TeamBlock".
  */
-export interface TeamGridBlock {
+export interface TeamBlock {
   header?: {
     enableHeader?: boolean | null;
     eyebrow?: string | null;
@@ -1404,11 +1404,14 @@ export interface TeamGridBlock {
      */
     anchorId?: string | null;
   };
-  columns: '2' | '3' | '4';
   /**
-   * Grouped: a labelled section per group (board, advisory, …), all visible. Tabs: one grid with a category filter bar.
+   * Grouped: a labelled section per category, all visible. Tabs: one grid with a category filter bar.
    */
   layout: 'grouped' | 'tabs';
+  /**
+   * People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk.
+   */
+  density: 'airy' | 'medium' | 'compact';
   populateBy?: ('collection' | 'selection') | null;
   /**
    * Leave empty to show every group.
@@ -1421,7 +1424,7 @@ export interface TeamGridBlock {
   selectedMembers?: (number | Team)[] | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'teamGrid';
+  blockType: 'team';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1840,7 +1843,7 @@ export interface PagesSelect<T extends boolean = true> {
         timeline?: T | TimelineBlockSelect<T>;
         comparisonTable?: T | ComparisonTableBlockSelect<T>;
         contactDetails?: T | ContactDetailsBlockSelect<T>;
-        teamGrid?: T | TeamGridBlockSelect<T>;
+        team?: T | TeamBlockSelect<T>;
       };
   meta?:
     | T
@@ -2236,9 +2239,9 @@ export interface ContactDetailsBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TeamGridBlock_select".
+ * via the `definition` "TeamBlock_select".
  */
-export interface TeamGridBlockSelect<T extends boolean = true> {
+export interface TeamBlockSelect<T extends boolean = true> {
   header?:
     | T
     | {
@@ -2248,8 +2251,8 @@ export interface TeamGridBlockSelect<T extends boolean = true> {
         body?: T;
         anchorId?: T;
       };
-  columns?: T;
   layout?: T;
+  density?: T;
   populateBy?: T;
   categories?: T;
   limit?: T;
