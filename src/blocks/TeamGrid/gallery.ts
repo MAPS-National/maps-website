@@ -1,7 +1,7 @@
-import type { Team, TeamCategory, TeamGridBlock as TeamGridBlockProps } from '@/payload-types'
+import type { Media, Team, TeamCategory, TeamGridBlock as TeamGridBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
-import { prose, sampleNetworking, sampleSpeaker, sampleSummit } from '@/blocks/gallery-helpers'
+import { prose } from '@/blocks/gallery-helpers'
 
 // Mirror the Webflow Team Categories the directory filters on.
 const cat = (title: string, slug: string): TeamCategory =>
@@ -12,13 +12,39 @@ const advisory = cat('Advisory Council', 'advisory-council')
 const nyState = cat('MAPS NY', 'new-york-state-committee')
 const txState = cat('MAPS TX', 'maps-texas-state-committee')
 
-// The card + modal read name/job titles/categories/photo/bio; build just those
-// and present them as Team docs. Selection mode avoids a DB round-trip here.
-const mockMember = (
+const MIME: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+}
+
+// Real portrait headshots, copied into tracked public/import/team by the Webflow
+// importer — individual portraits so the showroom reads like a real directory.
+const portrait = (file: string, name: string): Media => {
+  const ext = file.split('.').pop()?.toLowerCase() ?? 'jpg'
+  return {
+    id: file,
+    alt: `Portrait of ${name}`,
+    url: `/import/team/${file}`,
+    width: 600,
+    height: 600,
+    mimeType: MIME[ext] ?? 'image/jpeg',
+    filename: file,
+    updatedAt: '2026-06-23T00:00:00.000Z',
+    createdAt: '2026-06-23T00:00:00.000Z',
+  } as unknown as Media
+}
+
+// The card + modal read name/job title/categories/photo/bio; build just those and
+// present them as Team docs. Selection mode avoids a DB round-trip here. Contact
+// fields are varied (some both, some one, some none) to exercise the conditional
+// LinkedIn/email icons. Names/photos are real members; titles/groups are demo.
+const member = (
   name: string,
   jobTitle: string,
   categories: TeamCategory[],
-  bio: string,
+  file: string,
   extra: Partial<Team> = {},
 ): Team =>
   ({
@@ -26,51 +52,54 @@ const mockMember = (
     name,
     jobTitle,
     categories,
-    bio: prose(bio),
+    photo: portrait(file, name),
+    bio: prose(`${name} serves with MAPS National, supporting Muslim Americans across public service.`),
     ...extra,
   }) as unknown as Team
 
 const members: Team[] = [
-  mockMember(
-    'Aisha Rahman',
-    'Board Chair',
-    [board],
-    'Aisha has spent two decades in public service, leading civic-engagement initiatives across federal and state agencies.',
-    { photo: sampleSpeaker, email: 'aisha@example.org', linkedin: 'https://linkedin.com' },
-  ),
-  mockMember(
-    'Omar Haddad',
-    'Outreach Director',
-    [board],
-    'Omar advises on policy and partnerships, with a focus on building coalitions among public-sector professionals.',
-    { photo: sampleSummit },
-  ),
-  mockMember(
-    'Layla Nasser',
-    'Advisory Council',
-    [advisory],
-    'Layla brings legal and regulatory expertise from a career in administrative law.',
-    { photo: sampleNetworking },
-  ),
-  mockMember(
-    'Yusuf Karim',
-    'Senior Advisor',
-    [advisory],
-    'Yusuf mentors emerging public servants through the network’s professional-development programs.',
-  ),
-  mockMember(
-    'Fatima Ali',
-    'President, MAPS New York',
-    [nyState],
-    'Fatima leads the New York state committee, organizing local chapters and member events.',
-    { jobTitleSecondary: 'State Committee President', photo: sampleSpeaker },
-  ),
-  mockMember(
-    'Bilal Shah',
-    'President, MAPS Texas',
-    [txState],
-    'Bilal coordinates the Texas committee and its outreach to municipal employees.',
-  ),
+  member('Hon. Asim Rehman', 'Board Chair', [board], 'hon-asim-rehman.webp', {
+    email: 'asim@example.org',
+    linkedin: 'https://www.linkedin.com',
+  }),
+  member('Fatema Z. Sumar', 'Vice Chair', [board], 'fatema-z-sumar.png', {
+    linkedin: 'https://www.linkedin.com',
+  }),
+  member('Yusufi Vali', 'Treasurer', [board], 'yusufi-vali.png'),
+  member('Dr. Hashima Hasan', 'Secretary', [board], 'dr-hashima-hasan.png', {
+    email: 'hashima@example.org',
+  }),
+  member('Hasan Shanawani', 'Director', [board], 'hasan-shanawani.jpg', {
+    linkedin: 'https://www.linkedin.com',
+  }),
+  member('Syra Madad', 'Senior Advisor', [advisory], 'syra-madad.png', {
+    email: 'syra@example.org',
+    linkedin: 'https://www.linkedin.com',
+  }),
+  member('Fatiha Ainane', 'Advisor', [advisory], 'fatiha-ainane.webp'),
+  member('Ahmad Maaty', 'Advisor', [advisory], 'ahmad-maaty.png', {
+    linkedin: 'https://www.linkedin.com',
+  }),
+  member('Madiha Zuberi', 'Advisor', [advisory], 'madiha-zuberi.webp'),
+  member('Omar Aswad', 'Advisor', [advisory], 'omar-aswad.webp', {
+    email: 'omar@example.org',
+  }),
+  member('Hesham El-Meligy', 'President, MAPS New York', [nyState], 'hesham-el-meligy.png', {
+    linkedin: 'https://www.linkedin.com',
+  }),
+  member('Duriba Khan', 'Vice President', [nyState], 'duriba-khan.png'),
+  member('Ayyan S. Zubair', 'Committee Member', [nyState], 'ayyan-s-zubair.png', {
+    email: 'ayyan@example.org',
+  }),
+  member('Nancy Moemen', 'Committee Member', [nyState], 'nancy-moemen.png'),
+  member('Basem Hassan', 'President, MAPS Texas', [txState], 'basem-hassan.png', {
+    linkedin: 'https://www.linkedin.com',
+  }),
+  member('Saira Amar', 'Vice President', [txState], 'saira-amar.png', {
+    email: 'saira@example.org',
+  }),
+  member('Tamim Chowdhury', 'Committee Member', [txState], 'tamim-chowdhury.png'),
+  member('Zunera Ahmed', 'Committee Member', [txState], 'zunera-ahmed.png'),
 ]
 
 export const teamGridGallery: GalleryBlock<TeamGridBlockProps> = {
