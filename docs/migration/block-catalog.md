@@ -15,6 +15,8 @@ The big finding: the same intent is rendered under many different Webflow class 
 
 ## 1. New blocks to build (port)
 
+> **Build status (2026-06-23).** 9 of these 11 are shipped as native blocks on `master`: **CardGrid, FeatureSplit, FAQ, LogoStrip, Gallery** (shipped as `MediaGallery` — renamed to avoid colliding with the blocks-gallery showroom), **PricingTiers, ComparisonTable, Timeline** (built vertical, not horizontal), **ContactDetails**. Remaining: **Testimonials** (blocked — needs the Testimonials collection in §4 first) and **MapLocationCards** (blocked — needs a Google Maps API key). Each ships with a colocated `gallery.ts` and appears in `/design-system/blocks`.
+
 | Block | Intent | Source classes (deduped) | Pages | Key fields / variants |
 |---|---|---|---|---|
 | **CardGrid** ⭐ | feature-grid / resource cards / icon steps | `membership_grid-wrapper`, `home_features-list-1`, `states_layout-component`, `layout_list`, `career_layout-component`, `layout311_list` | index, partners, programs (A), members (5), portal | `items[]` (media, heading, body, `buttons[]`, `requiredPlans[]`), `mediaType` (icon/image/none), `columns`. **Highest reuse.** |
@@ -43,7 +45,7 @@ Every page intro maps onto an **existing hero**; none needs a new component. The
 | **MediumImpact** (split text + side image) | donate, join, portal | donate, join, members/portal |
 | **LowImpact** (page-title header) ⭐ | interior page titles | about-us/* (6), programs A (3), members content pages, new-york-state |
 
-**LowImpact must absorb the variation** (see §5): optional **eyebrow/tagline**, optional **breadcrumb**, intro rich text, 0–2 CTAs.
+**LowImpact must absorb the variation** (see §5): optional **eyebrow/tagline**, optional **breadcrumb**, intro rich text, 0–2 CTAs. ✅ **Done (2026-06-23)** — the LowImpact hero now has `eyebrow`, `breadcrumbs`, and CTA fields.
 
 ---
 
