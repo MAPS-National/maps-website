@@ -87,7 +87,7 @@ export const teamGridGallery: GalleryBlock<TeamGridBlockProps> = {
       props: {
         blockType: 'teamGrid',
         populateBy: 'selection',
-        columns: '3',
+        columns: '4',
         layout: 'grouped',
         header: {
           enableHeader: true,

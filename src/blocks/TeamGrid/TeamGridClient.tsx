@@ -158,7 +158,7 @@ export const TeamGridClient: React.FC<{
             </button>
 
             <div className="flex flex-col gap-6 sm:flex-row">
-              <Photo className="w-full shrink-0 sm:w-40" member={openMember} />
+              <Photo className="w-full shrink-0 rounded-lg sm:w-40" member={openMember} />
               <div className="min-w-0">
                 <h3 className="text-2xl font-semibold">{openMember.name}</h3>
                 {openMember.jobTitle && <p className="mt-1 text-primary">{openMember.jobTitle}</p>}
@@ -253,35 +253,34 @@ const Card: React.FC<{
   onOpen: (id: string, el: HTMLElement) => void
 }> = ({ member, onOpen }) => (
   <button
-    className="group flex w-full flex-col items-center rounded-lg border border-border bg-card p-4 text-center transition-colors hover:border-primary"
+    className="group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left transition-colors hover:border-primary"
     onClick={(e) => onOpen(member.id, e.currentTarget)}
     type="button"
   >
-    <Photo className="w-full max-w-44" member={member} />
-    <span className="mt-4 font-semibold transition-colors group-hover:text-primary">
+    <Photo className="w-full" member={member} />
+    <span className="px-4 pt-4 font-semibold transition-colors group-hover:text-primary">
       {member.name}
     </span>
     {member.jobTitle && (
-      <span className="mt-0.5 text-sm text-content-secondary">{member.jobTitle}</span>
+      <span className="px-4 pb-4 pt-0.5 text-sm text-content-secondary">{member.jobTitle}</span>
     )}
+    {!member.jobTitle && <span className="pb-4" />}
   </button>
 )
 
-/** Square (1:1) rounded headshot, or initials on a brand tint when no photo. */
+/** Square (1:1) headshot, or initials on a brand tint when no photo. Rounding is
+ * left to the caller — cards clip via overflow-hidden, the modal rounds itself. */
 const Photo: React.FC<{ className?: string; member: TeamMember }> = ({ className, member }) => {
   if (member.photoSrc) {
     return (
       <span
-        className={cn(
-          'relative block aspect-square overflow-hidden rounded-lg bg-surface-secondary',
-          className,
-        )}
+        className={cn('relative block aspect-square overflow-hidden bg-surface-secondary', className)}
       >
         <NextImage
           alt={member.photoAlt || member.name}
           className="object-cover"
           fill
-          sizes="(max-width: 640px) 100vw, 320px"
+          sizes="(max-width: 640px) 50vw, 280px"
           src={member.photoSrc}
         />
       </span>
@@ -291,7 +290,7 @@ const Photo: React.FC<{ className?: string; member: TeamMember }> = ({ className
     <span
       aria-hidden="true"
       className={cn(
-        'flex aspect-square items-center justify-center rounded-lg bg-primary/10 text-3xl font-semibold text-primary',
+        'flex aspect-square items-center justify-center bg-primary/10 text-3xl font-semibold text-primary',
         className,
       )}
     >
