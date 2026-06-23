@@ -178,15 +178,28 @@ export const transforms: Record<string, TransformFactory> = {
 
       if (ctx.options.dryRun) return undefined
 
-      const alt = (options?.alt as string) || str(ctx.row['Name']) || baseName
-      const media = await ctx.payload.create({
+      // Reuse an existing Media with this filename so re-runs don't pile up
+      // duplicate uploads — filenames are derived from the (unique) row slug.
+      const existing = await ctx.payload.find({
         collection: 'media',
-        data: { alt },
-        file: { name: filename, data: buffer, mimetype: MIME[ext] || 'image/jpeg', size: buffer.length },
+        where: { filename: { equals: filename } },
+        limit: 1,
+        depth: 0,
         overrideAccess: true,
       })
-      ctx.cache.set(cacheKey, media.id)
-      return media.id
+      let id = existing.docs[0]?.id
+      if (id == null) {
+        const alt = (options?.alt as string) || str(ctx.row['Name']) || baseName
+        const media = await ctx.payload.create({
+          collection: 'media',
+          data: { alt },
+          file: { name: filename, data: buffer, mimetype: MIME[ext] || 'image/jpeg', size: buffer.length },
+          overrideAccess: true,
+        })
+        id = media.id
+      }
+      ctx.cache.set(cacheKey, id)
+      return id
     }
   },
 
