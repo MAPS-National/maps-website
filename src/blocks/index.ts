@@ -13,6 +13,7 @@ import { LogoStrip } from './LogoStrip/config'
 import { MediaBlock } from './MediaBlock/config'
 import { MediaGallery } from './MediaGallery/config'
 import { PricingTiers } from './PricingTiers/config'
+import { Team } from './Team/config'
 import { Timeline } from './Timeline/config'
 
 /**
@@ -40,4 +41,5 @@ export const layoutBlocks: Block[] = [
   Timeline,
   ComparisonTable,
   ContactDetails,
+  Team,
 ]

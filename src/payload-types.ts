@@ -241,6 +241,7 @@ export interface Page {
     | TimelineBlock
     | ComparisonTableBlock
     | ContactDetailsBlock
+    | TeamBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1376,6 +1377,57 @@ export interface ContactDetailsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamBlock".
+ */
+export interface TeamBlock {
+  header?: {
+    enableHeader?: boolean | null;
+    eyebrow?: string | null;
+    heading?: string | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Optional in-page anchor target, e.g. "team" makes the section reachable at #team. Must be unique on the page.
+     */
+    anchorId?: string | null;
+  };
+  /**
+   * Grouped: a labelled section per category, all visible. Tabs: one grid with a category filter bar.
+   */
+  layout: 'grouped' | 'tabs';
+  /**
+   * People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk.
+   */
+  density: 'airy' | 'medium' | 'compact';
+  populateBy?: ('collection' | 'selection') | null;
+  /**
+   * Leave empty to show every group.
+   */
+  categories?: (number | TeamCategory)[] | null;
+  /**
+   * 0 = show everyone.
+   */
+  limit?: number | null;
+  selectedMembers?: (number | Team)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'team';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team-categories".
  */
 export interface TeamCategory {
@@ -1791,6 +1843,7 @@ export interface PagesSelect<T extends boolean = true> {
         timeline?: T | TimelineBlockSelect<T>;
         comparisonTable?: T | ComparisonTableBlockSelect<T>;
         contactDetails?: T | ContactDetailsBlockSelect<T>;
+        team?: T | TeamBlockSelect<T>;
       };
   meta?:
     | T
@@ -2181,6 +2234,29 @@ export interface ContactDetailsBlockSelect<T extends boolean = true> {
         href?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamBlock_select".
+ */
+export interface TeamBlockSelect<T extends boolean = true> {
+  header?:
+    | T
+    | {
+        enableHeader?: T;
+        eyebrow?: T;
+        heading?: T;
+        body?: T;
+        anchorId?: T;
+      };
+  layout?: T;
+  density?: T;
+  populateBy?: T;
+  categories?: T;
+  limit?: T;
+  selectedMembers?: T;
   id?: T;
   blockName?: T;
 }

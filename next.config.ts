@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
         // (/design-system/blocks). See src/blocks/gallery-helpers.ts.
         pathname: '/gallery/**',
       },
+      {
+        // Real team portraits (importer staging) used as Team Grid gallery samples.
+        pathname: '/import/team/**',
+      },
     ],
     qualities: [100],
     remotePatterns: [
