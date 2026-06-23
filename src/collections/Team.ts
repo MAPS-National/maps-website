@@ -8,6 +8,7 @@ import {
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { legacyItemId } from '../fields/legacyItemId'
 import { slugField } from 'payload'
 
 /**
@@ -122,5 +123,6 @@ export const Team: CollectionConfig<'team'> = {
       ],
     },
     slugField(),
+    legacyItemId(),
   ],
 }
