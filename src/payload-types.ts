@@ -241,7 +241,6 @@ export interface Page {
     | TimelineBlock
     | ComparisonTableBlock
     | ContactDetailsBlock
-    | TeamGridBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1377,54 +1376,6 @@ export interface ContactDetailsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TeamGridBlock".
- */
-export interface TeamGridBlock {
-  header?: {
-    enableHeader?: boolean | null;
-    eyebrow?: string | null;
-    heading?: string | null;
-    body?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    /**
-     * Optional in-page anchor target, e.g. "team" makes the section reachable at #team. Must be unique on the page.
-     */
-    anchorId?: string | null;
-  };
-  columns: '2' | '3' | '4';
-  /**
-   * Adds a tab bar that filters the grid by group (board, advisory, …).
-   */
-  enableFilter?: boolean | null;
-  populateBy?: ('collection' | 'selection') | null;
-  /**
-   * Leave empty to show every group.
-   */
-  categories?: (number | TeamCategory)[] | null;
-  /**
-   * 0 = show everyone.
-   */
-  limit?: number | null;
-  selectedMembers?: (number | Team)[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'teamGrid';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team-categories".
  */
 export interface TeamCategory {
@@ -1439,6 +1390,10 @@ export interface TeamCategory {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Source CMS Item ID — import idempotency key. Do not edit.
+   */
+  legacyItemId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1495,6 +1450,10 @@ export interface Team {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Source CMS Item ID — import idempotency key. Do not edit.
+   */
+  legacyItemId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1832,7 +1791,6 @@ export interface PagesSelect<T extends boolean = true> {
         timeline?: T | TimelineBlockSelect<T>;
         comparisonTable?: T | ComparisonTableBlockSelect<T>;
         contactDetails?: T | ContactDetailsBlockSelect<T>;
-        teamGrid?: T | TeamGridBlockSelect<T>;
       };
   meta?:
     | T
@@ -2228,29 +2186,6 @@ export interface ContactDetailsBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TeamGridBlock_select".
- */
-export interface TeamGridBlockSelect<T extends boolean = true> {
-  header?:
-    | T
-    | {
-        enableHeader?: T;
-        eyebrow?: T;
-        heading?: T;
-        body?: T;
-        anchorId?: T;
-      };
-  columns?: T;
-  enableFilter?: T;
-  populateBy?: T;
-  categories?: T;
-  limit?: T;
-  selectedMembers?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -2403,6 +2338,7 @@ export interface TeamCategoriesSelect<T extends boolean = true> {
   order?: T;
   generateSlug?: T;
   slug?: T;
+  legacyItemId?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2423,6 +2359,7 @@ export interface TeamSelect<T extends boolean = true> {
   orderSecondary?: T;
   generateSlug?: T;
   slug?: T;
+  legacyItemId?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { legacyItemId } from '../fields/legacyItemId'
 import { slugField } from 'payload'
 
 /**
@@ -42,5 +43,6 @@ export const TeamCategories: CollectionConfig = {
     slugField({
       position: undefined,
     }),
+    legacyItemId(),
   ],
 }
