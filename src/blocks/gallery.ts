@@ -13,6 +13,7 @@ import { logoStripGallery } from './LogoStrip/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
 import { mediaGalleryGallery } from './MediaGallery/gallery'
 import { pricingTiersGallery } from './PricingTiers/gallery'
+import { teamGridGallery } from './TeamGrid/gallery'
 import { timelineGallery } from './Timeline/gallery'
 
 /**
@@ -46,4 +47,5 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   timelineGallery,
   comparisonTableGallery,
   contactDetailsGallery,
+  teamGridGallery,
 ]

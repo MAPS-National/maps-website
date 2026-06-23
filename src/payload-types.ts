@@ -71,6 +71,7 @@ export interface Config {
     posts: Post;
     media: Media;
     categories: Category;
+    team: Team;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -93,6 +94,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -237,6 +239,7 @@ export interface Page {
     | TimelineBlock
     | ComparisonTableBlock
     | ContactDetailsBlock
+    | TeamGridBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1372,6 +1375,97 @@ export interface ContactDetailsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamGridBlock".
+ */
+export interface TeamGridBlock {
+  header?: {
+    enableHeader?: boolean | null;
+    eyebrow?: string | null;
+    heading?: string | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Optional in-page anchor target, e.g. "team" makes the section reachable at #team. Must be unique on the page.
+     */
+    anchorId?: string | null;
+  };
+  columns: '2' | '3' | '4';
+  /**
+   * Adds a tab bar that filters the grid by group (board, advisory, …).
+   */
+  enableFilter?: boolean | null;
+  populateBy?: ('collection' | 'selection') | null;
+  /**
+   * Leave empty to show every group.
+   */
+  category?: ('board' | 'advisory' | 'state' | 'staff')[] | null;
+  /**
+   * 0 = show everyone.
+   */
+  limit?: number | null;
+  selectedMembers?: (number | Team)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'teamGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  /**
+   * e.g. "Board Chair", "State Director".
+   */
+  role?: string | null;
+  /**
+   * Groups the directory and drives the on-page filter.
+   */
+  category: 'board' | 'advisory' | 'state' | 'staff';
+  /**
+   * US state for a state-committee member, e.g. "New York".
+   */
+  state?: string | null;
+  photo?: (number | null) | Media;
+  /**
+   * Shown in the member detail modal.
+   */
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  email?: string | null;
+  linkedin?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1577,6 +1671,10 @@ export interface PayloadLockedDocument {
         value: number | Category;
       } | null)
     | ({
+        relationTo: 'team';
+        value: number | Team;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
@@ -1696,6 +1794,7 @@ export interface PagesSelect<T extends boolean = true> {
         timeline?: T | TimelineBlockSelect<T>;
         comparisonTable?: T | ComparisonTableBlockSelect<T>;
         contactDetails?: T | ContactDetailsBlockSelect<T>;
+        teamGrid?: T | TeamGridBlockSelect<T>;
       };
   meta?:
     | T
@@ -2091,6 +2190,29 @@ export interface ContactDetailsBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamGridBlock_select".
+ */
+export interface TeamGridBlockSelect<T extends boolean = true> {
+  header?:
+    | T
+    | {
+        enableHeader?: T;
+        eyebrow?: T;
+        heading?: T;
+        body?: T;
+        anchorId?: T;
+      };
+  columns?: T;
+  enableFilter?: T;
+  populateBy?: T;
+  category?: T;
+  limit?: T;
+  selectedMembers?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -2231,6 +2353,22 @@ export interface CategoriesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  category?: T;
+  state?: T;
+  photo?: T;
+  bio?: T;
+  email?: T;
+  linkedin?: T;
   updatedAt?: T;
   createdAt?: T;
 }
