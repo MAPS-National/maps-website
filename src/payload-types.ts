@@ -1390,6 +1390,10 @@ export interface TeamCategory {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Source CMS Item ID — import idempotency key. Do not edit.
+   */
+  legacyItemId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1446,6 +1450,10 @@ export interface Team {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Source CMS Item ID — import idempotency key. Do not edit.
+   */
+  legacyItemId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2330,6 +2338,7 @@ export interface TeamCategoriesSelect<T extends boolean = true> {
   order?: T;
   generateSlug?: T;
   slug?: T;
+  legacyItemId?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2350,6 +2359,7 @@ export interface TeamSelect<T extends boolean = true> {
   orderSecondary?: T;
   generateSlug?: T;
   slug?: T;
+  legacyItemId?: T;
   updatedAt?: T;
   createdAt?: T;
 }
