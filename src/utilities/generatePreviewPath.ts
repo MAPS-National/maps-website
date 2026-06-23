@@ -17,8 +17,10 @@ export const generatePreviewPath = ({ collection, slug }: Props) => {
     return null
   }
 
-  // Encode to support slugs with special characters
-  const encodedSlug = encodeURIComponent(slug)
+  // Encode per path segment so nested slugs (e.g. about-us/board-leadership)
+  // keep their slashes — encoding the whole slug turns "/" into "%2F" and the
+  // [...slug] catch-all can't resolve the preview the way a normal visit does.
+  const encodedSlug = slug.split('/').map(encodeURIComponent).join('/')
 
   const encodedParams = new URLSearchParams({
     path: `${collectionPrefixMap[collection]}/${encodedSlug}`,

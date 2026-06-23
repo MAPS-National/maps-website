@@ -14,6 +14,9 @@ import { authenticated } from '../access/authenticated'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Shared WebP output options applied to the original and every generated size.
+const webp = { format: 'webp' as const, options: { quality: 75 } }
+
 export const Media: CollectionConfig = {
   slug: 'media',
   folders: true,
@@ -27,7 +30,13 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      //required: true,
+      // Required so every image carries a description for screen readers + SEO.
+      // The bulk importer always supplies one (Name/Slug fallback), so enforcing
+      // this never blocks the migration.
+      required: true,
+      admin: {
+        description: 'Describe the image for screen readers and SEO. Required.',
+      },
     },
     {
       name: 'caption',
@@ -44,6 +53,9 @@ export const Media: CollectionConfig = {
     staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
+    // Re-encode the original to WebP@75 so the bulk import doesn't store large
+    // unoptimized source files. Sharp must be told per-size too (see below).
+    formatOptions: webp,
     imageSizes: [
       {
         name: 'thumbnail',
@@ -76,6 +88,8 @@ export const Media: CollectionConfig = {
         height: 630,
         crop: 'center',
       },
-    ],
+      // Payload applies formatOptions to each generated size individually, so
+      // spread the same WebP encoding onto all of them rather than repeating it.
+    ].map((size) => ({ ...size, formatOptions: webp })),
   },
 }
