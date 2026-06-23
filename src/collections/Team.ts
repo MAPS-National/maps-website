@@ -8,12 +8,14 @@ import {
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { slugField } from 'payload'
 
 /**
- * Team — the people directory behind the team-grid block. One row per person
- * (board, advisory, state committees, staff), shown as a filterable grid with a
- * per-member bio modal on the public site. Content is entered here, not ported
- * from Webflow (the export's CMS lists are empty placeholders).
+ * Team — the people directory behind the team-grid block. Schema mirrors the
+ * Webflow "Team Members" CMS collection: a primary + optional secondary job
+ * title, a headshot, contact links, a rich-text bio, and one or more Team
+ * Categories (a member can sit on several committees). `order` drives the
+ * within-group sort. Shown as a filterable grid with a per-member bio modal.
  */
 export const Team: CollectionConfig<'team'> = {
   slug: 'team',
@@ -24,59 +26,43 @@ export const Team: CollectionConfig<'team'> = {
     update: authenticated,
   },
   admin: {
-    defaultColumns: ['name', 'role', 'category', 'updatedAt'],
+    defaultColumns: ['name', 'jobTitle', 'updatedAt'],
     useAsTitle: 'name',
     group: 'Content',
   },
   defaultSort: 'name',
   fields: [
     {
-      type: 'row',
-      fields: [
-        {
-          name: 'name',
-          type: 'text',
-          required: true,
-          admin: { width: '50%' },
-        },
-        {
-          name: 'role',
-          type: 'text',
-          label: 'Role / title',
-          admin: { width: '50%', description: 'e.g. "Board Chair", "State Director".' },
-        },
-      ],
+      name: 'name',
+      type: 'text',
+      required: true,
     },
     {
       type: 'row',
       fields: [
         {
-          name: 'category',
-          type: 'select',
-          required: true,
-          defaultValue: 'board',
-          admin: {
-            width: '50%',
-            description: 'Groups the directory and drives the on-page filter.',
-          },
-          options: [
-            { label: 'Board of Directors', value: 'board' },
-            { label: 'Advisory Board', value: 'advisory' },
-            { label: 'State Committees', value: 'state' },
-            { label: 'Staff', value: 'staff' },
-          ],
+          name: 'jobTitle',
+          type: 'text',
+          label: 'Job title',
+          admin: { width: '50%', description: 'Primary role, e.g. "President, MAPS Texas".' },
         },
         {
-          name: 'state',
+          name: 'jobTitleSecondary',
           type: 'text',
-          label: 'State',
-          admin: {
-            width: '50%',
-            description: 'US state for a state-committee member, e.g. "New York".',
-            condition: (_, siblingData) => siblingData?.category === 'state',
-          },
+          label: 'Job title (secondary)',
+          admin: { width: '50%', description: 'Optional second role or affiliation.' },
         },
       ],
+    },
+    {
+      name: 'categories',
+      type: 'relationship',
+      relationTo: 'team-categories',
+      hasMany: true,
+      label: 'Team categories',
+      admin: {
+        description: 'Groups this member belongs to. Drives the on-page filter.',
+      },
     },
     {
       name: 'photo',
@@ -112,5 +98,29 @@ export const Team: CollectionConfig<'team'> = {
         },
       ],
     },
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'order',
+          type: 'number',
+          label: 'Order',
+          admin: {
+            width: '50%',
+            description: 'Within-group sort; lower numbers first.',
+          },
+        },
+        {
+          name: 'orderSecondary',
+          type: 'number',
+          label: 'Order (secondary)',
+          admin: {
+            width: '50%',
+            description: 'Tie-breaker sort for a second group.',
+          },
+        },
+      ],
+    },
+    slugField(),
   ],
 }

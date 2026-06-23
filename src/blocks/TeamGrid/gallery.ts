@@ -1,27 +1,31 @@
-import type { Team, TeamGridBlock as TeamGridBlockProps } from '@/payload-types'
+import type { Team, TeamCategory, TeamGridBlock as TeamGridBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
-import {
-  prose,
-  sampleNetworking,
-  sampleSpeaker,
-  sampleSummit,
-} from '@/blocks/gallery-helpers'
+import { prose, sampleNetworking, sampleSpeaker, sampleSummit } from '@/blocks/gallery-helpers'
 
-// The card + modal read name/role/category/state/photo/bio; build just those and
-// present them as Team docs. Selection mode avoids a DB round-trip in the gallery.
+// Mirror the Webflow Team Categories the directory filters on.
+const cat = (title: string, slug: string): TeamCategory =>
+  ({ id: slug, title, slug }) as unknown as TeamCategory
+
+const board = cat('Board of Directors', 'board-of-directors')
+const advisory = cat('Advisory Council', 'advisory-council')
+const nyState = cat('MAPS NY', 'new-york-state-committee')
+const txState = cat('MAPS TX', 'maps-texas-state-committee')
+
+// The card + modal read name/job titles/categories/photo/bio; build just those
+// and present them as Team docs. Selection mode avoids a DB round-trip here.
 const mockMember = (
   name: string,
-  role: string,
-  category: Team['category'],
+  jobTitle: string,
+  categories: TeamCategory[],
   bio: string,
   extra: Partial<Team> = {},
 ): Team =>
   ({
     id: name,
     name,
-    role,
-    category,
+    jobTitle,
+    categories,
     bio: prose(bio),
     ...extra,
   }) as unknown as Team
@@ -30,43 +34,42 @@ const members: Team[] = [
   mockMember(
     'Aisha Rahman',
     'Board Chair',
-    'board',
+    [board],
     'Aisha has spent two decades in public service, leading civic-engagement initiatives across federal and state agencies.',
     { photo: sampleSpeaker, email: 'aisha@example.org', linkedin: 'https://linkedin.com' },
   ),
   mockMember(
     'Omar Haddad',
-    'Vice Chair',
-    'board',
+    'Outreach Director',
+    [board],
     'Omar advises on policy and partnerships, with a focus on building coalitions among public-sector professionals.',
     { photo: sampleSummit },
   ),
   mockMember(
     'Layla Nasser',
-    'Advisory Board',
-    'advisory',
+    'Advisory Council',
+    [advisory],
     'Layla brings legal and regulatory expertise from a career in administrative law.',
     { photo: sampleNetworking },
   ),
   mockMember(
     'Yusuf Karim',
     'Senior Advisor',
-    'advisory',
+    [advisory],
     'Yusuf mentors emerging public servants through the network’s professional-development programs.',
   ),
   mockMember(
     'Fatima Ali',
-    'State Director',
-    'state',
+    'President, MAPS New York',
+    [nyState],
     'Fatima leads the New York state committee, organizing local chapters and member events.',
-    { state: 'New York', photo: sampleSpeaker },
+    { jobTitleSecondary: 'State Committee President', photo: sampleSpeaker },
   ),
   mockMember(
     'Bilal Shah',
-    'State Director',
-    'state',
+    'President, MAPS Texas',
+    [txState],
     'Bilal coordinates the Texas committee and its outreach to municipal employees.',
-    { state: 'Texas' },
   ),
 ]
 
@@ -79,7 +82,7 @@ export const teamGridGallery: GalleryBlock<TeamGridBlockProps> = {
   variants: [
     {
       name: 'Filterable grid',
-      description: 'Three columns with the group filter tabs (board / advisory / state).',
+      description: 'Three columns with the group filter tabs (board / advisory / state committees).',
       props: {
         blockType: 'teamGrid',
         populateBy: 'selection',

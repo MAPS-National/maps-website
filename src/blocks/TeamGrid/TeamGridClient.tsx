@@ -5,15 +5,16 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { cn } from '@/utilities/ui'
 
+/** A group a member belongs to: stable filter value + display label. */
+export type TeamTab = { value: string; label: string }
+
 export type TeamMember = {
   id: string
   name: string
-  /** Group key — 'board' | 'advisory' | 'state' | 'staff' (or any future value). */
-  category: string
-  /** Human label for the group, used by the filter tabs and the modal. */
-  categoryLabel: string
-  role?: string
-  state?: string
+  jobTitle?: string
+  jobTitleSecondary?: string
+  /** Groups this member belongs to (a member can be in several). */
+  categories: TeamTab[]
   email?: string
   linkedin?: string
   photoSrc?: string
@@ -56,14 +57,17 @@ export const TeamGridClient: React.FC<{
   // Ordered, de-duplicated groups present in the data → filter tabs.
   const tabs = useMemo(() => {
     const seen = new Map<string, string>()
-    for (const m of members) if (!seen.has(m.category)) seen.set(m.category, m.categoryLabel)
+    for (const m of members) for (const c of m.categories) if (!seen.has(c.value)) seen.set(c.value, c.label)
     return Array.from(seen, ([value, label]) => ({ value, label }))
   }, [members])
 
   const showTabs = enableFilter && tabs.length > 1
 
   const visible = useMemo(
-    () => (active === 'all' ? members : members.filter((m) => m.category === active)),
+    () =>
+      active === 'all'
+        ? members
+        : members.filter((m) => m.categories.some((c) => c.value === active)),
     [active, members],
   )
 
@@ -142,13 +146,15 @@ export const TeamGridClient: React.FC<{
               </div>
               <div className="min-w-0">
                 <h3 className="text-2xl font-semibold">{openMember.name}</h3>
-                {openMember.role && (
-                  <p className="mt-1 text-primary">{openMember.role}</p>
+                {openMember.jobTitle && <p className="mt-1 text-primary">{openMember.jobTitle}</p>}
+                {openMember.jobTitleSecondary && (
+                  <p className="text-primary">{openMember.jobTitleSecondary}</p>
                 )}
-                <p className="mt-1 text-sm text-content-secondary">
-                  {openMember.categoryLabel}
-                  {openMember.state ? ` · ${openMember.state}` : ''}
-                </p>
+                {openMember.categories.length > 0 && (
+                  <p className="mt-1 text-sm text-content-secondary">
+                    {openMember.categories.map((c) => c.label).join(' · ')}
+                  </p>
+                )}
                 {(openMember.email || openMember.linkedin) && (
                   <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
                     {openMember.email && (
@@ -221,11 +227,8 @@ const Card: React.FC<{
     <span className="mt-4 font-semibold transition-colors group-hover:text-primary">
       {member.name}
     </span>
-    {member.role && <span className="mt-0.5 text-sm text-content-secondary">{member.role}</span>}
-    {member.state && (
-      <span className="mt-0.5 text-xs uppercase tracking-wide text-content-secondary">
-        {member.state}
-      </span>
+    {member.jobTitle && (
+      <span className="mt-0.5 text-sm text-content-secondary">{member.jobTitle}</span>
     )}
   </button>
 )

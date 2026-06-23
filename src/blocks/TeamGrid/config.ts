@@ -109,20 +109,15 @@ export const TeamGrid: Block = {
       ],
     },
     {
-      name: 'category',
-      type: 'select',
-      label: 'Limit to group',
+      name: 'categories',
+      type: 'relationship',
+      relationTo: 'team-categories',
       hasMany: true,
+      label: 'Limit to groups',
       admin: {
         condition: (_, siblingData) => siblingData?.populateBy === 'collection',
         description: 'Leave empty to show every group.',
       },
-      options: [
-        { label: 'Board of Directors', value: 'board' },
-        { label: 'Advisory Board', value: 'advisory' },
-        { label: 'State Committees', value: 'state' },
-        { label: 'Staff', value: 'staff' },
-      ],
     },
     {
       name: 'limit',

@@ -71,6 +71,7 @@ export interface Config {
     posts: Post;
     media: Media;
     categories: Category;
+    'team-categories': TeamCategory;
     team: Team;
     users: User;
     redirects: Redirect;
@@ -94,6 +95,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    'team-categories': TeamCategoriesSelect<false> | TeamCategoriesSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
@@ -1411,7 +1413,7 @@ export interface TeamGridBlock {
   /**
    * Leave empty to show every group.
    */
-  category?: ('board' | 'advisory' | 'state' | 'staff')[] | null;
+  categories?: (number | TeamCategory)[] | null;
   /**
    * 0 = show everyone.
    */
@@ -1423,23 +1425,42 @@ export interface TeamGridBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-categories".
+ */
+export interface TeamCategory {
+  id: number;
+  title: string;
+  /**
+   * Lower numbers sort first on directory pages.
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team".
  */
 export interface Team {
   id: number;
   name: string;
   /**
-   * e.g. "Board Chair", "State Director".
+   * Primary role, e.g. "President, MAPS Texas".
    */
-  role?: string | null;
+  jobTitle?: string | null;
   /**
-   * Groups the directory and drives the on-page filter.
+   * Optional second role or affiliation.
    */
-  category: 'board' | 'advisory' | 'state' | 'staff';
+  jobTitleSecondary?: string | null;
   /**
-   * US state for a state-committee member, e.g. "New York".
+   * Groups this member belongs to. Drives the on-page filter.
    */
-  state?: string | null;
+  categories?: (number | TeamCategory)[] | null;
   photo?: (number | null) | Media;
   /**
    * Shown in the member detail modal.
@@ -1461,6 +1482,19 @@ export interface Team {
   } | null;
   email?: string | null;
   linkedin?: string | null;
+  /**
+   * Within-group sort; lower numbers first.
+   */
+  order?: number | null;
+  /**
+   * Tie-breaker sort for a second group.
+   */
+  orderSecondary?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -1669,6 +1703,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'team-categories';
+        value: number | TeamCategory;
       } | null)
     | ({
         relationTo: 'team';
@@ -2205,7 +2243,7 @@ export interface TeamGridBlockSelect<T extends boolean = true> {
   columns?: T;
   enableFilter?: T;
   populateBy?: T;
-  category?: T;
+  categories?: T;
   limit?: T;
   selectedMembers?: T;
   id?: T;
@@ -2358,17 +2396,33 @@ export interface CategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-categories_select".
+ */
+export interface TeamCategoriesSelect<T extends boolean = true> {
+  title?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team_select".
  */
 export interface TeamSelect<T extends boolean = true> {
   name?: T;
-  role?: T;
-  category?: T;
-  state?: T;
+  jobTitle?: T;
+  jobTitleSecondary?: T;
+  categories?: T;
   photo?: T;
   bio?: T;
   email?: T;
   linkedin?: T;
+  order?: T;
+  orderSecondary?: T;
+  generateSlug?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
