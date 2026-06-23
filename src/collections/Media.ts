@@ -27,7 +27,10 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      //required: true,
+      required: true,
+      admin: {
+        description: 'Describe the image for screen readers and SEO. Required.',
+      },
     },
     {
       name: 'caption',
