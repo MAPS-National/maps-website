@@ -1,4 +1,7 @@
+import { academyVideosImport, videoCategoriesImport } from './mappings/academy'
+import { latestUpdatesImport, updateCategoriesImport } from './mappings/posts'
 import { teamCategoriesImport, teamMembersImport } from './mappings/team'
+import { testimonialsCareerImport, testimonialsProgramsImport } from './mappings/testimonials'
 import type { CollectionImport } from './types'
 
 /**
@@ -11,4 +14,10 @@ import type { CollectionImport } from './types'
 export const importsByName: Record<string, CollectionImport> = {
   'team-categories': teamCategoriesImport,
   team: teamMembersImport,
+  'update-categories': updateCategoriesImport,
+  updates: latestUpdatesImport,
+  'testimonials-career': testimonialsCareerImport,
+  'testimonials-programs': testimonialsProgramsImport,
+  'video-categories': videoCategoriesImport,
+  'academy-videos': academyVideosImport,
 }

@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { legacyItemId } from '../fields/legacyItemId'
 import { slugField } from 'payload'
 
 export const Categories: CollectionConfig = {
@@ -24,5 +25,7 @@ export const Categories: CollectionConfig = {
     slugField({
       position: undefined,
     }),
+    // Webflow Item ID — idempotency key for the Latest Update Categories import (#75).
+    legacyItemId(),
   ],
 }

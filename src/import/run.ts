@@ -100,13 +100,17 @@ const runOne = async (
         continue
       }
 
+      // Collections like Posts/Pages run an afterChange revalidate hook that
+      // calls Next's revalidatePath — which throws outside a request context
+      // (we're a standalone CLI). The hooks honour context.disableRevalidate.
+      const context = { disableRevalidate: true }
       if (existingId != null) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await payload.update({ collection: imp.collection, id: existingId, data: finalDoc as any, overrideAccess: true })
+        await payload.update({ collection: imp.collection, id: existingId, data: finalDoc as any, overrideAccess: true, context })
         report.updated++
       } else {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await payload.create({ collection: imp.collection, data: finalDoc as any, overrideAccess: true })
+        await payload.create({ collection: imp.collection, data: finalDoc as any, overrideAccess: true, context })
         report.created++
       }
     } catch (err) {
