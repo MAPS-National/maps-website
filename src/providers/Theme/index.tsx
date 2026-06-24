@@ -48,6 +48,10 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     document.documentElement.setAttribute('data-theme', themeToSet)
+    // Syncing React state to the resolved theme once on mount, from an external
+    // store (localStorage + the pre-paint data-theme set by InitTheme). The
+    // one-shot sync is intentional and flash-free.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setThemeState(themeToSet)
   }, [])
 

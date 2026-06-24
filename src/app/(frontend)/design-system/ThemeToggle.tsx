@@ -8,7 +8,9 @@ export const ThemeToggle: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
 
   useEffect(() => {
+    // One-shot sync to the data-theme attribute (external store) on mount.
     const current = document.documentElement.getAttribute('data-theme')
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(current === 'dark' ? 'dark' : 'light')
   }, [])
 

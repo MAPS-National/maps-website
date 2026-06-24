@@ -35,6 +35,8 @@ export const Card: React.FC<{
         'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer',
         className,
       )}
+      // useClickableCard's refs are read only in its event handlers/effects, never during render.
+      // eslint-disable-next-line react-hooks/refs
       ref={card.ref}
     >
       <div className="relative w-full ">
@@ -67,6 +69,7 @@ export const Card: React.FC<{
         {titleToUse && (
           <div className="prose">
             <h3>
+              {/* eslint-disable-next-line react-hooks/refs */}
               <Link className="not-prose" href={href} ref={link.ref}>
                 {titleToUse}
               </Link>

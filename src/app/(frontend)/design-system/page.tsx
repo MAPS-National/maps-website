@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import React from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -49,9 +50,9 @@ export default function StyleGuidePage() {
         <h1 className="text-4xl">Design System</h1>
         <p className="text-muted-foreground">
           Design tokens — brand palette, radius, typography, spacing, semantic tiers. See the{' '}
-          <a className="text-link underline" href="/design-system/blocks">
+          <Link className="text-link underline" href="/design-system/blocks">
             blocks gallery
-          </a>{' '}
+          </Link>{' '}
           for every layout block and hero rendered with sample data.
         </p>
         <div>
