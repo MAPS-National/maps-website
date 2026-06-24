@@ -644,6 +644,7 @@ export interface ArchiveBlock {
     };
     [k: string]: unknown;
   } | null;
+  display?: ('grid' | 'slider') | null;
   populateBy?: ('collection' | 'selection') | null;
   relationTo?: 'posts' | null;
   categories?: (number | Category)[] | null;
@@ -1568,9 +1569,9 @@ export interface TestimonialsBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Grid: cards. Single: one large featured pull-quote.
+   * Grid: cards. Single: one large featured pull-quote. Slider: autoplaying carousel.
    */
-  variant: 'grid' | 'single';
+  variant: 'grid' | 'single' | 'slider';
   type: 'all' | 'career' | 'programs';
   populateBy?: ('collection' | 'selection') | null;
   /**
@@ -2204,6 +2205,7 @@ export interface MediaBlockSelect<T extends boolean = true> {
  */
 export interface ArchiveBlockSelect<T extends boolean = true> {
   introContent?: T;
+  display?: T;
   populateBy?: T;
   relationTo?: T;
   categories?: T;

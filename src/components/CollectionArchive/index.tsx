@@ -3,12 +3,19 @@ import React from 'react'
 
 import { Card, CardPostData } from '@/components/Card'
 
+import { CollectionArchiveSlider } from './CollectionArchiveSlider'
+
 export type Props = {
+  display?: 'grid' | 'slider'
   posts: CardPostData[]
 }
 
 export const CollectionArchive: React.FC<Props> = (props) => {
-  const { posts } = props
+  const { display = 'grid', posts } = props
+
+  if (display === 'slider') {
+    return <CollectionArchiveSlider posts={posts} />
+  }
 
   return (
     <div className={cn('container')}>

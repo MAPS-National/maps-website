@@ -27,6 +27,16 @@ export const Archive: Block = {
       label: 'Intro Content',
     },
     {
+      name: 'display',
+      type: 'select',
+      defaultValue: 'grid',
+      label: 'Display As',
+      options: [
+        { label: 'Grid', value: 'grid' },
+        { label: 'Slider', value: 'slider' },
+      ],
+    },
+    {
       name: 'populateBy',
       type: 'select',
       defaultValue: 'collection',

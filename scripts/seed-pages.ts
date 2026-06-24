@@ -1104,9 +1104,10 @@ const homeSlice: PageSlice = async (payload) => {
       _status: 'published',
       hero,
       layout: [
-        // Latest Updates — the news feed (full feed, latest first). Up to 12.
+        // Latest Updates — the news feed (full feed, latest first), as a slider.
         {
           blockType: 'archive',
+          display: 'slider',
           populateBy: 'collection',
           relationTo: 'posts',
           limit: 12,
@@ -1166,7 +1167,7 @@ const homeSlice: PageSlice = async (payload) => {
         // Member Testimonials on MAPS Programs.
         {
           blockType: 'testimonials',
-          variant: 'grid',
+          variant: 'slider',
           type: 'programs',
           populateBy: 'collection',
           limit: 0,
@@ -1218,7 +1219,7 @@ const homeSlice: PageSlice = async (payload) => {
         // type, so scoped to 'all' (flagged).
         {
           blockType: 'testimonials',
-          variant: 'grid',
+          variant: 'slider',
           type: 'all',
           populateBy: 'collection',
           limit: 0,
@@ -1858,7 +1859,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
     layout.push({
       blockType: 'mediaGallery',
       heading: 'MAPS New York in the community',
-      layout: 'grid',
+      layout: 'slider',
       columns: '3',
       enableLightbox: true,
       images: galleryImages,
@@ -2496,7 +2497,7 @@ const careerSupportSlice: PageSlice = async (payload) => {
       },
       layout: [...layout, {
           blockType: 'testimonials',
-          variant: 'grid',
+          variant: 'slider',
           type: 'career',
           populateBy: 'collection',
           limit: 0,
