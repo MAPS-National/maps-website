@@ -15,6 +15,7 @@
     "import": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm src/import/cli.ts",
     "import:prose": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/import-prose.ts",
     "rehost:images": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/rehost-images.ts",
+    "import:slider": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/import-slider.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",

@@ -982,6 +982,17 @@ const homeSlice: PageSlice = async (payload) => {
   })
   const heroMediaId = heroMedia.docs[0]?.id
 
+  // Home hero carousel (#91): fold the 40-image Sliders CMS set into a
+  // MediaGallery slider, resolved by the `slider-` filename prefix at runtime.
+  const sliderMedia = await payload.find({
+    collection: 'media',
+    where: { filename: { like: 'slider-' } },
+    sort: 'filename',
+    limit: 0,
+    depth: 0,
+  })
+  const sliderImages = sliderMedia.docs.map((d) => ({ image: d.id }))
+
   const hero = heroMediaId
     ? {
         type: 'highImpact',
@@ -1061,6 +1072,18 @@ const homeSlice: PageSlice = async (payload) => {
       _status: 'published',
       hero,
       layout: [
+        ...(sliderImages.length
+          ? [
+              {
+                blockType: 'mediaGallery',
+                heading: 'MAPS National in the community',
+                layout: 'slider',
+                columns: '3',
+                enableLightbox: true,
+                images: sliderImages,
+              },
+            ]
+          : []),
         // Latest Updates — the news feed (full feed, latest first). Source is a
         // Webflow CMS slider; rendered here as the native ArchiveBlock (slider
         // IX2 does not carry over). Three slides in source -> limit 3.
@@ -2443,7 +2466,15 @@ const careerSupportSlice: PageSlice = async (payload) => {
           },
         ],
       },
-      layout,
+      layout: [...layout, {
+          blockType: 'testimonials',
+          variant: 'grid',
+          type: 'career',
+          populateBy: 'collection',
+          limit: 0,
+          eyebrow: 'In their words',
+          heading: 'What our community says',
+        }],
     },
   ] as unknown as PageData[]
 }
@@ -2560,6 +2591,15 @@ const communityBuildingSlice: PageSlice = async (_payload) => {
               ),
             },
           ],
+        },
+        {
+          blockType: 'testimonials',
+          variant: 'grid',
+          type: 'programs',
+          populateBy: 'collection',
+          limit: 0,
+          eyebrow: 'In their words',
+          heading: 'What our community says',
         },
       ],
     },
@@ -2689,6 +2729,15 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
           ],
           ...(featureImage ? { image: featureImage } : {}),
           anchorId: 'recordings',
+        },
+        {
+          blockType: 'testimonials',
+          variant: 'grid',
+          type: 'programs',
+          populateBy: 'collection',
+          limit: 0,
+          eyebrow: 'In their words',
+          heading: 'What our community says',
         },
       ],
     },
@@ -2851,6 +2900,15 @@ const policyInitiativesSlice: PageSlice = async (payload) => {
             },
           ],
         },
+        {
+          blockType: 'testimonials',
+          variant: 'grid',
+          type: 'programs',
+          populateBy: 'collection',
+          limit: 0,
+          eyebrow: 'In their words',
+          heading: 'What our community says',
+        },
       ],
     },
   ] as unknown as PageData[]
@@ -2991,6 +3049,15 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
               },
             },
           ],
+        },
+        {
+          blockType: 'testimonials',
+          variant: 'grid',
+          type: 'programs',
+          populateBy: 'collection',
+          limit: 0,
+          eyebrow: 'In their words',
+          heading: 'What our community says',
         },
       ],
     },
@@ -3671,9 +3738,45 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
   ] as unknown as PageData[]
 }
 
+const contactUsSlice: PageSlice = async (_payload) => {
+  return [
+    {
+      slug: 'contact-us',
+      title: 'Contact Us',
+      _status: 'published',
+      hero: {
+        type: 'lowImpact',
+        eyebrow: 'Get in touch',
+        breadcrumbs: [{ label: 'Home', url: '/' }, { label: 'Contact Us' }],
+        richText: richText(
+          heading('Contact us', 'h1'),
+          paragraph(
+            "We're here to listen and help you find your place in public service. Send us a message and we'll be in contact with you shortly.",
+          ),
+        ),
+      },
+      layout: [
+        {
+          blockType: 'contactDetails',
+          heading: 'Reach MAPS National',
+          items: [
+            { icon: 'email', label: 'Email', value: 'info@mapsnational.org' },
+            {
+              icon: 'location',
+              label: 'Mailing address',
+              value: '420 Florida Ave NE, #29\nWashington, DC 20002',
+            },
+          ],
+        },
+      ],
+    },
+  ] as unknown as PageData[]
+}
+
 const PAGE_SLICES: PageSlice[] = [
   aboutUsSlice,
   phase4ShowcaseSlice,
+  contactUsSlice,
   aboutUsFaqSlice,
   missionSlice,
   partnersSlice,

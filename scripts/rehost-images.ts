@@ -47,6 +47,14 @@ const IMAGES: Array<{ file: string; alt: string }> = [
   { file: '8.webp', alt: 'MAPS New York networking' },
   { file: '26.webp', alt: 'MAPS New York community event' },
   { file: '16.webp', alt: 'MAPS New York in the community' },
+  // home — HighImpact hero background (#91)
+  { file: '10-23-0814-1600.webp', alt: 'Muslim American public servants at a MAPS National gathering' },
+  // partner logos present in the export under their friendly names (about-us/partners,
+  // #85). The other ~29 partner logos are not in the export under usable names and
+  // need their real source files before LogoStrip is complete.
+  { file: 'aafen.webp', alt: 'AAFEN' },
+  { file: 'minaret.webp', alt: 'Minaret Foundation' },
+  { file: 'uscmo.webp', alt: 'US Council of Muslim Organizations (USCMO)' },
 ]
 
 const run = async () => {
