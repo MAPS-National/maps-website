@@ -661,39 +661,41 @@ const partnersSlice: PageSlice = async (payload) => {
   // public/import/partners (see assetsToCopy) and MUST be ingested as Media
   // docs (gap) so these filenames resolve. We only emit a LogoStrip item for
   // docs that actually exist, so the page degrades gracefully pre-ingest.
+  // The Media pipeline converts every upload to WebP, so all logos are stored
+  // as `<name>.webp` regardless of source extension (see scripts/rehost-images).
+  // guidance.svg is omitted — SVG can't go through the WebP pipeline.
   const LOGO_FILENAMES: string[] = [
     'aafen.webp',
     'hops.webp',
     'mpac.webp',
     'isf.webp',
-    'ai.png',
-    'ispu.png',
+    'ai.webp',
+    'ispu.webp',
     'uscmo.webp',
     'naml.webp',
     'cmsa.webp',
     'amt.webp',
     'mlsa.webp',
     'ia.webp',
-    'mcn.png',
-    'coalition.png',
-    'elgl.png',
+    'mcn.webp',
+    'coalition.webp',
+    'elgl.webp',
     'equally-able.webp',
-    'mwpn.png',
-    'logo-600px.png',
-    'amana.jpg',
-    'amba.png',
+    'mwpn.webp',
+    'logo-600px.webp',
+    'amana.webp',
+    'amba.webp',
     'maemsa.webp',
     'saldef.webp',
-    'hhrd.png',
-    'gr.jpg',
-    'umma.png',
+    'hhrd.webp',
+    'gr.webp',
+    'umma.webp',
     'minaret.webp',
-    'cair.png',
+    'cair.webp',
     'wcaps.webp',
-    'guidance.svg',
-    'amhp.png',
-    'muppies.png',
-    'poligon.png',
+    'amhp.webp',
+    'muppies.webp',
+    'poligon.webp',
   ]
 
   const mediaDocs = await payload.find({
@@ -827,7 +829,25 @@ const partnersSlice: PageSlice = async (payload) => {
   ] as unknown as PageData[]
 }
 
-const donateSlice: PageSlice = async (_payload) => {
+const donateSlice: PageSlice = async (payload) => {
+  // Payment-method logos + QR codes (#DN1). The Media pipeline stores everything
+  // as WebP, so resolve the `.webp` filenames re-hosted by scripts/rehost-images.
+  const mediaId = async (filename: string): Promise<number | null> => {
+    const res = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+    })
+    return (res.docs[0]?.id as number | undefined) ?? null
+  }
+  const [paypalLogo, zelleLogo, paypalQr, zelleQr] = await Promise.all([
+    mediaId('paypal.webp'),
+    mediaId('zelle.webp'),
+    mediaId('paypal-qr.webp'),
+    mediaId('zelle-qr.webp'),
+  ])
+
   return [
     {
       slug: 'donate',
@@ -899,7 +919,10 @@ const donateSlice: PageSlice = async (_payload) => {
             ),
             anchorId: 'payments',
           },
-          columns: [{ label: 'PayPal' }, { label: 'Zelle' }],
+          columns: [
+            { label: 'PayPal', ...(paypalLogo ? { icon: paypalLogo } : {}) },
+            { label: 'Zelle', ...(zelleLogo ? { icon: zelleLogo } : {}) },
+          ],
           rows: [
             {
               label: 'Transaction fees',
@@ -923,8 +946,8 @@ const donateSlice: PageSlice = async (_payload) => {
             {
               label: 'QR Code',
               cells: [
-                { type: 'text', text: 'Available' },
-                { type: 'text', text: 'Available' },
+                paypalQr ? { type: 'image', image: paypalQr } : { type: 'text', text: 'Available' },
+                zelleQr ? { type: 'image', image: zelleQr } : { type: 'text', text: 'Available' },
               ],
             },
           ],
