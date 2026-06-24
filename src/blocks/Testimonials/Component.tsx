@@ -24,6 +24,16 @@ const headshotSrc = (t: Testimonial): string | null => {
   return null
 }
 
+/**
+ * The Webflow source had no real author names — the imported `author` is a
+ * legacy id code ("10", "11", "1b", "4a"). Treat an author that's just digits
+ * (optionally one trailing letter) as "no name" so we show an anonymous quote
+ * (no attribution block) instead of junk. Hand-seeded testimonials with real
+ * names ("Amina R.") are unaffected.
+ */
+const hasNamedAuthor = (t: Testimonial): boolean =>
+  Boolean(t.author && !/^\d+[a-z]?$/i.test(t.author.trim()))
+
 const Avatar: React.FC<{ testimonial: Testimonial; className?: string }> = ({
   testimonial,
   className,
@@ -117,10 +127,12 @@ export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string 
             <blockquote className="font-serif text-2xl font-medium leading-relaxed text-content md:text-3xl">
               <RichText data={docs[0].quote} enableGutter={false} />
             </blockquote>
-            <figcaption className="mt-8 flex items-center justify-center gap-4">
-              <Avatar className="size-14" testimonial={docs[0]} />
-              <Identity testimonial={docs[0]} />
-            </figcaption>
+            {hasNamedAuthor(docs[0]) && (
+              <figcaption className="mt-8 flex items-center justify-center gap-4">
+                <Avatar className="size-14" testimonial={docs[0]} />
+                <Identity testimonial={docs[0]} />
+              </figcaption>
+            )}
           </figure>
         ) : (
           <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -137,10 +149,12 @@ export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string 
                     enableProse
                   />
                 </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3">
-                  <Avatar className="size-12" testimonial={t} />
-                  <Identity testimonial={t} />
-                </figcaption>
+                {hasNamedAuthor(t) && (
+                  <figcaption className="mt-6 flex items-center gap-3">
+                    <Avatar className="size-12" testimonial={t} />
+                    <Identity testimonial={t} />
+                  </figcaption>
+                )}
               </li>
             ))}
           </ul>

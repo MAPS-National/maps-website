@@ -3,6 +3,7 @@
 import NextImage from 'next/image'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
+import { Carousel } from '@/components/Carousel'
 import { cn } from '@/utilities/ui'
 
 export type GalleryImage = {
@@ -34,7 +35,6 @@ export const MediaGalleryClient: React.FC<{
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
-  const trackRef = useRef<HTMLUListElement>(null)
   const wasOpenRef = useRef(false)
 
   const isSlider = layout === 'slider'
@@ -75,49 +75,18 @@ export const MediaGalleryClient: React.FC<{
     return () => document.removeEventListener('keydown', onKey)
   }, [openIndex, close, step])
 
-  const scrollByPage = (dir: number) => {
-    const el = trackRef.current
-    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' })
-  }
-
   return (
     <>
       {isSlider ? (
-        <div className="relative">
-          <ul
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            ref={trackRef}
-          >
-            {images.map((image, i) => (
-              <li
-                className="w-[78%] shrink-0 snap-start sm:w-[46%] lg:w-[31%]"
-                key={i}
-              >
-                <Thumb image={image} index={i} lightbox={lightbox} onOpen={open} />
-              </li>
-            ))}
-          </ul>
-          {images.length > 1 && (
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                aria-label="Previous images"
-                className="rounded-md border border-border p-2 transition-colors hover:bg-surface-secondary"
-                onClick={() => scrollByPage(-1)}
-                type="button"
-              >
-                <Chevron dir="left" />
-              </button>
-              <button
-                aria-label="Next images"
-                className="rounded-md border border-border p-2 transition-colors hover:bg-surface-secondary"
-                onClick={() => scrollByPage(1)}
-                type="button"
-              >
-                <Chevron dir="right" />
-              </button>
-            </div>
-          )}
-        </div>
+        <Carousel
+          ariaLabel="Image gallery"
+          autoPlay
+          slideClassName="w-[78%] sm:w-[46%] lg:w-[31%]"
+        >
+          {images.map((image, i) => (
+            <Thumb image={image} index={i} key={i} lightbox={lightbox} onOpen={open} />
+          ))}
+        </Carousel>
       ) : (
         <ul className={cn('grid grid-cols-1 gap-4', gridCols[columns] ?? gridCols['3'])}>
           {images.map((image, i) => (
