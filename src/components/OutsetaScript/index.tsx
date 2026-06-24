@@ -8,21 +8,21 @@ import React from 'react'
  * (`src/middleware.ts`) verifies. The SDK still powers the login / profile /
  * signup widgets and the join-page plan modals.
  *
- * Loaded site-wide (frontend layout) like the original, so the header login /
- * profile widgets work on every page.
+ * One script, not two: it sets `window.o_options` and THEN injects outseta.min.js
+ * itself, so the config is guaranteed to exist before the SDK initializes. (Two
+ * separate next/script tags raced — `beforeInteractive` is only reliable in the
+ * root layout, not this route-group layout, so the SDK could load first and throw
+ * "[domain] is a required option".)
  */
 export const OutsetaScript: React.FC = () => {
   return (
-    <>
-      {/* o_options must exist before outseta.min.js runs. */}
-      {/* eslint-disable-next-line @next/next/no-before-interactive-script-outside-document */}
-      <Script
-        id="outseta-options"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
+    <Script
+      id="outseta"
+      strategy="afterInteractive"
+      dangerouslySetInnerHTML={{
+        __html: `
   var isProd = window.location.origin === "https://mapsnational.org";
-  var o_options = {
+  window.o_options = {
     domain: 'mapsnational.outseta.com',
     load: 'auth,customForm,emailList,leadCapture,nocode,profile,support',
     monitorDom: true,
@@ -31,10 +31,16 @@ export const OutsetaScript: React.FC = () => {
       authenticationCallbackUrl: isProd ? null : window.location.origin + "/members/portal"
     }
   };
+  (function () {
+    if (document.getElementById('outseta-sdk')) return;
+    var s = document.createElement('script');
+    s.id = 'outseta-sdk';
+    s.src = 'https://cdn.outseta.com/outseta.min.js';
+    s.async = true;
+    document.head.appendChild(s);
+  })();
   `,
-        }}
-      />
-      <Script id="outseta-sdk" src="https://cdn.outseta.com/outseta.min.js" strategy="afterInteractive" />
-    </>
+      }}
+    />
   )
 }
