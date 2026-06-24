@@ -13,6 +13,7 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
     "import": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm src/import/cli.ts",
+    "import:prose": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/import-prose.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
@@ -22,7 +23,8 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
-    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
+    "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
+    "demo:prose": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/demo-prose-pages.ts"
   },
   "dependencies": {
     "@payloadcms/admin-bar": "3.85.1",
