@@ -14,6 +14,7 @@
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
     "import": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm src/import/cli.ts",
     "import:prose": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/import-prose.ts",
+    "rehost:images": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/rehost-images.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
