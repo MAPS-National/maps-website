@@ -148,7 +148,12 @@ export const transforms: Record<string, TransformFactory> = {
       const cacheKey = `img:${url}`
       if (ctx.cache.has(cacheKey)) return ctx.cache.get(cacheKey) ?? undefined
 
-      const baseName = str(ctx.row['Slug']) || `row-${ctx.rowIndex + 1}`
+      // The row slug names the file (readable, stable). A gallery has many
+      // images per row, so mediaGallery passes a per-image `nameSuffix`
+      // (e.g. "-2") to keep each one distinct — without it they'd all collide
+      // on "{slug}.{ext}" and dedupe down to a single Media.
+      const suffix = (options?.nameSuffix as string) || ''
+      const baseName = (str(ctx.row['Slug']) || `row-${ctx.rowIndex + 1}`) + suffix
       const ext = extFromUrl(url)
       const filename = `${baseName}.${ext}`
       const absDir = path.resolve(process.cwd(), publicDir)
@@ -203,10 +208,13 @@ export const transforms: Record<string, TransformFactory> = {
     }
   },
 
-  /** `; `-separated image URLs → ordered Media ids (reuses externalImage per token). */
+  /**
+   * `; `-separated image URLs → ordered Media ids. Each image is re-hosted via
+   * externalImage with a `-N` filename suffix so the row's photos don't collide
+   * with each other (or the hero) on a single `{slug}` filename.
+   */
   mediaGallery: (options) => {
     const sep = (options?.sep as string) || ';'
-    const single = transforms.externalImage(options)
     return async (raw, ctx) => {
       const urls = str(raw)
         .split(sep)
@@ -214,8 +222,9 @@ export const transforms: Record<string, TransformFactory> = {
         .filter(Boolean)
       if (!urls.length) return undefined
       const ids: unknown[] = []
-      for (const url of urls) {
-        const id = await single(url, ctx)
+      for (let i = 0; i < urls.length; i++) {
+        const single = transforms.externalImage({ ...options, nameSuffix: `-${i + 1}` })
+        const id = await single(urls[i], ctx)
         if (id != null) ids.push(id)
       }
       return ids.length ? ids : undefined

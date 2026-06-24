@@ -14,6 +14,13 @@ import { authenticated } from '../access/authenticated'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Bulk import (#74) re-hosts many large Webflow originals across 7 sizes each.
+// Re-encode every output to WebP q80 so we don't store unoptimized PNG/JPEG at
+// each width. Upload-level formatOptions only covers the base file, so the same
+// options are spread onto every imageSize below.
+// ponytail: one shared format/quality; give a size its own formatOptions only if it needs to differ.
+const WEBP = { format: 'webp' as const, options: { quality: 80 } }
+
 export const Media: CollectionConfig = {
   slug: 'media',
   folders: true,
@@ -47,6 +54,7 @@ export const Media: CollectionConfig = {
     staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
+    formatOptions: WEBP, // base upload
     imageSizes: [
       {
         name: 'thumbnail',
@@ -79,6 +87,6 @@ export const Media: CollectionConfig = {
         height: 630,
         crop: 'center',
       },
-    ],
+    ].map((size) => ({ ...size, formatOptions: WEBP })),
   },
 }

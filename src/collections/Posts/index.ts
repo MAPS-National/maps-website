@@ -11,6 +11,7 @@ import {
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
+import { legacyItemId } from '../../fields/legacyItemId'
 import { Banner } from '../../blocks/Banner/config'
 import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
@@ -80,6 +81,23 @@ export const Posts: CollectionConfig<'posts'> = {
               name: 'heroImage',
               type: 'upload',
               relationTo: 'media',
+            },
+            {
+              name: 'postSummary',
+              type: 'textarea',
+              label: 'Summary',
+              admin: {
+                description: 'Short excerpt shown on the listing card (Webflow "Post Summary").',
+              },
+            },
+            {
+              name: 'gallery',
+              type: 'upload',
+              relationTo: 'media',
+              hasMany: true,
+              admin: {
+                description: 'Photo gallery re-hosted from the Webflow "Photos" field.',
+              },
             },
             {
               name: 'content',
@@ -182,6 +200,24 @@ export const Posts: CollectionConfig<'posts'> = {
       },
     },
     {
+      name: 'sticky',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Pin to the top of the listing (Webflow "Sticky").',
+      },
+    },
+    {
+      name: 'membersOnlyUrl',
+      type: 'text',
+      label: 'Members-only URL',
+      admin: {
+        position: 'sidebar',
+        description: 'Optional gated link from the Webflow "Members Only URL" field.',
+      },
+    },
+    {
       name: 'authors',
       type: 'relationship',
       admin: {
@@ -215,6 +251,8 @@ export const Posts: CollectionConfig<'posts'> = {
       ],
     },
     slugField(),
+    // Webflow Item ID — idempotency key for the Latest Updates import (#75).
+    legacyItemId(),
   ],
   hooks: {
     afterChange: [revalidatePost],
