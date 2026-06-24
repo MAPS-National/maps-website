@@ -28,7 +28,9 @@ const eslintConfig = [
     },
   },
   {
-    ignores: ['.next/', 'src/payload-types.ts', 'src/payload-generated-schema.ts'],
+    // migration/ is the gitignored Webflow export — vendored, not part of the
+    // build, and not ours to lint.
+    ignores: ['.next/', 'migration/', 'src/payload-types.ts', 'src/payload-generated-schema.ts'],
   },
 ]
 

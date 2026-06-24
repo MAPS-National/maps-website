@@ -175,7 +175,7 @@ const FilterTab: React.FC<{ active: boolean; label: string; onClick: () => void 
   onClick,
 }) => (
   <button
-    aria-pressed={active}
+    aria-selected={active}
     className={cn(
       'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
       active

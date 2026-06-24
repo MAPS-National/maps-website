@@ -27,7 +27,8 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
   useEffect(() => {
     // Follow the header theme a page sets; when none is set (null), fall back to
     // no override so the header inherits the global theme instead of sticking to
-    // the previous page's value.
+    // the previous page's value. Mirrors an external context (HeaderTheme).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (headerTheme !== theme) setTheme(headerTheme ?? null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [headerTheme])
