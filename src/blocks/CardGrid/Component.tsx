@@ -42,26 +42,35 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
         {items?.map((item, index) => {
           const { icon, image, heading, body, links, enableCardLink, cardLink, requiredPlans } = item
           const media = mediaType === 'icon' ? icon : mediaType === 'image' ? image : null
+          const hasImage = mediaType === 'image' && media && typeof media === 'object'
+          const hasIcon = mediaType === 'icon' && media && typeof media === 'object'
+          // Whole-card link: an absolute overlay makes the entire surface (image
+          // included) clickable; the button is suppressed when the card links.
+          const isCardLink = Boolean(enableCardLink && cardLink)
 
-          const head = (
+          const textBody = (
             <>
-              {media && typeof media === 'object' && mediaType === 'image' && (
-                <div className="relative mb-5 aspect-video overflow-hidden rounded-md">
-                  <Media fill imgClassName="object-cover" resource={media} />
-                </div>
-              )}
-              {media && typeof media === 'object' && mediaType === 'icon' && (
-                <div className="relative mb-4 h-12 w-12">
-                  <Media fill imgClassName="object-contain" resource={media} />
-                </div>
-              )}
               {heading && <h3 className="text-xl font-semibold">{heading}</h3>}
+              {body && (
+                <RichText className="mt-3 text-muted-foreground" data={body} enableGutter={false} />
+              )}
+              {!isCardLink && Array.isArray(links) && links.length > 0 && (
+                <div className="relative z-20 mt-auto flex flex-wrap gap-3 pt-6">
+                  {links.map(({ link }, i) => (
+                    <CMSLink key={i} {...link} />
+                  ))}
+                </div>
+              )}
             </>
           )
 
           return (
             <div
-              className="flex h-full flex-col rounded-lg border bg-card p-6"
+              className={cn(
+                'group relative flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors',
+                !hasImage && 'p-6',
+                isCardLink && 'hover:border-primary',
+              )}
               data-required-plans={
                 Array.isArray(requiredPlans) && requiredPlans.length > 0
                   ? requiredPlans.join(',')
@@ -69,22 +78,31 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
               }
               key={index}
             >
-              {enableCardLink && cardLink ? (
-                <CMSLink {...cardLink} className="block transition-opacity hover:opacity-80">
-                  {head}
+              {isCardLink && (
+                <CMSLink {...cardLink} className="absolute inset-0 z-10">
+                  <span className="sr-only">{heading || 'View'}</span>
                 </CMSLink>
-              ) : (
-                head
               )}
 
-              {body && <RichText className="mt-3 text-muted-foreground" data={body} enableGutter={false} />}
-
-              {Array.isArray(links) && links.length > 0 && (
-                <div className="mt-auto flex flex-wrap gap-3 pt-6">
-                  {links.map(({ link }, i) => (
-                    <CMSLink key={i} {...link} />
-                  ))}
+              {hasImage && (
+                <div className="relative aspect-video w-full overflow-hidden">
+                  <Media
+                    fill
+                    imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
+                    resource={media}
+                  />
                 </div>
+              )}
+              {hasIcon && (
+                <div className="relative mb-4 h-12 w-12">
+                  <Media fill imgClassName="object-contain" resource={media} />
+                </div>
+              )}
+
+              {hasImage ? (
+                <div className="flex flex-1 flex-col px-6 pb-6 pt-5">{textBody}</div>
+              ) : (
+                textBody
               )}
             </div>
           )
