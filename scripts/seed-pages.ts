@@ -61,6 +61,7 @@ const aboutUsSlice: PageSlice = async (payload) => {
   const boardCats = ids(
     'board-of-directors',
     'board-deputy-directors',
+    'specialists-committee-chairs',
     'board-committees-task-forces',
   )
   const advisoryCats = ids('advisory-council')
@@ -94,7 +95,13 @@ const aboutUsSlice: PageSlice = async (payload) => {
         richText: richText(
           heading('Board & Leadership'),
           paragraph(
-            'The directors, chairs, and specialists who steer MAPS National and carry its mission forward.',
+            'Muslim Americans in Public Service is managed by a Board of Directors, supported by Deputy Directors, organizational specialists, Board Committees, and State Committees for sub-national member and policy coordination.',
+          ),
+          paragraph(
+            'Officers act in the long-term best interest of MAPS National; support and expand the MAPS membership; and help develop or execute activities, programs, and services on their behalf that are in line with the three MAPS mission objectives and values.',
+          ),
+          paragraph(
+            'Meet our leaders, read more about their distinguished public service careers, and reach out directly or follow them on social media below.',
           ),
         ),
       },
@@ -110,7 +117,10 @@ const aboutUsSlice: PageSlice = async (payload) => {
         richText: richText(
           heading('Advisory Council'),
           paragraph(
-            'Senior advisors who lend their expertise and counsel to MAPS National’s leadership.',
+            'The MAPS Advisory Council is a standing, non-decision-making body composed of accomplished professionals and trailblazers who support the mission, goals and values of the organization.',
+          ),
+          paragraph(
+            'Advisory Council members make recommendations, provide general guidance, and serve as organizational resources to the Board and professional resources to MAPS members. Advisory Council members participate in MAPS in their personal capacities.',
           ),
         ),
       },
@@ -126,7 +136,10 @@ const aboutUsSlice: PageSlice = async (payload) => {
         richText: richText(
           heading('State Committees'),
           paragraph(
-            'These local leaders are key to strengthening the MAPS National community while bringing professional development directly to public servants where they live and work.',
+            'State Committees help organize MAPS National members and local public servants, and represent MAPS among government officials within their respective States.',
+          ),
+          paragraph(
+            'These local leaders are key to strengthening the MAPS National community while ensuring community and professional development are brought directly to local public servants where they live and work.',
           ),
         ),
       },
@@ -993,6 +1006,39 @@ const homeSlice: PageSlice = async (payload) => {
   })
   const sliderImages = sliderMedia.docs.map((d) => ({ image: d.id }))
 
+  // MAPS Programs cards — full-bleed linked image cards (#H2). Resolve by filename.
+  const programImg = async (filename: string): Promise<number | null> => {
+    const res = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+    })
+    return (res.docs[0]?.id as number | undefined) ?? null
+  }
+  const [careerImg, communityImg, policyImg] = await Promise.all([
+    programImg('4_1.webp'),
+    programImg('5_1.webp'),
+    programImg('policy.webp'),
+  ])
+  const haveProgramImages = [careerImg, communityImg, policyImg].every(
+    (id): id is number => typeof id === 'number',
+  )
+
+  // Community photo slider — moved to the bottom of the page, before the footer (#H5).
+  const communitySlider = sliderImages.length
+    ? [
+        {
+          blockType: 'mediaGallery',
+          heading: 'MAPS National in the community',
+          layout: 'slider',
+          columns: '3',
+          enableLightbox: true,
+          images: sliderImages,
+        },
+      ]
+    : []
+
   const hero = heroMediaId
     ? {
         type: 'highImpact',
@@ -1051,20 +1097,6 @@ const homeSlice: PageSlice = async (payload) => {
         ],
       }
 
-  // Per-card "Learn More" button (CardGrid items use a linkGroup, maxRows 1).
-  const learnMore = (url: string) => ({
-    links: [
-      {
-        link: {
-          type: 'custom',
-          appearance: 'default',
-          label: 'Learn More',
-          url,
-        },
-      },
-    ],
-  })
-
   return [
     {
       slug: 'home',
@@ -1072,26 +1104,12 @@ const homeSlice: PageSlice = async (payload) => {
       _status: 'published',
       hero,
       layout: [
-        ...(sliderImages.length
-          ? [
-              {
-                blockType: 'mediaGallery',
-                heading: 'MAPS National in the community',
-                layout: 'slider',
-                columns: '3',
-                enableLightbox: true,
-                images: sliderImages,
-              },
-            ]
-          : []),
-        // Latest Updates — the news feed (full feed, latest first). Source is a
-        // Webflow CMS slider; rendered here as the native ArchiveBlock (slider
-        // IX2 does not carry over). Three slides in source -> limit 3.
+        // Latest Updates — the news feed (full feed, latest first). Up to 12.
         {
           blockType: 'archive',
           populateBy: 'collection',
           relationTo: 'posts',
-          limit: 3,
+          limit: 12,
           introContent: richText(
             heading('Latest Updates', 'h2'),
             paragraph(
@@ -1104,7 +1122,7 @@ const homeSlice: PageSlice = async (payload) => {
         {
           blockType: 'cardGrid',
           columns: '3',
-          mediaType: 'none',
+          mediaType: haveProgramImages ? 'image' : 'none',
           header: {
             enableHeader: true,
             heading: 'MAPS Programs',
@@ -1117,7 +1135,9 @@ const homeSlice: PageSlice = async (payload) => {
                   'Broadening pipelines into public service is critical to not only MAPS, but our mission as public servants. MAPS creates and promotes skill development, professional networking, mentorship, career education and advancement resources among members and within MAPS chapters to support our public servants and community representation.',
                 ),
               ),
-              ...learnMore('/programs/career-support'),
+              ...(careerImg ? { image: careerImg } : {}),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/programs/career-support', newTab: false },
             },
             {
               heading: 'Community Building',
@@ -1126,7 +1146,9 @@ const homeSlice: PageSlice = async (payload) => {
                   'In addition to connecting members nationally, MAPS aims to support internal communities of Muslim public servants where they reside at the state level, dedicated communities of practice within their professional field, as well as formal staff associations serving Muslim Americans in the government institutions where they work.',
                 ),
               ),
-              ...learnMore('/programs/community-building'),
+              ...(communityImg ? { image: communityImg } : {}),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/programs/community-building', newTab: false },
             },
             {
               heading: 'Policy & Advocacy',
@@ -1135,7 +1157,9 @@ const homeSlice: PageSlice = async (payload) => {
                   'Government works best when all public servants feel welcome in the workplace. MAPS welcomes the review, dissemination and amplification of substantive initiatives and resources produced by members, allies, government officials, and all Americans who value an effective and inclusive government of and by the people.',
                 ),
               ),
-              ...learnMore('/programs/policy-initiatives'),
+              ...(policyImg ? { image: policyImg } : {}),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/programs/policy-initiatives', newTab: false },
             },
           ],
         },
@@ -1165,7 +1189,8 @@ const homeSlice: PageSlice = async (payload) => {
                   'MAPS Members are Muslim Americans who are current or former public servants while Associate Members are students or professionals from the broader Muslim American community interested in or adjacent to public service. Allies or organizational partners who are US citizens of all identities, backgrounds, and faiths (or no faith) who believe in a diverse, conducive, and inclusive public workforce that represents America itself, are encouraged to join our network as Affiliates.',
                 ),
               ),
-              ...learnMore('/join'),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/join', newTab: false },
             },
             {
               heading: 'Membership Benefits',
@@ -1174,7 +1199,8 @@ const homeSlice: PageSlice = async (payload) => {
                   'Members are given access to MAPS Directors, specialists, mentors, advisors, exclusive programs and direct training and career services, partner organizations, specialized communities of practice, distribution lists, and Federal, State, and local government engagements, Muslim outreach functions, and building tours. Members also join exclusive chat groups allowing direct interaction with the MAPS network of public service professionals across the country.',
                 ),
               ),
-              ...learnMore('/join'),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/join', newTab: false },
             },
             {
               heading: '100% Free To Join',
@@ -1183,7 +1209,8 @@ const homeSlice: PageSlice = async (payload) => {
                   'Any person who supports our mission, and agrees to adhere to the values, policies, and objectives of MAPS, may engage the MAPS National network. Its free to join for all public servants and government-supporting and policy professionals, with marginal dues for Associates looking to enter public service. MAPS forgoes member dues to reduce barriers to an active and thriving community; and is unique among professional associations and national affinity organizations in doing so.',
                 ),
               ),
-              ...learnMore('/join'),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/join', newTab: false },
             },
           ],
         },
@@ -1197,6 +1224,7 @@ const homeSlice: PageSlice = async (payload) => {
           limit: 0,
           heading: 'Member Testimonials on MAPS Membership',
         },
+        ...communitySlider,
       ],
     },
   ] as unknown as PageData[]
@@ -1370,7 +1398,7 @@ const joinSlice: PageSlice = async (_payload) => {
                   'Affiliates generally receive career support to facilitate their pathway to service and full MAPS membership for token annual dues, while Allies primarily receive policy and program coordination with limited or moderated member engagement.',
                 ),
               ),
-              defaultOpen: true,
+              defaultOpen: false,
             },
             {
               question: 'Full Membership',
@@ -1546,12 +1574,12 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
                   'Our main chat for MAPS Members and Associates across the country, created and maintained to foster an inclusive, supportive, and focused professional communication space for personal success stories, professional development and networking opportunities, career postings and public policy where relevant to the organization and its mission.',
                 ),
               ),
-              links: [
-                joinBtn(
-                  'https://signal.group/#CjQKIJt0L3TEvNSeAM8cOxDYeQ4Rr-LkC3uMkSX1tWpTEwh7EhAhpJH42AqPlDsoaEt3xD4I',
-                  'Join',
-                ),
-              ],
+              enableCardLink: true,
+              cardLink: {
+                type: 'custom',
+                url: 'https://signal.group/#CjQKIJt0L3TEvNSeAM8cOxDYeQ4Rr-LkC3uMkSX1tWpTEwh7EhAhpJH42AqPlDsoaEt3xD4I',
+                newTab: true,
+              },
             },
             {
               heading: 'MAPS Social Chat',
@@ -1560,12 +1588,12 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
                   'This dedicated space allows MAPS Members and Associates to engage in an informal or social environment, where current affairs, politics, and broader issues on, or of concern to, the Muslim American community may be discussed freely from the perspective of Muslim American public servants. Personal attacks or inflammatory language intended to harm or disrespect others is prohibited.',
                 ),
               ),
-              links: [
-                joinBtn(
-                  'https://signal.group/#CjQKILO1Hppy2YF-fTgSZmAn26yVv0Ts_PyfVvGz53xK7UZQEhDs8WSDdFlluODjtVLv9ccE',
-                  'Join',
-                ),
-              ],
+              enableCardLink: true,
+              cardLink: {
+                type: 'custom',
+                url: 'https://signal.group/#CjQKILO1Hppy2YF-fTgSZmAn26yVv0Ts_PyfVvGz53xK7UZQEhDs8WSDdFlluODjtVLv9ccE',
+                newTab: true,
+              },
             },
             {
               heading: 'MAPS Affiliate Chat',
@@ -1574,12 +1602,12 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
                   'Our main chat for MAPS Affiliates across the country, aims to provide a supportive and focused professional communication space for professional development and networking opportunities, and career postings aimed as supporting and guiding Muslim Americans into a range of public service pathways.',
                 ),
               ),
-              links: [
-                joinBtn(
-                  'https://signal.group/#CjQKINQPIyQoCZ-9PSel4CSYWjZ0fgAnhBuAGvd3Q4-BJBtoEhD3AGqTfUn1fMFIgP_vSQAY',
-                  'Join',
-                ),
-              ],
+              enableCardLink: true,
+              cardLink: {
+                type: 'custom',
+                url: 'https://signal.group/#CjQKINQPIyQoCZ-9PSel4CSYWjZ0fgAnhBuAGvd3Q4-BJBtoEhD3AGqTfUn1fMFIgP_vSQAY',
+                newTab: true,
+              },
             },
           ],
         },
@@ -2472,8 +2500,8 @@ const careerSupportSlice: PageSlice = async (payload) => {
           type: 'career',
           populateBy: 'collection',
           limit: 0,
-          eyebrow: 'In their words',
-          heading: 'What our community says',
+          eyebrow: 'Career support',
+          heading: 'What our career-support members say',
         }],
     },
   ] as unknown as PageData[]
@@ -2529,7 +2557,7 @@ const communityBuildingSlice: PageSlice = async (_payload) => {
           items: [
             {
               question: 'MAPS State Committees',
-              defaultOpen: true,
+              defaultOpen: false,
               answer: richText(
                 paragraph(
                   'MAPS invites our Members and Associate Members across the country to build our network of communities in your State. These State committees connect members based on location and include Federal, State or local public servants serving or residing within the States below.',
@@ -2679,7 +2707,7 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
                 ),
               ),
               links: [
-                cta('Join MAPS and Login to the Portal to Request Support', '/join', true),
+                cta('Request support', '/join', true),
               ],
             },
             {
@@ -2706,7 +2734,7 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
                   'Connect with a powerful network of Muslim American professionals committed to creating meaningful impact. Our membership connection services provide introductions to fellow members who have successfully navigated a range of workplace challenges and circumstances across a number of agencies to allow for communal networking & knowledge sharing when it matters most.',
                 ),
               ),
-              links: [cta('Join MAPS and Login to the Portal to Request Support', '/join', false)],
+              links: [cta('Request support', '/join', false)],
             },
           ],
         },
@@ -2819,7 +2847,7 @@ const policyInitiativesSlice: PageSlice = async (payload) => {
                   'E. Training — Government executives should work to eliminate anti-Muslim bias in workforce and national security trainings. MAPS urges that Islamophobia awareness courses piloted by ING, ISPU, America Indivisible, MPAC, and Emgage be scaled up and widely adopted, and that law enforcement agencies be better trained to engage with Muslim communities.',
                 ),
               ),
-              defaultOpen: true,
+              defaultOpen: false,
             },
             {
               question: '2. Data Collection on Religious Affiliation',
@@ -3382,7 +3410,7 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
           items: [
             {
               question: 'Leadership & Public Administration',
-              defaultOpen: true,
+              defaultOpen: false,
               answer: richText(
                 paragraph(
                   'White House Fellowship — White House Fellowships offer exceptional emerging leaders first-hand experience working at the highest levels of the Federal government. Selected individuals typically spend a year working as a full-time, paid Fellow to senior White House Staff, Cabinet Secretaries, and other top-ranking government officials. There are no formal age restrictions; employees of the Federal government are not eligible unless they are career military personnel.',
@@ -3540,7 +3568,7 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
           items: [
             {
               question: 'Muslim Public Service Fellowships',
-              defaultOpen: true,
+              defaultOpen: false,
               answer: richText(
                 // Muslim Public Service Network (MPSN) – Summer Fellowship — https://www.muslimpublicservice.org/
                 paragraph('Muslim Public Service Network (MPSN) – Summer Fellowship'),
@@ -3773,10 +3801,42 @@ const contactUsSlice: PageSlice = async (_payload) => {
   ] as unknown as PageData[]
 }
 
+// Latest Updates — the full Posts feed. Target of the "View all updates" CTAs
+// on the home + events pages (previously a dead /latest-updates link, #EV1).
+const latestUpdatesSlice: PageSlice = async (_payload) => {
+  return [
+    {
+      slug: 'latest-updates',
+      title: 'Latest Updates',
+      _status: 'published',
+      hero: {
+        type: 'lowImpact',
+        eyebrow: 'News',
+        breadcrumbs: [{ label: 'Home', url: '/' }, { label: 'Latest Updates' }],
+        richText: richText(
+          heading('Latest Updates', 'h1'),
+          paragraph(
+            'Statements, press releases, events, photos, and professional development updates from across the MAPS National network.',
+          ),
+        ),
+      },
+      layout: [
+        {
+          blockType: 'archive',
+          populateBy: 'collection',
+          relationTo: 'posts',
+          limit: 0,
+        },
+      ],
+    },
+  ] as unknown as PageData[]
+}
+
 const PAGE_SLICES: PageSlice[] = [
   aboutUsSlice,
   phase4ShowcaseSlice,
   contactUsSlice,
+  latestUpdatesSlice,
   aboutUsFaqSlice,
   missionSlice,
   partnersSlice,

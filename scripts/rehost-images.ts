@@ -49,6 +49,10 @@ const IMAGES: Array<{ file: string; alt: string }> = [
   { file: '16.webp', alt: 'MAPS New York in the community' },
   // home — HighImpact hero background (#91)
   { file: '10-23-0814-1600.webp', alt: 'Muslim American public servants at a MAPS National gathering' },
+  // home — MAPS Programs cards (full-bleed linked image cards)
+  { file: '4_1.webp', alt: 'MAPS career support' },
+  { file: '5_1.webp', alt: 'MAPS community building' },
+  { file: 'policy.webp', alt: 'MAPS policy and advocacy' },
   // partner logos present in the export under their friendly names (about-us/partners,
   // #85). The other ~29 partner logos are not in the export under usable names and
   // need their real source files before LogoStrip is complete.
