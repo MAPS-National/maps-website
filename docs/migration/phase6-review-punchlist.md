@@ -15,14 +15,13 @@ Committed on `feat/phase6` (not pushed):
 - **`8654270`** — seed wave: **C8** accordions collapsed · **B1** State Committee Presidents group · **B2/AC2/SC1** recovered About-Us intro copy · **CS3** career headline · **LA2** short CTA · **H1** Latest Updates 12 · **H2** program cards full-bleed linked images · **H3** membership cards link to /join · **H5** community slider to bottom · **MCB1/MCB2** Signal cards clickable / state cards keep buttons · **EV1** new /latest-updates page.
 - **`8e13fc9`** — **C2** Testimonials slider variant · **C3** ArchiveBlock slider · **NY2** NY gallery slider · home Latest Updates + both testimonials now sliders (**H4**) · **CS2** career testimonials slider. Regenerated payload-types.
 - **`ac67d33`** — Outseta: single-script SDK init fix; members gate restored (server-side). TEMP review bypasses removed.
+- **`1f415e9`** — **P1** backfill ~28 partner logos from the live CDN → LogoStrip now shows 31 · **DN1** PayPal/Zelle logos (PayPal rasterized from SVG) + per-method QR codes wired into the donate comparison table. `rehost-images` gained remote-CDN support + dedupes by the stored `.webp` name.
 
 Also **CS1/LA1** (program support-card full-bleed) are satisfied by the C4 render change. **D1** resolved (site-wide).
 
 ### Still open (need assets / decisions / heavier block work)
 
 - **M1** — mission gallery: +2 photos (needs photo pick) and smaller tiles (needs a MediaGallery `density` field — schema). Not done.
-- **P1** — backfill ~29 partner logos. CDN URLs gathered (live partners page). Needs: download (incl. handling 1 SVG + a couple unnamed) + LogoStrip seed wiring.
-- **DN1** — donate Zelle/PayPal logos + per-method QRs. Local export paths gathered. Needs: ComparisonTable image support check (PayPal logo is SVG) + wiring.
 - **JU1** — Jumuah map: a pin per location (Maps JavaScript API + client child; largest block change).
 - **C6** — intra-group team member ordering by role rank (group order is now correct; per-member order needs an order field/sort). Authoritative ordered lists are gathered.
 - **CS4 data** — render guard hides the junk; the source has no real author names (re-import/anonymize is the deeper cleanup).
