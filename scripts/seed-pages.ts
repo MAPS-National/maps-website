@@ -3808,7 +3808,10 @@ const contactUsSlice: PageSlice = async (payload) => {
     emails: [
       {
         emailTo: 'info@mapsnational.org',
-        emailFrom: '"MAPS National" <no-reply@mapsnational.org>',
+        // Sender must be on a domain verified with the email provider (Resend).
+        // Driven by the same env as the adapter's defaultFromAddress so the
+        // verified sender is set in one place; falls back to a sensible default.
+        emailFrom: `"${process.env.EMAIL_FROM_NAME || 'MAPS National'}" <${process.env.EMAIL_FROM_ADDRESS || 'no-reply@mapsnational.org'}>`,
         subject: "You've received a new contact message.",
         message: richText(paragraph('A new message was submitted via the website contact form.')),
       },

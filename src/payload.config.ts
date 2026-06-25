@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { s3Storage } from '@payloadcms/storage-s3'
 import sharp from 'sharp'
 import path from 'path'
@@ -51,6 +52,21 @@ const storagePlugins = s3Enabled
     ]
   : []
 
+// Transactional email: Resend adapter, gated on env (mirrors the S3 pattern).
+// With RESEND_API_KEY unset the adapter stays inactive and Payload falls back to
+// its console "email writer" — form submissions still persist to the
+// form-submissions collection, they just aren't emailed (the dev/local default).
+// Activate by setting RESEND_API_KEY and verifying the sending domain in Resend;
+// the form-builder then delivers each form's notification emails. Backend swap is
+// a credentials-only change, one code path — same philosophy as the S3 adapter.
+const emailAdapter = process.env.RESEND_API_KEY
+  ? resendAdapter({
+      defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'no-reply@mapsnational.org',
+      defaultFromName: process.env.EMAIL_FROM_NAME || 'MAPS National',
+      apiKey: process.env.RESEND_API_KEY,
+    })
+  : undefined
+
 export default buildConfig({
   admin: {
     components: {
@@ -90,6 +106,7 @@ export default buildConfig({
   },
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
+  email: emailAdapter,
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',

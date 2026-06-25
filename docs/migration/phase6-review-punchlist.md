@@ -121,7 +121,7 @@ are applied in a batch against the seed/blocks.
 
 ### `/contact-us`
 
-- [x] **CO1 — Add a contact form** _(done — Payload form-builder; #98)_ → `/contact-us` now renders a `formBlock` (Full name · Email · Subject · Message → "Send message") above the contact details. The form is **owned + upserted by `seed-pages`** (by title), so a reseed keeps it and a fresh DB recreates it; notifies `info@mapsnational.org`.
+- [x] **CO1 — Add a contact form** _(done — Payload form-builder; #98)_ → `/contact-us` now renders a `formBlock` (Full name · Email · Subject · Message → "Send message") above the contact details. The form is **owned + upserted by `seed-pages`** (by title), so a reseed keeps it and a fresh DB recreates it; notifies `info@mapsnational.org`. **Email delivery:** Webflow's baked-in form email is replaced by a Payload email adapter — `@payloadcms/email-resend`, **env-gated** in `payload.config.ts` like the S3 adapter. Submissions always persist to the `form-submissions` collection (admin); when `RESEND_API_KEY` is set (+ sending domain verified in Resend) the notification emails actually send. Sender driven by `EMAIL_FROM_ADDRESS`/`EMAIL_FROM_NAME` (verify a subdomain e.g. `send.mapsnational.org` so the root Workspace MX/SPF is untouched). Without the key, Payload's console fallback logs the attempt (dev default).
 
 ### `/join`
 
