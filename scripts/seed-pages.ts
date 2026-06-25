@@ -3857,8 +3857,8 @@ const contactUsSlice: PageSlice = async (payload) => {
         {
           blockType: 'contactDetails',
           heading: 'Reach MAPS National',
+          // Email intentionally omitted — the form above is the contact path.
           items: [
-            { icon: 'email', label: 'Email', value: 'info@mapsnational.org' },
             {
               icon: 'location',
               label: 'Mailing address',

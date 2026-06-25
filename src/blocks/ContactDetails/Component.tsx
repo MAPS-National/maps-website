@@ -50,7 +50,9 @@ export const ContactDetailsBlock: React.FC<ContactDetailsBlockProps> = (props) =
 
   return (
     <section className="container">
-      <div className="max-w-xl">
+      {/* max-w-2xl, not max-w-xl: the brand theme defines --spacing-xl (4rem),
+          which shadows Tailwind's max-w-xl and collapses the column to 64px. */}
+      <div className="max-w-2xl">
         {heading && <h2 className="text-3xl font-semibold md:text-4xl">{heading}</h2>}
         {intro && <RichText className="mt-4" data={intro} enableGutter={false} />}
 
