@@ -51,6 +51,15 @@ const GROUPS: NavGroup[] = [
     ],
   },
   {
+    label: 'Events',
+    items: [
+      { label: 'Upcoming Events', href: '/events/upcoming' },
+      { label: 'MAPS Events', href: '/events/maps' },
+      { label: 'Partner Events', href: '/events/partner' },
+      { label: 'All Events', href: '/events' },
+    ],
+  },
+  {
     label: 'Members',
     items: [
       { label: 'Member Portal', href: '/members/portal' },
@@ -66,7 +75,6 @@ const GROUPS: NavGroup[] = [
 
 const FLAT: NavLink[] = [
   { label: 'Press', href: '/press' },
-  { label: 'Events', href: '/events' },
   { label: 'Latest Updates', href: '/latest-updates' },
   { label: 'Contact', href: '/contact-us' },
 ]
@@ -209,7 +217,7 @@ export const NavMenu: React.FC = () => {
             </button>
           </div>
 
-          <nav className="container grid gap-x-10 gap-y-10 pb-20 md:grid-cols-2 lg:grid-cols-4">
+          <nav className="container grid gap-x-10 gap-y-10 pb-20 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {GROUPS.map((group) => (
               <div key={group.label}>
                 <p className="mb-4 border-b border-border pb-2 font-serif text-lg font-semibold text-content">

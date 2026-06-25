@@ -52,6 +52,7 @@ const resolveSlug = (segments?: string[]): string =>
 
 const SECTION_LABELS: Record<string, string> = {
   'about-us': 'About Us',
+  events: 'Events',
   members: 'Members',
   programs: 'Programs',
   resources: 'Resources',

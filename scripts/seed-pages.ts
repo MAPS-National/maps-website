@@ -976,6 +976,35 @@ const eventsSlice: PageSlice = async (payload) => {
     .map((s) => idBySlug.get(s))
     .filter((v): v is number => typeof v === 'number')
 
+  // One category-filtered Events child page (e.g. /events/upcoming). Same Archive
+  // shape as the parent but scoped to a single category; LowImpact header so the
+  // catch-all route derives the Home > Events > <title> breadcrumb.
+  const eventChild = (slug: string, title: string, catSlug: string, intro: string): PageData => {
+    const id = idBySlug.get(catSlug)
+    return {
+      slug: `events/${slug}`,
+      title,
+      _status: 'published',
+      hero: {
+        type: 'lowImpact',
+        eyebrow: 'Events',
+        richText: richText(heading(title), paragraph(intro)),
+        links: [
+          { link: { type: 'custom', appearance: 'outline', label: 'All events', url: '/events' } },
+        ],
+      },
+      layout: [
+        {
+          blockType: 'archive',
+          populateBy: 'collection',
+          relationTo: 'posts',
+          categories: id ? [id] : [],
+          limit: 12,
+        },
+      ],
+    } as unknown as PageData
+  }
+
   return [
     {
       slug: 'events',
@@ -1011,6 +1040,24 @@ const eventsSlice: PageSlice = async (payload) => {
         },
       ],
     },
+    eventChild(
+      'upcoming',
+      'Upcoming Events',
+      'upcoming-events',
+      'Register for upcoming MAPS webinars, training sessions, and member events.',
+    ),
+    eventChild(
+      'maps',
+      'MAPS Events',
+      'events',
+      'Events hosted by MAPS National, including member gatherings and professional development.',
+    ),
+    eventChild(
+      'partner',
+      'Partner Events',
+      'partner-event',
+      'Events co-hosted with our partner organizations across the public service community.',
+    ),
   ] as unknown as PageData[]
 }
 
