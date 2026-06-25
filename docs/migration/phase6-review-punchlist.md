@@ -19,15 +19,21 @@ Committed on `feat/phase6` (not pushed):
 
 Also **CS1/LA1** (program support-card full-bleed) are satisfied by the C4 render change. **D1** resolved (site-wide).
 
-### Decided (walkthrough 2) — to implement
+### Decided (walkthrough 2) — DONE
 
-- **M1** — MediaGallery: add a `density: compact` option (4-col, square, tighter gaps), set the mission gallery to it. **+2 photos held** — user will supply the 2 community images.
-- **JU1** — MapLocationCards: replace the single Embed iframe with a **Maps JavaScript API** map dropping a pin per `locations` entry (`'use client'` child; uses `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`; degrades to cards-only with no key).
-- **C6** — enforce **exact source member order** across every team group (board ×4, advisory, 9 state committees) from the gathered live-site lists. Set an explicit per-member order; Team block sorts by it.
-- **G1 / D2** — header menu: **hamburger overlay at all breakpoints**, proposed IA (About Us / Programs / Resources / Members groups + Press · Events · Contact · Donate/Join), plus the Outseta login/logout control ([#115]). Keep the current hero.
-- **C5** — sticky left scroll-spy **TOC on all long content pages** (auto-derive anchors from headings; render only when 3+ sections).
-- **C7** — add a `program` tag field to the Testimonials collection; scrape each **live** program page for which testimonials it shows; tag + filter each block by program.
-- **JU2** — rename slug → `/resources/jumuah-services`; add a redirect from the old slug; update internal links.
+Built + preview-verified, committed on `feat/phase6` (not pushed):
+
+- **`00265f0`** — **M1** MediaGallery `density: compact` (four-up square photo wall, tight gaps) · **JU1** MapLocationCards now a client Maps-JS-API map with one marker per geocoded location + an InfoWindow showing that location's card on click (lat/lng fields added; degrades to cards-only with no key). Regenerated payload-types.
+- **`3bb29fe`** — seed data: **M1** mission gallery set to compact · **JU1** coordinates for all 9 Jumuah locations · **JU2** slug → `/resources/jumuah-services` + redirect + stale old-slug page removed on reseed · **C6** exact per-group team order from the live site · **C7** removed the generic testimonials block from community-building / legal-advocacy / policy-initiatives / public-sector-engagement · `revalidateRedirects` honors `disableRevalidate`.
+- **`b671cf1`** — **C5** sticky scroll-spy TOC (`PageTOC`) for long content pages: self-gates at 3+ section headings, reserves a left rail at xl+, hidden below xl.
+- **`690cc26`** — **G1/D2** header hamburger overlay at all breakpoints with the full IA + Donate/Join CTAs + Outseta login/logout ([#115]); header no longer reads the CMS nav global.
+
+**Notes / deviations to confirm:**
+
+- **C7 changed approach (live data contradicted the plan).** Gather found **none** of the 5 live program pages show testimonials — so a `program` tag field would tag nothing. Faithful port = remove the generic block from the 4 non-career program pages (matches your original "remove" instinct); career-support keeps its `career` set per your instruction. No tag field added. _Revert any block to restore it if you'd rather curate per-program._
+- **C6 limitations (real data is messy):** a single `order` field can't encode two independent ranks, so the two members cross-listed across leadership groups — **Fatima Abdelsalam** and **Hon. Samia Naseem** — sort to the **top of the "State Committee Presidents"** group on board-leadership instead of their exact live slot (they're exact on their own pages). Also **Hasan Shanawani** is in the DB's `board-of-directors` but not on the live board page, so the board shows 13 — remove his category if he shouldn't appear.
+- **M1 +2 photos still held** — supply the 2 community images and they drop into the compact grid.
+- **JU1 / JU2 dev caveat:** map markers + InfoWindows verified live; the old-slug redirect needs a fresh `getCachedRedirects` (a `next build` or a `.next` clear) — production builds regenerate it automatically.
 
 ### Closed
 
@@ -46,7 +52,7 @@ are applied in a batch against the seed/blocks.
 ## Open decisions
 
 - [x] **D1 — Card pattern scope. RESOLVED → site-wide.** Full-bleed image cards are the **default for all comparable CardGrids** (programs/members/resources). Confirmed on PSE. See [C4].
-- [ ] **D2 — Header menu treatment.** Hamburger overlay at **all** breakpoints, or desktop nav bar + hamburger on mobile only? _(user leans hamburger)_
+- [x] **D2 — Header menu treatment.** → hamburger overlay at all breakpoints (done, `690cc26`). Hamburger overlay at **all** breakpoints, or desktop nav bar + hamburger on mobile only? _(user leans hamburger)_
 
 ## Cross-cutting / component work (emerges from items below)
 
@@ -55,15 +61,15 @@ are applied in a batch against the seed/blocks.
 - [ ] **C3 — ArchiveBlock: slider treatment** for the Latest Updates feed on home (H1).
 - [ ] **C4 — CardGrid: "linked image card" pattern** — full-bleed image, whole card clickable (`enableCardLink` + `cardLink`), no button, keep border. **Scope: site-wide** (D1 resolved) — apply to every comparable CardGrid (home H2/H3, all program support-area grids [CS1]/[LA1], members, resources). The **clickable-surface + no-button** behavior can also apply to **imageless** cards where called out (e.g. [MCB1]) — but it's **opt-in per section**, not automatic (some imageless cards keep their buttons, see [MCB2]).
 - [ ] **C8 — Accordions collapsed by default** _(global)_. Every accordion/FAQ block site-wide starts collapsed, not expanded. Generalizes [CB2]. _(AFK — accordion `defaultOpen` off everywhere)_
-- [ ] **C7 — Targeted testimonials per page** _(HITL: the per-page mapping)_. Instead of removing the Testimonials block from program pages (supersedes [CB1]/[LA3]), each program page should show testimonials **relevant to that program**. The Programs testimonials CSV is a flat 13-item bucket with **no program field**, so targeting can't be auto-derived. Need a curation mechanism — a `program`/tag field on Testimonials (or a relationship pick on the block) — and the per-page selection sourced from what each **live** program page displays. Career-support keeps its `career` set. _(mechanism AFK; the mapping is HITL — read from live site)_
-- [ ] **C6 — Team member ordering must follow source role hierarchy** _(all team pages)_. Members are currently in import/CSV order, not the source's deliberate ordering (President → Vice President → … then the rest). Order is **not alphabetical** — it's role-rank. Need an explicit per-member order field (or a role-rank sort) so each Team block renders in the source's order. Generalizes [AC1]. _(AFK — add order field to Team + set from source order)_
-- [ ] **C5 — Sticky left TOC for content pages** _(HITL: scope + which pages)_. Sticky, left-rail table of contents that scroll-spies the page's section headings (mission, faq, and other long prose/Content pages). _Note: the Team page does **not** currently have a TOC (it has a filter/tab bar) — this is net-new, no existing component to reuse._ Needs: anchor IDs auto-derived from headings (Content/prose blocks), a sticky `aside` + scroll-spy highlight, collapses/hides on mobile. Decide which page set gets it.
+- [x] **C7 — Targeted testimonials per page** _(done, `3bb29fe` — live shows none, so removed from the 4 non-career program pages)_ _(HITL: the per-page mapping)_. Instead of removing the Testimonials block from program pages (supersedes [CB1]/[LA3]), each program page should show testimonials **relevant to that program**. The Programs testimonials CSV is a flat 13-item bucket with **no program field**, so targeting can't be auto-derived. Need a curation mechanism — a `program`/tag field on Testimonials (or a relationship pick on the block) — and the per-page selection sourced from what each **live** program page displays. Career-support keeps its `career` set. _(mechanism AFK; the mapping is HITL — read from live site)_
+- [x] **C6 — Team member ordering must follow source role hierarchy** _(done, `3bb29fe`)_ _(all team pages)_. Members are currently in import/CSV order, not the source's deliberate ordering (President → Vice President → … then the rest). Order is **not alphabetical** — it's role-rank. Need an explicit per-member order field (or a role-rank sort) so each Team block renders in the source's order. Generalizes [AC1]. _(AFK — add order field to Team + set from source order)_
+- [x] **C5 — Sticky left TOC for content pages** _(done, `b671cf1`)_ _(HITL: scope + which pages)_. Sticky, left-rail table of contents that scroll-spies the page's section headings (mission, faq, and other long prose/Content pages). _Note: the Team page does **not** currently have a TOC (it has a filter/tab bar) — this is net-new, no existing component to reuse._ Needs: anchor IDs auto-derived from headings (Content/prose blocks), a sticky `aside` + scroll-spy highlight, collapses/hides on mobile. Decide which page set gets it.
 
 ---
 
 ## Global (header / footer / site-wide)
 
-- [ ] **G1 — Header nav menu** _(HITL: D2 + IA)_. Today the header is just logo + "Home" + "Search". Build a real menu (hamburger overlay per D2), keeping the current hero design. Folds in the login/logout control ([#115]). Proposed IA:
+- [x] **G1 — Header nav menu** _(done, `690cc26`)_ _(HITL: D2 + IA)_. Today the header is just logo + "Home" + "Search". Build a real menu (hamburger overlay per D2), keeping the current hero design. Folds in the login/logout control ([#115]). Proposed IA:
   - About Us → Mission · FAQ · Partners · Board & Leadership · Advisory Council · State Committees
   - Programs → Career Support · Community Building · Legal Advocacy · Policy Initiatives · Public Sector Engagement
   - Resources → Federal Employment · Jumuah Services · Fellowships (Young) · Fellowships (Mid-Career→Senior)
@@ -85,7 +91,7 @@ are applied in a batch against the seed/blocks.
 
 ### `/about-us/mission`
 
-- [ ] **M1 — "MAPS in the community" gallery** → add **2 more photos** (7 → 9, fills the 3-col grid evenly) and render the tiles **smaller** (tighter cell size — more columns or smaller aspect). _(AFK seed + MediaGallery)_
+- [x] **M1 — "MAPS in the community" gallery** _(done, `00265f0`/`3bb29fe`; +2 photos still held)_ → add **2 more photos** (7 → 9, fills the 3-col grid evenly) and render the tiles **smaller** (tighter cell size — more columns or smaller aspect). _(AFK seed + MediaGallery)_
 
 ### `/about-us/board-leadership`
 
@@ -151,8 +157,8 @@ are applied in a batch against the seed/blocks.
 
 ### `/resources/jumuah-prayer-services-washington-dc`
 
-- [ ] **JU1 — Drop a pin per location on the map** → the MapLocationCards map should show each Jumuah location as a **map pin/marker**, not a single generic embed. _Note: the current block uses the Google Maps **Embed API** (one place per iframe) — multi-marker needs the Maps **JavaScript API** (markers from the `locations` array) or a custom-map embed; meaningful change to the block._ _(needs block work)_
-- [ ] **JU2 — Shorten slug** _(optional)_ → `jumuah-prayer-services-washington-dc` is long; consider `jumuah-services`. _(AFK — but breaks any existing inbound links/redirects)_
+- [x] **JU1 — Drop a pin per location on the map** _(done, `00265f0`/`3bb29fe`)_ → the MapLocationCards map should show each Jumuah location as a **map pin/marker**, not a single generic embed. _Note: the current block uses the Google Maps **Embed API** (one place per iframe) — multi-marker needs the Maps **JavaScript API** (markers from the `locations` array) or a custom-map embed; meaningful change to the block._ _(needs block work)_
+- [x] **JU2 — Shorten slug** _(done, `3bb29fe` — `/resources/jumuah-services` + redirect)_ → `jumuah-prayer-services-washington-dc` is long; consider `jumuah-services`. _(AFK — but breaks any existing inbound links/redirects)_
 
 ## Programs
 
