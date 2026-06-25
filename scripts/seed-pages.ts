@@ -238,7 +238,7 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
   return [
     {
       slug: 'phase-4-blocks',
-      title: 'Phase 4 — Block Showcase',
+      title: 'Phase 4 Block Showcase',
       _status: 'published',
       hero: {
         type: 'lowImpact',
@@ -390,10 +390,6 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'About Us',
-        breadcrumbs: [
-          { label: 'About Us', url: '/about-us/mission' },
-          { label: 'FAQs' },
-        ],
         richText: richText(
           heading('Frequently Asked Questions'),
           paragraph(
@@ -653,7 +649,6 @@ const missionSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'About Us',
-        breadcrumbs: [{ label: 'About Us', url: '/about-us/board-leadership' }, { label: 'Mission' }],
         richText: richText(
           heading('Mission, Values & History', 'h1'),
           paragraph(
@@ -815,10 +810,6 @@ const partnersSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'About Us',
-        breadcrumbs: [
-          { label: 'About Us', url: '/about-us/mission' },
-          { label: 'Partners' },
-        ],
         richText: richText(
           heading('Our Partner Organizations'),
           paragraph(
@@ -993,7 +984,6 @@ const eventsSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Events',
-        breadcrumbs: [{ label: 'Home', url: '/' }, { label: 'Events' }],
         richText: richText(
           heading('Events'),
           paragraph(
@@ -1212,7 +1202,7 @@ const homeSlice: PageSlice = async (payload) => {
           type: 'programs',
           populateBy: 'collection',
           limit: 0,
-          heading: 'Member Testimonials on MAPS Programs',
+          heading: 'Member Testimonials',
         },
         // MAPS Membership — three membership cards. Images flagged.
         {
@@ -1567,10 +1557,6 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
       _status: 'published',
       hero: {
         type: 'lowImpact',
-        breadcrumbs: [
-          { label: 'Member Portal', url: '/members/portal' },
-          { label: 'Community Building' },
-        ],
         richText: richText(
           heading('Community Building'),
           paragraph('Review our engagement standards before joining.'),
@@ -1770,13 +1756,6 @@ const mapsAcademyVidsSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Member Portal',
-        breadcrumbs: [
-          { label: 'Member Portal', url: '/members/portal' },
-          // BUG FIX (catalog §6): source mislabeled this active crumb
-          // "Professional Development"; the current page is MAPS Academy Videos.
-          // Last crumb = current page -> url omitted (rendered as plain text).
-          { label: 'MAPS Academy Videos' },
-        ],
         richText: richText(
           heading('Recent MAPS Academy Programs'),
           paragraph(
@@ -1918,7 +1897,6 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Members',
-        breadcrumbs: [{ label: 'Members' }, { label: 'New York State' }],
         richText: richText(
           heading('MAPS New York State Committee'),
           paragraph(
@@ -1981,10 +1959,6 @@ const policyLegalAdvocacySlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Member Portal',
-        breadcrumbs: [
-          { label: 'Member Portal', url: '/members/portal' },
-          { label: 'Policy & Legal Advocacy' },
-        ],
         richText: richText(
           heading('Policy & Legal Advocacy', 'h1'),
           paragraph(
@@ -2113,10 +2087,6 @@ const memberPortalSlice: PageSlice = async (_payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Member Portal',
-        breadcrumbs: [
-          { label: 'Members', url: '/members' },
-          { label: 'Member Portal' },
-        ],
         richText: richText(
           heading('Member Portal', 'h1'),
           paragraph(
@@ -2166,10 +2136,6 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Member Portal',
-        breadcrumbs: [
-          { label: 'Member Portal', url: '/members/portal' },
-          { label: 'Professional Development' },
-        ],
         richText: richText(
           heading('Professional Development', 'h1'),
           paragraph(
@@ -2302,15 +2268,11 @@ const resourcesPointsOfContactSlice: PageSlice = async (_payload) => {
   return [
     {
       slug: 'members/resources-points-of-contact',
-      title: 'Resources — Points of Contact',
+      title: 'Resources, Points of Contact',
       _status: 'published',
       hero: {
         type: 'lowImpact',
         eyebrow: 'Members',
-        breadcrumbs: [
-          { label: 'Members', url: '/members' },
-          { label: 'Resources — Points of Contact' },
-        ],
         richText: richText(
           heading('Resources & Points of Contact'),
           paragraph(
@@ -2371,7 +2333,6 @@ const pressSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Press',
-        breadcrumbs: [{ label: 'Home', url: '/' }, { label: 'Press' }],
         richText: richText(
           heading('Press Releases'),
           paragraph('Latest statements, press releases, and media features from MAPS.'),
@@ -2521,7 +2482,6 @@ const careerSupportSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Empower',
-        breadcrumbs: [{ label: 'Programs' }, { label: 'Career Support' }],
         richText: richText(
           heading('Advance your career, serve your community and country'),
           paragraph(
@@ -2565,10 +2525,6 @@ const communityBuildingSlice: PageSlice = async (_payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Programs',
-        breadcrumbs: [
-          { label: 'Programs' },
-          { label: 'Community Building' },
-        ],
         richText: richText(
           heading('Community Building'),
           paragraph(
@@ -2701,7 +2657,6 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Empower',
-        breadcrumbs: [{ label: 'Programs', url: '/programs' }, { label: 'Legal Advocacy' }],
         richText: richText(
           heading('Legal Advocacy'),
           paragraph(
@@ -2808,11 +2763,6 @@ const policyInitiativesSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Programs',
-        breadcrumbs: [
-          { label: 'Home', url: '/' },
-          { label: 'Programs', url: '/programs/career-support' },
-          { label: 'Policy & Advocacy' },
-        ],
         richText: richText(
           heading('Policy & Advocacy Initiatives'),
           paragraph('Supporting Federal, State & Local Government Staffers.'),
@@ -2993,10 +2943,6 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Empower',
-        breadcrumbs: [
-          { label: 'Programs' },
-          { label: 'Private Sector Engagement' },
-        ],
         richText: richText(
           heading('MAPS Private Sector Engagement (PSE)'),
           paragraph(
@@ -3106,10 +3052,6 @@ const federalEmploymentSlice: PageSlice = async (_payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Resources',
-        breadcrumbs: [
-          { label: 'Resources' },
-          { label: 'Federal & State Jobs' },
-        ],
         richText: richText(
           heading('Federal & State Government Jobs', 'h1'),
           paragraph(
@@ -3273,15 +3215,11 @@ const jumuahServicesSlice: PageSlice = async (_payload) => {
   return [
     {
       slug: 'resources/jumuah-services',
-      title: 'Jumuah Prayer Services — Washington, DC',
+      title: 'Jumuah Prayer Services in Washington, DC',
       _status: 'published',
       hero: {
         type: 'lowImpact',
         eyebrow: 'Friday Congregational Prayer',
-        breadcrumbs: [
-          { label: 'Resources', url: '/resources' },
-          { label: 'Jumuah Services' },
-        ],
         richText: richText(
           heading('Jumuah Services in Washington DC Metro Area'),
           paragraph(
@@ -3379,15 +3317,11 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
   return [
     {
       slug: 'resources/public-service-fellowships-mid-career-to-senior-professionals',
-      title: 'Public Service Fellowships — Mid-Career to Senior Professionals',
+      title: 'Public Service Fellowships for Mid-Career to Senior Professionals',
       _status: 'published',
       hero: {
         type: 'lowImpact',
         eyebrow: 'Resources',
-        breadcrumbs: [
-          { label: 'Resources' },
-          { label: 'Fellowships (Mid/Senior Professionals)' },
-        ],
         richText: richText(
           heading('Public Service Fellowships', 'h1'),
           paragraph('Mid-Career to Senior Professionals'),
@@ -3535,15 +3469,11 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
   return [
     {
       slug: 'resources/public-service-fellowships-young-professionals',
-      title: 'Public Service Fellowships — Young Professionals',
+      title: 'Public Service Fellowships for Young Professionals',
       _status: 'published',
       hero: {
         type: 'lowImpact',
         eyebrow: 'Resources',
-        breadcrumbs: [
-          { label: 'Resources', url: '/resources/federal-employment' },
-          { label: 'Fellowships — Young Professionals' },
-        ],
         richText: richText(
           heading('Public Service Fellowships — Young Professionals', 'h1'),
           paragraph(
@@ -3839,7 +3769,6 @@ const contactUsSlice: PageSlice = async (payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'Get in touch',
-        breadcrumbs: [{ label: 'Home', url: '/' }, { label: 'Contact Us' }],
         richText: richText(
           heading('Contact us', 'h1'),
           paragraph(
@@ -3903,7 +3832,6 @@ const latestUpdatesSlice: PageSlice = async (_payload) => {
       hero: {
         type: 'lowImpact',
         eyebrow: 'News',
-        breadcrumbs: [{ label: 'Home', url: '/' }, { label: 'Latest Updates' }],
         richText: richText(
           heading('Latest Updates', 'h1'),
           paragraph(
