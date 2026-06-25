@@ -1157,9 +1157,13 @@ export interface MediaGalleryBlock {
    */
   layout: 'grid' | 'slider';
   /**
-   * Number of columns in grid layout (ignored for the slider).
+   * Number of columns in grid layout (ignored when density is Compact or for the slider).
    */
   columns: '2' | '3' | '4';
+  /**
+   * Comfortable: 4:3 tiles at the chosen column count. Compact: small square tiles, four-up, tighter gaps — best for a dense photo wall. Ignored for the slider.
+   */
+  density: 'comfortable' | 'compact';
   /**
    * Let visitors click an image to view it full-size in an overlay, with next/previous.
    */
@@ -1768,6 +1772,14 @@ export interface MapLocationCardsBlock {
         email?: string | null;
         linkLabel?: string | null;
         linkUrl?: string | null;
+        /**
+         * Decimal degrees. With lng, drops a map pin for this location.
+         */
+        lat?: number | null;
+        /**
+         * Decimal degrees.
+         */
+        lng?: number | null;
         id?: string | null;
       }[]
     | null;
@@ -2381,6 +2393,7 @@ export interface MediaGalleryBlockSelect<T extends boolean = true> {
   heading?: T;
   layout?: T;
   columns?: T;
+  density?: T;
   enableLightbox?: T;
   images?:
     | T
@@ -2592,6 +2605,8 @@ export interface MapLocationCardsBlockSelect<T extends boolean = true> {
         email?: T;
         linkLabel?: T;
         linkUrl?: T;
+        lat?: T;
+        lng?: T;
         id?: T;
       };
   id?: T;

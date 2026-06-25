@@ -20,6 +20,9 @@ const gridCols: Record<string, string> = {
   '4': 'grid-cols-2 lg:grid-cols-4',
 }
 
+// Compact: a dense, square photo wall — four-up, tight gaps, ignores `columns`.
+const compactCols = 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+
 /**
  * Interactive surface for the Media Gallery block: a tiled grid or a swipeable
  * horizontal slider, plus an optional click-to-zoom lightbox. The lightbox is a
@@ -28,10 +31,12 @@ const gridCols: Record<string, string> = {
  */
 export const MediaGalleryClient: React.FC<{
   columns: string
+  density?: string
   images: GalleryImage[]
   layout: string
   lightbox: boolean
-}> = ({ columns, images, layout, lightbox }) => {
+}> = ({ columns, density = 'comfortable', images, layout, lightbox }) => {
+  const compact = density === 'compact'
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -88,10 +93,15 @@ export const MediaGalleryClient: React.FC<{
           ))}
         </Carousel>
       ) : (
-        <ul className={cn('grid grid-cols-1 gap-4', gridCols[columns] ?? gridCols['3'])}>
+        <ul
+          className={cn(
+            'grid grid-cols-1',
+            compact ? cn('gap-2', compactCols) : cn('gap-4', gridCols[columns] ?? gridCols['3']),
+          )}
+        >
           {images.map((image, i) => (
             <li key={i}>
-              <Thumb image={image} index={i} lightbox={lightbox} onOpen={open} />
+              <Thumb compact={compact} image={image} index={i} lightbox={lightbox} onOpen={open} />
             </li>
           ))}
         </ul>
@@ -167,21 +177,29 @@ export const MediaGalleryClient: React.FC<{
  * lightbox captured for focus restoration.
  */
 const Thumb: React.FC<{
+  compact?: boolean
   image: GalleryImage
   index: number
   lightbox: boolean
   onOpen: (index: number, el: HTMLElement) => void
-}> = ({ image, index, lightbox, onOpen }) => {
+}> = ({ compact, image, index, lightbox, onOpen }) => {
   const inner = (
     <NextImage
       alt={image.alt}
       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       fill
-      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      sizes={
+        compact
+          ? '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
+          : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+      }
       src={image.src}
     />
   )
-  const wrapperCls = 'group relative block aspect-[4/3] w-full overflow-hidden bg-surface-secondary'
+  const wrapperCls = cn(
+    'group relative block w-full overflow-hidden bg-surface-secondary',
+    compact ? 'aspect-square' : 'aspect-[4/3]',
+  )
 
   return lightbox ? (
     <button
