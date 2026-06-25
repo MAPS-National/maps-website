@@ -87,6 +87,15 @@
       max-width: var(--breakpoint-2xl);
     }
   }
+
+  /* Sticky page TOC (PageTOC): reserve a left rail only when the TOC activates
+     itself (3+ section headings) and only at xl+, where there's room. Below xl
+     the rail is hidden and content stays full-width. */
+  @variant xl {
+    [data-toc-content][data-toc-active='true'] {
+      padding-left: 15rem;
+    }
+  }
 }
 
 :root {
