@@ -484,7 +484,8 @@ const missionSlice: PageSlice = async (payload) => {
       blockType: 'mediaGallery',
       heading: 'MAPS in the community',
       layout: 'grid',
-      columns: '3',
+      columns: '4',
+      density: 'compact',
       enableLightbox: true,
       images: galleryImages,
     } as unknown as PageData['layout'][number])
@@ -2643,17 +2644,7 @@ const communityBuildingSlice: PageSlice = async (_payload) => {
               ),
             },
           ],
-        },
-        {
-          blockType: 'testimonials',
-          variant: 'grid',
-          type: 'programs',
-          populateBy: 'collection',
-          limit: 0,
-          eyebrow: 'In their words',
-          heading: 'What our community says',
-        },
-      ],
+        },      ],
     },
   ] as unknown as PageData[]
 }
@@ -2781,17 +2772,7 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
           ],
           ...(featureImage ? { image: featureImage } : {}),
           anchorId: 'recordings',
-        },
-        {
-          blockType: 'testimonials',
-          variant: 'grid',
-          type: 'programs',
-          populateBy: 'collection',
-          limit: 0,
-          eyebrow: 'In their words',
-          heading: 'What our community says',
-        },
-      ],
+        },      ],
     },
   ] as unknown as PageData[]
 }
@@ -2951,17 +2932,7 @@ const policyInitiativesSlice: PageSlice = async (payload) => {
               ),
             },
           ],
-        },
-        {
-          blockType: 'testimonials',
-          variant: 'grid',
-          type: 'programs',
-          populateBy: 'collection',
-          limit: 0,
-          eyebrow: 'In their words',
-          heading: 'What our community says',
-        },
-      ],
+        },      ],
     },
   ] as unknown as PageData[]
 }
@@ -3101,17 +3072,7 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
               },
             },
           ],
-        },
-        {
-          blockType: 'testimonials',
-          variant: 'grid',
-          type: 'programs',
-          populateBy: 'collection',
-          limit: 0,
-          eyebrow: 'In their words',
-          heading: 'What our community says',
-        },
-      ],
+        },      ],
     },
   ] as unknown as PageData[]
 }
@@ -3291,7 +3252,7 @@ const federalEmploymentSlice: PageSlice = async (_payload) => {
 const jumuahServicesSlice: PageSlice = async (_payload) => {
   return [
     {
-      slug: 'resources/jumuah-prayer-services-washington-dc',
+      slug: 'resources/jumuah-services',
       title: 'Jumuah Prayer Services — Washington, DC',
       _status: 'published',
       hero: {
@@ -3323,27 +3284,37 @@ const jumuahServicesSlice: PageSlice = async (_payload) => {
           locations: [
             {
               name: 'George Washington University (1:15pm)',
+              lat: 38.8997,
+              lng: -77.0476,
               address:
                 'GWU Student Center, Room 406\n800 21st Street NW, Washington, DC 20037',
               email: 'education@gwmsa.com',
             },
             {
               name: 'Georgetown University (1:30pm)',
+              lat: 38.9097,
+              lng: -77.0743,
               address:
                 'Bulldog Alley, Leavy Center Main Floor\n3800 Reservoir Rd. NW (37th Street & O St)\nWashington, DC 20057',
             },
             {
               name: 'U.S. Capitol Building (12:30pm)',
+              lat: 38.8899,
+              lng: -77.0091,
               address:
                 '*Congressional Staffers and Guests Only — Contact MAPS to coordinate escort*\nRoom HC-5, First St. SE, Washington, DC 20004\nA valid government ID (e.g. driver’s license) is required for entry. Inform the guard where you are headed; they are familiar with “Muslim Friday Prayer” and will give you directions to the service.',
             },
             {
               name: 'Islamic Center on Massachusetts Avenue (12:30pm EST, 1:30pm EDT)',
+              lat: 38.9171,
+              lng: -77.0567,
               address: '2551 Mass Avenue NW, Washington, DC 20008',
               phone: '(202) 332-8343',
             },
             {
               name: 'Center DC (1:00pm & 2:00pm)',
+              lat: 38.9092,
+              lng: -77.0237,
               address:
                 '1426 9th St NW Suite 100, Washington, DC 20001\nDue to space limitations, registration is required to attend.',
               linkLabel: 'RSVP for Jummah & Center DC events',
@@ -3351,23 +3322,31 @@ const jumuahServicesSlice: PageSlice = async (_payload) => {
             },
             {
               name: 'The Church of the Epiphany (1:00pm)',
+              lat: 38.8982,
+              lng: -77.029,
               address:
                 '1317 G St., NW, Washington, DC 20005\nIn the basement of the church (towards 14th St). Located two blocks from Metro Center — serves the downtown working community. Hosted in the Church of the Epiphany, the only church on G street between 13th and 14th streets.',
             },
             {
               name: 'Islamic Center of America (1:30pm)',
+              lat: 38.881,
+              lng: -77.0166,
               address:
                 '900 4th St., SW, Washington, DC 20024\nEntrance is on the I Street side, in the basement of “Christ United Methodist Church.” Roughly two blocks from the Waterfront Metro Station — serves the SW working community, right by Southwest Library.',
               phone: '(202) 437-1295',
             },
             {
               name: 'IMAAM Center in Silver Spring (12:15pm & 1:30pm)',
+              lat: 39.0043,
+              lng: -77.0375,
               address:
                 '9100 Georgia Avenue, Silver Spring, MD 20910\nBlocks from downtown Silver Spring, close to several Federal buildings in or around Silver Spring.',
               phone: '(240) 233-6967',
             },
             {
               name: 'McLean Islamic Center (11:30am, 12:30pm & 1:30pm EST)',
+              lat: 38.9269,
+              lng: -77.2287,
               address: '8800 Jarrett Valley Drive, Vienna, VA 22182',
             },
           ],
@@ -3888,6 +3867,114 @@ const PAGE_SLICES: PageSlice[] = [
 ]
 
 // ---------------------------------------------------------------------------
+// Team member ordering (C6) — exact per-group order read from the live site
+// (mapsnational.webflow.io, June 2026). Groups are listed in display-seniority
+// order; each member takes a single global `order` from the FIRST (most senior)
+// group they appear in, so the Team block's `sort: 'order'` renders every group
+// in this sequence and a cross-listed leader surfaces at the top of their junior
+// groups (e.g. a state president leads their own committee). A single numeric
+// field can't encode two independent ranks, so the few members cross-listed
+// across two *leadership* groups keep their senior rank in the junior one:
+// Fatima Abdelsalam and Hon. Samia Naseem therefore sort to the top of the
+// "State Committee Presidents" group rather than their exact live slot — refine
+// in admin if that subsection's precise order matters.
+const TEAM_ORDER: string[][] = [
+  // Board of Directors
+  ['Ahmad Maaty', 'Ameer Abdulrahman', 'Katie Qutub', 'Aamer Uddin', 'Assma Daifallah', 'Idil Ahmed', 'Farrah Pappa', 'Mahnoor Jaura', 'Jaheda Guliwala', 'Tamim Chowdhury', 'Hassan Sheikh', 'Mohammed Sohail Chaudhry'],
+  // Board Specialists, Committee Chairs & Deputy Directors
+  ['Syed "Waqar" Azeem', 'Ismail Mohammed', 'Ejaz Baluch', 'Fatima Abdelsalam', 'Omar Aswad', 'Maisa Munawara', 'Zaineb Sharif', 'Muna Sultana', 'Ayah Elwannas', 'Badr Alsaidi'],
+  // Committee and Task Force Members
+  ['Mariya Ilyas', 'Sarah Ahmad', 'Ameena Razzaque', 'Saeb Ahsan', 'Suha Ansari', 'Madiha Zuberi'],
+  // Advisory Council (its own page — keep exact, so it precedes the presidents)
+  ['Adil Ahmed', 'Ahsia Badi', 'Laila ElGohary', 'Dr. Hashima Hasan', 'Hon. Rashad Hauter', 'Madiha Latif', 'Syra Madad', 'Saeed Mody', 'Ahmed Mousa', 'Hon. Samia Naseem', 'Hon. Asim Rehman', 'Fatema Z. Sumar', 'Yusufi Vali', 'Hon. Asad Ba-Yunus'],
+  // State Committee Presidents
+  ['Basem Hassan', 'Sofia Abdi', 'Machhadie Assi', 'Fatima Abdelsalam', 'Mahanaz Ebadi', 'Hon. Samia Naseem', 'Fatima Shaikh', 'Dr. Samia Hussein', 'John Patrick Abellera'],
+  // State committees — president first, then live order
+  ['Basem Hassan', 'Hesham El Meligy', 'Sadiyah Kazi', 'Sarah Khan', 'Rumana Haque', 'Syed Adnan Bukhari', 'Ayyad Algabyali', 'Zunera Ahmed', 'Saira Amar', 'Ayyan S. Zubair', 'Duriba Khan'], // New York
+  ['Sofia Abdi', 'Hodan Hashi', 'Faarooq Sahabdeen', 'Armaya Doremi'], // Massachusetts
+  ['Machhadie Assi', 'Omar Shajrah', 'Aiyah Kassem', 'Ola Albayati', 'Saja Badawi'], // Michigan
+  ['Fatima Abdelsalam', 'Tajnia Hussain'], // New Jersey
+  ['Mahanaz Ebadi', 'Zeeshan M. Chaudhry', 'Sada Ahmed'], // California
+  ['Hon. Samia Naseem', 'Wardah Alvi', 'Safiyah Zaidi'], // Illinois
+  ['Fatima Shaikh'], // Texas
+  ['Dr. Samia Hussein', 'Sabit Nasir'], // Connecticut
+  ['John Patrick Abellera'], // Georgia
+]
+
+const applyTeamOrder = async (payload: Payload, context: Record<string, unknown>) => {
+  const all = await payload.find({ collection: 'team', limit: 0, depth: 0 })
+  // Imported names can carry non-breaking spaces (U+00A0) from the source CSV,
+  // so normalize on both sides before matching.
+  const norm = (s: string) => s.split(String.fromCharCode(160)).join(' ').trim()
+  const byName = new Map(all.docs.map((d) => [norm(d.name), d]))
+
+  // Assign one global order from each member's first (most senior) appearance.
+  const orderByName = new Map<string, number>()
+  let counter = 1
+  for (const group of TEAM_ORDER) {
+    for (const name of group) {
+      if (!orderByName.has(name)) orderByName.set(name, counter++)
+    }
+  }
+
+  const missing: string[] = []
+  let updated = 0
+  for (const [name, order] of orderByName) {
+    const doc = byName.get(name)
+    if (!doc) {
+      missing.push(name)
+      continue
+    }
+    if (doc.order !== order) {
+      await payload.update({ collection: 'team', id: doc.id, data: { order }, context })
+    }
+    updated++
+  }
+  payload.logger.info(`Team order: set ${updated}/${orderByName.size} members from live order.`)
+  if (missing.length) payload.logger.warn(`Team order: no DB match for: ${missing.join(', ')}`)
+}
+
+// Slug redirects (JU2 + future renames) — upserted into the redirects collection
+// so old URLs 301 to the new ones. PayloadRedirects matches `from` against the
+// requested "/path" and follows `to.url`.
+const SLUG_REDIRECTS: { from: string; to: string }[] = [
+  { from: '/resources/jumuah-prayer-services-washington-dc', to: '/resources/jumuah-services' },
+]
+
+const applyRedirects = async (payload: Payload, context: Record<string, unknown>) => {
+  for (const { from, to } of SLUG_REDIRECTS) {
+    const existing = await payload.find({
+      collection: 'redirects',
+      where: { from: { equals: from } },
+      limit: 1,
+      depth: 0,
+    })
+    const data = { from, to: { type: 'custom' as const, url: to } }
+    if (existing.docs[0]) {
+      await payload.update({ collection: 'redirects', id: existing.docs[0].id, data, context })
+    } else {
+      await payload.create({ collection: 'redirects', data, context })
+    }
+
+    // A slug rename leaves the page under the OLD slug behind (upsert keys on the
+    // new slug), so delete it — the redirect now covers that path.
+    const oldSlug = from.replace(/^\//, '')
+    const stale = await payload.find({
+      collection: 'pages',
+      where: { slug: { equals: oldSlug } },
+      limit: 10,
+      depth: 0,
+    })
+    for (const doc of stale.docs) {
+      await payload.delete({ collection: 'pages', id: doc.id, context })
+      payload.logger.info(`Removed stale page /${oldSlug}`)
+    }
+
+    payload.logger.info(`Redirect: ${from} -> ${to}`)
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Runner
 
 const run = async () => {
@@ -3916,6 +4003,9 @@ const run = async () => {
       }
     }
   }
+
+  await applyTeamOrder(payload, context)
+  await applyRedirects(payload, context)
 
   payload.logger.info('Page seed complete.')
   process.exit(0)
