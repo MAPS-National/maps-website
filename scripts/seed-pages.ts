@@ -1273,7 +1273,11 @@ const homeSlice: PageSlice = async (payload) => {
 }
 
 const joinSlice: PageSlice = async (_payload) => {
-  // Outseta registration links per plan (preserved from the source CTAs).
+  // Outseta registration links per plan (preserved from the source CTAs). The
+  // URL is an Outseta auth link ending in `#o-anonymous`; with the nocode module
+  // loaded (monitorDom), a same-tab click opens the plan-signup modal in place.
+  // Must NOT be newTab — `target="_blank"` makes the browser navigate to the
+  // hosted auth page instead of letting nocode intercept and pop the modal (JN1).
   const apply = (url: string) =>
     [
       {
@@ -1282,7 +1286,6 @@ const joinSlice: PageSlice = async (_payload) => {
           appearance: 'outline' as const,
           label: 'Apply',
           url,
-          newTab: true,
         },
       },
     ]
@@ -3785,7 +3788,43 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
   ] as unknown as PageData[]
 }
 
-const contactUsSlice: PageSlice = async (_payload) => {
+const contactUsSlice: PageSlice = async (payload) => {
+  // Contact form (CO1, #98). Owned here and upserted by title so a reseed keeps
+  // it and a fresh DB recreates it — self-healing like the gallery media.
+  const formData = {
+    title: 'Contact Form',
+    submitButtonLabel: 'Send message',
+    confirmationType: 'message' as const,
+    confirmationMessage: richText(
+      heading('Thank you — your message has been sent.', 'h3'),
+      paragraph("We'll be in touch with you shortly."),
+    ),
+    fields: [
+      { blockType: 'text', name: 'full-name', blockName: 'full-name', label: 'Full name', required: true, width: 100 },
+      { blockType: 'email', name: 'email', blockName: 'email', label: 'Email', required: true, width: 100 },
+      { blockType: 'text', name: 'subject', blockName: 'subject', label: 'Subject', required: false, width: 100 },
+      { blockType: 'textarea', name: 'message', blockName: 'message', label: 'Message', required: true, width: 100 },
+    ],
+    emails: [
+      {
+        emailTo: 'info@mapsnational.org',
+        emailFrom: '"MAPS National" <no-reply@mapsnational.org>',
+        subject: "You've received a new contact message.",
+        message: richText(paragraph('A new message was submitted via the website contact form.')),
+      },
+    ],
+  }
+
+  const existingForm = await payload.find({
+    collection: 'forms',
+    where: { title: { equals: formData.title } },
+    limit: 1,
+    depth: 0,
+  })
+  const formId = existingForm.docs[0]
+    ? (await payload.update({ collection: 'forms', id: existingForm.docs[0].id, data: formData as never })).id
+    : (await payload.create({ collection: 'forms', data: formData as never })).id
+
   return [
     {
       slug: 'contact-us',
@@ -3803,6 +3842,12 @@ const contactUsSlice: PageSlice = async (_payload) => {
         ),
       },
       layout: [
+        {
+          blockType: 'formBlock',
+          form: formId,
+          enableIntro: true,
+          introContent: richText(heading('Send us a message', 'h3')),
+        },
         {
           blockType: 'contactDetails',
           heading: 'Reach MAPS National',

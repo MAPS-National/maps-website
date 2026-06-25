@@ -35,6 +35,7 @@ Built + preview-verified, committed on `feat/phase6` (not pushed):
 - **C6 resolved (walkthrough 3):** (a) the Presidents-tab float (**Fatima Abdelsalam** + **Hon. Samia Naseem** above Basem Hassan — a single `order` field can't hold two independent ranks) is **accepted as-is**: cosmetic, exact everywhere else. (b) **Hasan Shanawani** (in the import's board, not on the live board) is **hidden via a new `inactive` flag** on Team — board now matches the source (12 / 3 at-large). The flag is a reversible per-member sidebar toggle (record preserved, not deleted); the block query is null-safe so existing members are unaffected. Seed sets it via `TEAM_INACTIVE`.
 - **M1 done** — the 2 supplied community photos (Georgetown Law panel + MAPS at the U.S. DOJ) are in the grid (now 9). Converted to optimized webp (the DOJ one from HEIC via a transient decoder), committed under `public/import/prose/`. `seed-pages` `mediaId` is now self-healing — it creates a Media doc from the tracked source if absent, so a fresh DB reproduces the gallery without `import:prose`. Layout refined: compact density now honors the `columns` field (mission set to `3` → clean 3×3) and tiles are **4:3** (was square) so the landscape group photos aren't center-cropped/zoomed.
 - **JU1 / JU2 dev caveat:** map markers + InfoWindows verified live; the old-slug redirect needs a fresh `getCachedRedirects` (a `next build` or a `.next` clear) — production builds regenerate it automatically.
+- **Punch-list reconciled (walkthrough 4):** every item is now `[x]`. The two items previously deferred to standalone issues are built — **CO1** (contact form, #98) and **JN1** (`/join` Outseta plan modal). Checkboxes lower in this doc were flipped to match the committed reality recorded in the progress log above.
 
 ### Closed
 
@@ -57,11 +58,11 @@ are applied in a batch against the seed/blocks.
 
 ## Cross-cutting / component work (emerges from items below)
 
-- [ ] **C1 — Autoplay carousel primitive.** One shared auto-playing carousel reused by the Testimonials slider (H4) and the Latest Updates slider (H1). Build once.
-- [ ] **C2 — Testimonials block: add `slider` variant + autoplay** (today only `grid` / `single`).
-- [ ] **C3 — ArchiveBlock: slider treatment** for the Latest Updates feed on home (H1).
-- [ ] **C4 — CardGrid: "linked image card" pattern** — full-bleed image, whole card clickable (`enableCardLink` + `cardLink`), no button, keep border. **Scope: site-wide** (D1 resolved) — apply to every comparable CardGrid (home H2/H3, all program support-area grids [CS1]/[LA1], members, resources). The **clickable-surface + no-button** behavior can also apply to **imageless** cards where called out (e.g. [MCB1]) — but it's **opt-in per section**, not automatic (some imageless cards keep their buttons, see [MCB2]).
-- [ ] **C8 — Accordions collapsed by default** _(global)_. Every accordion/FAQ block site-wide starts collapsed, not expanded. Generalizes [CB2]. _(AFK — accordion `defaultOpen` off everywhere)_
+- [x] **C1 — Autoplay carousel primitive.** One shared auto-playing carousel reused by the Testimonials slider (H4) and the Latest Updates slider (H1). Build once.
+- [x] **C2 — Testimonials block: add `slider` variant + autoplay** (today only `grid` / `single`).
+- [x] **C3 — ArchiveBlock: slider treatment** for the Latest Updates feed on home (H1).
+- [x] **C4 — CardGrid: "linked image card" pattern** — full-bleed image, whole card clickable (`enableCardLink` + `cardLink`), no button, keep border. **Scope: site-wide** (D1 resolved) — apply to every comparable CardGrid (home H2/H3, all program support-area grids [CS1]/[LA1], members, resources). The **clickable-surface + no-button** behavior can also apply to **imageless** cards where called out (e.g. [MCB1]) — but it's **opt-in per section**, not automatic (some imageless cards keep their buttons, see [MCB2]).
+- [x] **C8 — Accordions collapsed by default** _(global)_. Every accordion/FAQ block site-wide starts collapsed, not expanded. Generalizes [CB2]. _(AFK — accordion `defaultOpen` off everywhere)_
 - [x] **C7 — Targeted testimonials per page** _(done, `3bb29fe` — live shows none, so removed from the 4 non-career program pages)_ _(HITL: the per-page mapping)_. Instead of removing the Testimonials block from program pages (supersedes [CB1]/[LA3]), each program page should show testimonials **relevant to that program**. The Programs testimonials CSV is a flat 13-item bucket with **no program field**, so targeting can't be auto-derived. Need a curation mechanism — a `program`/tag field on Testimonials (or a relationship pick on the block) — and the per-page selection sourced from what each **live** program page displays. Career-support keeps its `career` set. _(mechanism AFK; the mapping is HITL — read from live site)_
 - [x] **C6 — Team member ordering must follow source role hierarchy** _(done, `3bb29fe`)_ _(all team pages)_. Members are currently in import/CSV order, not the source's deliberate ordering (President → Vice President → … then the rest). Order is **not alphabetical** — it's role-rank. Need an explicit per-member order field (or a role-rank sort) so each Team block renders in the source's order. Generalizes [AC1]. _(AFK — add order field to Team + set from source order)_
 - [x] **C5 — Sticky left TOC for content pages** _(done, `b671cf1`)_ _(HITL: scope + which pages)_. Sticky, left-rail table of contents that scroll-spies the page's section headings (mission, faq, and other long prose/Content pages). _Note: the Team page does **not** currently have a TOC (it has a filter/tab bar) — this is net-new, no existing component to reuse._ Needs: anchor IDs auto-derived from headings (Content/prose blocks), a sticky `aside` + scroll-spy highlight, collapses/hides on mobile. Decide which page set gets it.
@@ -81,11 +82,11 @@ are applied in a batch against the seed/blocks.
 
 ## Home (`/`)
 
-- [ ] **H1 — Latest Updates** → slider/carousel showing **12 items** (currently a static 3-card grid). _(AFK seed + C3)_
-- [ ] **H2 — MAPS Programs cards** → full-bleed image per card, **whole card clickable** → program page, **remove "Learn More" buttons**, keep border. Source images: `4_1.webp` (Career Support), `5_1.webp` (Community Building), `policy.webp` (Policy & Advocacy). _(AFK seed + C4; needs image re-host)_
-- [ ] **H3 — MAPS Membership cards** → same treatment as H2; cards link → `/join`. Membership card images TBD from source home. _(AFK seed + C4)_
-- [ ] **H4 — Both Testimonials blocks** (Programs + Membership) → **slider with autoplay** (currently static grids). _(C1 + C2)_
-- [ ] **H5 — "MAPS National in the community" slider** → move to the **bottom** of the page, right before the footer (currently directly under the hero). _(AFK seed reorder)_
+- [x] **H1 — Latest Updates** → slider/carousel showing **12 items** (currently a static 3-card grid). _(AFK seed + C3)_
+- [x] **H2 — MAPS Programs cards** → full-bleed image per card, **whole card clickable** → program page, **remove "Learn More" buttons**, keep border. Source images: `4_1.webp` (Career Support), `5_1.webp` (Community Building), `policy.webp` (Policy & Advocacy). _(AFK seed + C4; needs image re-host)_
+- [x] **H3 — MAPS Membership cards** → same treatment as H2; cards link → `/join`. Membership card images TBD from source home. _(AFK seed + C4)_
+- [x] **H4 — Both Testimonials blocks** (Programs + Membership) → **slider with autoplay** (currently static grids). _(C1 + C2)_
+- [x] **H5 — "MAPS National in the community" slider** → move to the **bottom** of the page, right before the footer (currently directly under the hero). _(AFK seed reorder)_
 - [x] **Outseta `[domain]` init error** — fixed: single script sets `window.o_options` then injects the SDK (was a `beforeInteractive` race in the route-group layout). _(done, uncommitted in working tree)_
 
 ## About Us
@@ -96,63 +97,63 @@ are applied in a batch against the seed/blocks.
 
 ### `/about-us/board-leadership`
 
-- [ ] **B1 — Missing "State Committee Presidents" group** → the page doesn't show this team group (the 4th group whose category routing was unresolved at assembly). Surface it as its own grouped section on the page. _(AFK seed — map the team category onto this page's Team block)_
-- [ ] **B2 — Full body copy missing** → only the one-line hero intro is present; the page's full descriptive/section copy from the source was not ported. Pull the complete copy from the source. **Likely systemic** — audit the other About-Us / interior pages for the same thinned-out copy. _(AFK — re-extract from source HTML / live site)_
+- [x] **B1 — Missing "State Committee Presidents" group** → the page doesn't show this team group (the 4th group whose category routing was unresolved at assembly). Surface it as its own grouped section on the page. _(AFK seed — map the team category onto this page's Team block)_
+- [x] **B2 — Full body copy missing** → only the one-line hero intro is present; the page's full descriptive/section copy from the source was not ported. Pull the complete copy from the source. **Likely systemic** — audit the other About-Us / interior pages for the same thinned-out copy. _(AFK — re-extract from source HTML / live site)_
 
 ### `/about-us/advisory-council`
 
-- [ ] **AC1 — Member order** → reorder the advisory council members to match the live site's order. _(AFK — read order from live page; set Team category/member ordering)_
-- [ ] **AC2 — Missing text** → only the one-line hero intro; full page copy missing (same as [B2]). _(AFK — re-extract from source)_
+- [x] **AC1 — Member order** → reorder the advisory council members to match the live site's order. _(AFK — read order from live page; set Team category/member ordering)_
+- [x] **AC2 — Missing text** → only the one-line hero intro; full page copy missing (same as [B2]). _(AFK — re-extract from source)_
 
 ### `/about-us/state-committees`
 
-- [ ] **SC1 — Missing text** → only the one-line hero intro; full page copy (committee list + descriptions) missing (same as [B2]). _(AFK — re-extract from source)_
+- [x] **SC1 — Missing text** → only the one-line hero intro; full page copy (committee list + descriptions) missing (same as [B2]). _(AFK — re-extract from source)_
 
 ### `/about-us/partners`
 
-- [ ] **P1 — Backfill the missing partner logos** → only 3 of ~32 are live (export had only aafen/minaret/uscmo). **Pull the rest from the live site's partners page** — scrape the logo `<img>` CDN URLs off `mapsnational.webflow.io`, download → re-host as Media (extend `rehost:images`). _(AFK — was HITL; live site is the source)_
+- [x] **P1 — Backfill the missing partner logos** → only 3 of ~32 are live (export had only aafen/minaret/uscmo). **Pull the rest from the live site's partners page** — scrape the logo `<img>` CDN URLs off `mapsnational.webflow.io`, download → re-host as Media (extend `rehost:images`). _(AFK — was HITL; live site is the source)_
 
 ## Donate / Join / Contact
 
 ### `/donate`
 
-- [ ] **DN1 — Missing payment logos + QR codes** → the donation methods table is missing the **Zelle** and **PayPal** logos and the **per-method QR codes**. **Assets are on the live site: https://mapsnational.webflow.io/donate** — scrape the logo + QR image URLs, download → re-host as Media, bind into the table. (Confirm SVG handling if any are SVG; QRs are likely PNG.) _(AFK — live site is the source)_
+- [x] **DN1 — Missing payment logos + QR codes** → the donation methods table is missing the **Zelle** and **PayPal** logos and the **per-method QR codes**. **Assets are on the live site: https://mapsnational.webflow.io/donate** — scrape the logo + QR image URLs, download → re-host as Media, bind into the table. (Confirm SVG handling if any are SVG; QRs are likely PNG.) _(AFK — live site is the source)_
 
 ### `/contact-us`
 
-- [ ] **CO1 — Add a contact form** → page has ContactDetails only; add a working contact form (Payload form-builder). **Already filed as #98** — confirmed from review. _(AFK — per existing issue)_
+- [x] **CO1 — Add a contact form** _(done — Payload form-builder; #98)_ → `/contact-us` now renders a `formBlock` (Full name · Email · Subject · Message → "Send message") above the contact details. The form is **owned + upserted by `seed-pages`** (by title), so a reseed keeps it and a fresh DB recreates it; notifies `info@mapsnational.org`.
 
 ### `/join`
 
-- [ ] **JN1 — "Apply" CTAs must open the Outseta plan modal** → tier "Apply" buttons currently open a `target="_blank"` link. They should trigger the **Outseta plan-signup modal** in place (the source uses `#o-…` nocode anchors). **Already filed as the AFK Outseta `/join` CTAs issue** — this confirms it from review. _(AFK — per existing issue)_
+- [x] **JN1 — "Apply" CTAs must open the Outseta plan modal** _(done)_ → the tier "Apply" links dropped `newTab`, so the `…/auth?widgetMode=register&planUid=…#o-anonymous` anchors are no longer `target="_blank"`. The loaded nocode module (`monitorDom`) now intercepts the click and opens the **plan-signup modal in place** (verified: click stays on `/join`, Outseta modal renders) — matching the source.
 
 ## Press / Events
 
 ### `/press`
 
-- [ ] **PR1 — ArchiveBlock card images → consistent 1:1, clip** → cards show images at native ratios (3:2, etc.), so heights vary. Enforce a **consistent** card image aspect (target **1:1**) and `object-cover`-clip any non-square source to fit. Applies to **all ArchiveBlock card images** — confirmed on `/press` **and `/events`**; also home Latest Updates. _(AFK — Card image aspect)_
-- [ ] **PR2 — Remove card subtitle/description text** → the Card renders a description paragraph (post summary) that makes cards too tall. Drop the description from the Card (keep title + category + image). Applies to **all ArchiveBlock cards**. _(AFK — Card component)_
+- [x] **PR1 — ArchiveBlock card images → consistent 1:1, clip** → cards show images at native ratios (3:2, etc.), so heights vary. Enforce a **consistent** card image aspect (target **1:1**) and `object-cover`-clip any non-square source to fit. Applies to **all ArchiveBlock card images** — confirmed on `/press` **and `/events`**; also home Latest Updates. _(AFK — Card image aspect)_
+- [x] **PR2 — Remove card subtitle/description text** → the Card renders a description paragraph (post summary) that makes cards too tall. Drop the description from the Card (keep title + category + image). Applies to **all ArchiveBlock cards**. _(AFK — Card component)_
 
 ### `/events`
 
-- [ ] **EV1 — "View all updates" → 404** → the button links to `/latest-updates`, which has no seeded page (only this link references that slug). Either **create** a Latest Updates archive page at `/latest-updates` (ArchiveBlock of all Posts) or **repoint** the button to an existing listing. Audit other "View all" CTAs for the same dead slug. _(AFK seed)_
+- [x] **EV1 — "View all updates" → 404** → the button links to `/latest-updates`, which has no seeded page (only this link references that slug). Either **create** a Latest Updates archive page at `/latest-updates` (ArchiveBlock of all Posts) or **repoint** the button to an existing listing. Audit other "View all" CTAs for the same dead slug. _(AFK seed)_
 
 ## Members
 
 ### `/members/community-building`
 
-- [ ] **MCB1 — Make the Signal-chat cards fully clickable, remove buttons** → the **"Join Signal Chat Groups"** cards (MAPS Member & Associate Chat, MAPS Social Chat, MAPS Affiliate Chat) have a "Join" button — make the **whole card** the clickable surface (target = the button's href) and **remove the button**. Same whole-card-clickable + no-button intent as [C4], but these are **imageless** text cards. **Scope: only this Signal-chat section.** _(AFK — CardGrid `enableCardLink` for imageless cards)_
-- [ ] **MCB2 — State cards keep their buttons** → the **"Connect in your state"** cards (Massachusetts, California, …) **keep** their "Join on Signal" buttons; do **not** make them whole-card links. _(explicit: no change)_
+- [x] **MCB1 — Make the Signal-chat cards fully clickable, remove buttons** → the **"Join Signal Chat Groups"** cards (MAPS Member & Associate Chat, MAPS Social Chat, MAPS Affiliate Chat) have a "Join" button — make the **whole card** the clickable surface (target = the button's href) and **remove the button**. Same whole-card-clickable + no-button intent as [C4], but these are **imageless** text cards. **Scope: only this Signal-chat section.** _(AFK — CardGrid `enableCardLink` for imageless cards)_
+- [x] **MCB2 — State cards keep their buttons** → the **"Connect in your state"** cards (Massachusetts, California, …) **keep** their "Join on Signal" buttons; do **not** make them whole-card links. _(explicit: no change)_
 
 ### `/members/new-york-state`
 
-- [ ] **NY1 — FeatureSplit images → 16:9, clipped** → images render at their native (square/tall) ratio, dwarfing the opposite text column. Constrain each to a **wide 16:9** aspect and `object-cover` clip so the image height balances the adjacent copy. Apply to **all** FeatureSplit rows on this page. _(AFK — FeatureSplit image aspect/`object-cover`)_
-- [ ] **NY2 — "MAPS New York in the community" gallery → slider** → convert the photo grid to a slider, same treatment as the home community slider ([H5]). Uses the shared carousel primitive ([C1]). _(AFK seed — MediaGallery slider mode)_
+- [x] **NY1 — FeatureSplit images → 16:9, clipped** → images render at their native (square/tall) ratio, dwarfing the opposite text column. Constrain each to a **wide 16:9** aspect and `object-cover` clip so the image height balances the adjacent copy. Apply to **all** FeatureSplit rows on this page. _(AFK — FeatureSplit image aspect/`object-cover`)_
+- [x] **NY2 — "MAPS New York in the community" gallery → slider** → convert the photo grid to a slider, same treatment as the home community slider ([H5]). Uses the shared carousel primitive ([C1]). _(AFK seed — MediaGallery slider mode)_
 
 ### `/members/maps-academy-vids`
 
-- [ ] **AV1 — Video tiles missing thumbnails** _(all AcademyVideos blocks site-wide — also on `/members/policy-legal-advocacy`)_ → tiles show only a play button on a tinted placeholder, no poster image. Add thumbnails — auto-derive from the video ID where possible (YouTube `img.youtube.com/vi/{id}/hqdefault.jpg`; Vimeo via oEmbed) or a `thumbnail` Media field on the collection. _(needs block/import work)_
-- [ ] **AV2 — Strip "MAPS Academy" prefix from filter tabs** → category filter labels read "MAPS Academy: Public Service Executive & Senior Official Pathways" etc. Drop the redundant "MAPS Academy" prefix from the VideoCategory labels. _(AFK — fix category titles in import/seed)_
+- [x] **AV1 — Video tiles missing thumbnails** _(all AcademyVideos blocks site-wide — also on `/members/policy-legal-advocacy`)_ → tiles show only a play button on a tinted placeholder, no poster image. Add thumbnails — auto-derive from the video ID where possible (YouTube `img.youtube.com/vi/{id}/hqdefault.jpg`; Vimeo via oEmbed) or a `thumbnail` Media field on the collection. _(needs block/import work)_
+- [x] **AV2 — Strip "MAPS Academy" prefix from filter tabs** → category filter labels read "MAPS Academy: Public Service Executive & Senior Official Pathways" etc. Drop the redundant "MAPS Academy" prefix from the VideoCategory labels. _(AFK — fix category titles in import/seed)_
 
 ## Resources
 
@@ -165,21 +166,21 @@ are applied in a batch against the seed/blocks.
 
 ### `/programs/career-support`
 
-- [ ] **CS1 — Full-bleed card images** → the three support-area cards have padded, inset images (`p-6` + `aspect-video` inside the border). Make the image **full-bleed** to the card edges (image flush to top/sides, copy padded below). Same full-bleed treatment as [C4]/[H2]. _(AFK — CardGrid full-bleed image variant)_
-- [ ] **CS2 — Testimonials → slider** → the career testimonials render as a static grid; make them an autoplay slider ([C1]+[C2]).
-- [ ] **CS3 — Section headline specific to the program** → "What our community says" is generic. Make the testimonials headline (and eyebrow) specific to **training / career support**. _(AFK — per-block heading field)_
-- [ ] **CS4 — Author names show numeric IDs** → testimonial authors render as `10` / `11` (the legacy numeric slug/ID), not real names. The author name/title field didn't import. **Likely systemic across all Testimonials.** _(AFK — fix testimonials import mapping / backfill author)_
+- [x] **CS1 — Full-bleed card images** → the three support-area cards have padded, inset images (`p-6` + `aspect-video` inside the border). Make the image **full-bleed** to the card edges (image flush to top/sides, copy padded below). Same full-bleed treatment as [C4]/[H2]. _(AFK — CardGrid full-bleed image variant)_
+- [x] **CS2 — Testimonials → slider** → the career testimonials render as a static grid; make them an autoplay slider ([C1]+[C2]).
+- [x] **CS3 — Section headline specific to the program** → "What our community says" is generic. Make the testimonials headline (and eyebrow) specific to **training / career support**. _(AFK — per-block heading field)_
+- [x] **CS4 — Author names show numeric IDs** → testimonial authors render as `10` / `11` (the legacy numeric slug/ID), not real names. The author name/title field didn't import. **Likely systemic across all Testimonials.** _(AFK — fix testimonials import mapping / backfill author)_
 
 ### `/programs/community-building`
 
-- [ ] **CB1 — ~~Remove testimonials section~~ → superseded by [C7]** (use targeted testimonials, don't remove). _(AFK seed)_
-- [ ] **CB2 — ~~Accordions collapsed by default~~ → generalized to [C8]** (global). _(AFK)_
+- [x] **CB1 — ~~Remove testimonials section~~ → superseded by [C7]** (use targeted testimonials, don't remove). _(AFK seed)_
+- [x] **CB2 — ~~Accordions collapsed by default~~ → generalized to [C8]** (global). _(AFK)_
 
 ### `/programs/legal-advocacy`
 
-- [ ] **LA1 — Full-bleed card images** → same as [CS1] (padded inset images → full-bleed). Confirms the full-bleed CardGrid treatment ([C4]) applies to **all** program CardGrids — apply globally. _(AFK)_
-- [ ] **LA2 — Shorten button copy** → "Join MAPS and Login to the Portal to Request Support" is too long. Shorten the CTA label. _(AFK seed)_
-- [ ] **LA3 — ~~Remove testimonials section~~ → superseded by [C7]** (use targeted testimonials). _(AFK seed)_
+- [x] **LA1 — Full-bleed card images** → same as [CS1] (padded inset images → full-bleed). Confirms the full-bleed CardGrid treatment ([C4]) applies to **all** program CardGrids — apply globally. _(AFK)_
+- [x] **LA2 — Shorten button copy** → "Join MAPS and Login to the Portal to Request Support" is too long. Shorten the CTA label. _(AFK seed)_
+- [x] **LA3 — ~~Remove testimonials section~~ → superseded by [C7]** (use targeted testimonials). _(AFK seed)_
 
 ---
 
