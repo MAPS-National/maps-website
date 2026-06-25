@@ -3866,6 +3866,27 @@ const contactUsSlice: PageSlice = async (payload) => {
             },
           ],
         },
+        {
+          // Steers donors away from mailing checks (a recurring problem) and
+          // back to the online flow. Sits directly under the mailing address.
+          blockType: 'cta',
+          richText: richText(
+            heading('Sending a donation?', 'h3'),
+            paragraph(
+              "Please don't mail a check to this address. Online gifts reach MAPS right away and are far easier for us to process — please donate securely online instead.",
+            ),
+          ),
+          links: [
+            {
+              link: {
+                type: 'custom',
+                appearance: 'default',
+                label: 'Donate online',
+                url: '/donate',
+              },
+            },
+          ],
+        },
       ],
     },
   ] as unknown as PageData[]
