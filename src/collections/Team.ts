@@ -123,6 +123,16 @@ export const Team: CollectionConfig<'team'> = {
         },
       ],
     },
+    {
+      name: 'inactive',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Inactive (hidden)',
+      admin: {
+        position: 'sidebar',
+        description: 'Hide this member from every team grid without deleting them.',
+      },
+    },
     slugField(),
     legacyItemId(),
   ],

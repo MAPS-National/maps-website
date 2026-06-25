@@ -3876,6 +3876,10 @@ const PAGE_SLICES: PageSlice[] = [
 // Fatima Abdelsalam and Hon. Samia Naseem therefore sort to the top of the
 // "State Committee Presidents" group rather than their exact live slot — refine
 // in admin if that subsection's precise order matters.
+// Imported names can carry non-breaking spaces (U+00A0) from the source CSV, so
+// normalize on both sides before matching against the live-order lists.
+const normName = (s: string) => s.split(String.fromCharCode(160)).join(' ').trim()
+
 const TEAM_ORDER: string[][] = [
   // Board of Directors
   ['Ahmad Maaty', 'Ameer Abdulrahman', 'Katie Qutub', 'Aamer Uddin', 'Assma Daifallah', 'Idil Ahmed', 'Farrah Pappa', 'Mahnoor Jaura', 'Jaheda Guliwala', 'Tamim Chowdhury', 'Hassan Sheikh', 'Mohammed Sohail Chaudhry'],
@@ -3901,10 +3905,7 @@ const TEAM_ORDER: string[][] = [
 
 const applyTeamOrder = async (payload: Payload, context: Record<string, unknown>) => {
   const all = await payload.find({ collection: 'team', limit: 0, depth: 0 })
-  // Imported names can carry non-breaking spaces (U+00A0) from the source CSV,
-  // so normalize on both sides before matching.
-  const norm = (s: string) => s.split(String.fromCharCode(160)).join(' ').trim()
-  const byName = new Map(all.docs.map((d) => [norm(d.name), d]))
+  const byName = new Map(all.docs.map((d) => [normName(d.name), d]))
 
   // Assign one global order from each member's first (most senior) appearance.
   const orderByName = new Map<string, number>()
@@ -3930,6 +3931,31 @@ const applyTeamOrder = async (payload: Payload, context: Record<string, unknown>
   }
   payload.logger.info(`Team order: set ${updated}/${orderByName.size} members from live order.`)
   if (missing.length) payload.logger.warn(`Team order: no DB match for: ${missing.join(', ')}`)
+}
+
+// Members present in the import but not on the live site (C6/b) — hidden via the
+// `inactive` flag rather than deleted, so the directory matches the source while
+// the record (bio, photo, history) is preserved and reversible in admin.
+const TEAM_INACTIVE: string[] = ['Hasan Shanawani']
+
+const applyTeamActive = async (payload: Payload, context: Record<string, unknown>) => {
+  const all = await payload.find({ collection: 'team', limit: 0, depth: 0 })
+  const inactiveSet = new Set(TEAM_INACTIVE.map(normName))
+  const matched = new Set<string>()
+  let updated = 0
+  for (const doc of all.docs) {
+    const name = normName(doc.name)
+    const shouldHide = inactiveSet.has(name)
+    if (shouldHide) matched.add(name)
+    // Also backfills existing NULL rows to an explicit false.
+    if (Boolean(doc.inactive) !== shouldHide) {
+      await payload.update({ collection: 'team', id: doc.id, data: { inactive: shouldHide }, context })
+      updated++
+    }
+  }
+  payload.logger.info(`Team active: ${updated} member(s) toggled; ${matched.size}/${inactiveSet.size} hidden.`)
+  const unmatched = [...inactiveSet].filter((n) => !matched.has(n))
+  if (unmatched.length) payload.logger.warn(`Team active: no DB match for: ${unmatched.join(', ')}`)
 }
 
 // Slug redirects (JU2 + future renames) — upserted into the redirects collection
@@ -4003,6 +4029,7 @@ const run = async () => {
   }
 
   await applyTeamOrder(payload, context)
+  await applyTeamActive(payload, context)
   await applyRedirects(payload, context)
 
   payload.logger.info('Page seed complete.')

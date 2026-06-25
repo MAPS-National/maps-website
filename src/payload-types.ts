@@ -1539,6 +1539,10 @@ export interface Team {
    */
   orderSecondary?: number | null;
   /**
+   * Hide this member from every team grid without deleting them.
+   */
+  inactive?: boolean | null;
+  /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
@@ -2791,6 +2795,7 @@ export interface TeamSelect<T extends boolean = true> {
   linkedin?: T;
   order?: T;
   orderSecondary?: T;
+  inactive?: T;
   generateSlug?: T;
   slug?: T;
   legacyItemId?: T;
