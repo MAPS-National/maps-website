@@ -78,6 +78,14 @@ are applied in a batch against the seed/blocks.
   - Members → Portal + member pages (gated → login)
   - Press · Events · Contact · Donate / Join (buttons)
 
+- [x] **G2 — Header icons (and logo) invisible over the dark hero in light mode** _(done, uncommitted)_ → the search + hamburger controls used the dead `text-content` token (no `--color-content` defined), so they inherited the **site** `--foreground` and ignored the header's per-page `data-theme` — on the HighImpact hero in light mode that's dark-on-dark. Also `PageClient` force-set the header theme to `light`, fighting `HighImpactHero`'s `dark`. Fix: icons use `text-foreground` (follows the header `data-theme`), and `PageClient` removed so heros drive the header theme as designed (also fixes the logo variant on the hero). _(AFK)_
+
+- [x] **G3 — Consistent breadcrumbs on all interior pages, with verified links** _(done, uncommitted)_ → breadcrumbs are now **derived render-side** in `[...slug]/page.tsx` from the page's slug + title (Home → section as plain text → current page), overriding the drifted per-page seed data. This eliminates the **4 broken** section-index links (`/members`, `/programs`, `/resources` have no landing page → section crumb is now plain text), fills the **5 missing** pages (about-us trio, donate, join), normalizes the Home-rooted style across all pages, and fixes content bugs surfaced in the audit (final crumb said "Private Sector Engagement" → now "Public…"; em-dash labels → commas). No reseed — derives from DB title/slug. _Follow-up: the now-dead `hero.breadcrumbs` seed arrays + em-dash page **titles** can be cleaned in a reseed (separate)._ _(AFK)_
+
+- [x] **G4 — Surface a prominent Login/Logout control in the header top bar** _(done, uncommitted)_ → moved the single Outseta `o-login-link` / `o-logout-link` pair out of the overlay menu into the always-visible header top bar, immediately **before** the search icon (ids kept unique so the no-code binder still wires the click; `data-o-anonymous` / `data-o-authenticated` show exactly one by auth state). Styled `text-foreground uppercase tracking-wide` to track the per-page header theme. _(AFK — NavMenu)_
+
+- [x] **G5 — Footer does not match the live site** _(done, uncommitted)_ → rebuilt `src/Footer/Component.tsx` to mirror the live footer: brand logo + intro copy, **3 columns** (Programs & Services / About / Follow us), **5 social** links (new tab), and copyright. Structure is **hardcoded** (footer no longer reads the `footer` CMS global — matches the header-nav precedent), brand tokens only. Newsletter is an **inert placeholder** (input + Subscribe), not wired to any provider per request (Mailchimp dropped). Theme selector kept, tucked into the bottom credit row. _(port)_
+
 ---
 
 ## Home (`/`)
@@ -88,6 +96,7 @@ are applied in a batch against the seed/blocks.
 - [x] **H4 — Both Testimonials blocks** (Programs + Membership) → **slider with autoplay** (currently static grids). _(C1 + C2)_
 - [x] **H5 — "MAPS National in the community" slider** → move to the **bottom** of the page, right before the footer (currently directly under the hero). _(AFK seed reorder)_
 - [x] **Outseta `[domain]` init error** — fixed: single script sets `window.o_options` then injects the SDK (was a `beforeInteractive` race in the route-group layout). _(done, uncommitted in working tree)_
+- [ ] **H6 — Small gap above the hero background image** → a thin strip of page background shows between the top of the viewport and the top of the HighImpact hero image. Likely the article wrapper's `pt-16` vs the hero's `-mt-[10.4rem]` pull-up not fully meeting under the fixed header (unverified — confirm in browser). _(AFK — hero/article top offset)_
 
 ## About Us
 
