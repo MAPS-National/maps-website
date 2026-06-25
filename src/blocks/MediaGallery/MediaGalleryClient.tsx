@@ -20,8 +20,13 @@ const gridCols: Record<string, string> = {
   '4': 'grid-cols-2 lg:grid-cols-4',
 }
 
-// Compact: a dense, square photo wall — four-up, tight gaps, ignores `columns`.
-const compactCols = 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+// Compact: a dense photo wall — tight gaps, 4:3 tiles. Honors `columns` as the
+// max column count (2/3/4); defaults to a four-up wall.
+const compactCols: Record<string, string> = {
+  '2': 'grid-cols-2',
+  '3': 'grid-cols-2 sm:grid-cols-3',
+  '4': 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
+}
 
 /**
  * Interactive surface for the Media Gallery block: a tiled grid or a swipeable
@@ -96,7 +101,9 @@ export const MediaGalleryClient: React.FC<{
         <ul
           className={cn(
             'grid grid-cols-1',
-            compact ? cn('gap-2', compactCols) : cn('gap-4', gridCols[columns] ?? gridCols['3']),
+            compact
+              ? cn('gap-2', compactCols[columns] ?? compactCols['4'])
+              : cn('gap-4', gridCols[columns] ?? gridCols['3']),
           )}
         >
           {images.map((image, i) => (
@@ -196,9 +203,10 @@ const Thumb: React.FC<{
       src={image.src}
     />
   )
+  // 4:3 tiles for both densities — a uniform grid that crops far less than a
+  // square would, so landscape (and portrait) photos keep their subject.
   const wrapperCls = cn(
-    'group relative block w-full overflow-hidden bg-surface-secondary',
-    compact ? 'aspect-square' : 'aspect-[4/3]',
+    'group relative block w-full overflow-hidden bg-surface-secondary aspect-[4/3]',
   )
 
   return lightbox ? (

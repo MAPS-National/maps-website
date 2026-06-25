@@ -45,7 +45,7 @@ export const mediaGalleryGallery: GalleryBlock<MediaGalleryBlockProps> = {
     },
     {
       name: 'Compact photo wall',
-      description: 'Dense, four-up square tiles with tight gaps — a photo wall.',
+      description: 'Dense, four-up 4:3 tiles with tight gaps — a photo wall.',
       props: {
         blockType: 'mediaGallery',
         layout: 'grid',

@@ -501,7 +501,7 @@ const missionSlice: PageSlice = async (payload) => {
       blockType: 'mediaGallery',
       heading: 'MAPS in the community',
       layout: 'grid',
-      columns: '4',
+      columns: '3',
       density: 'compact',
       enableLightbox: true,
       images: galleryImages,
