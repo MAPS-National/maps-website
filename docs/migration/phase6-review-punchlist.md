@@ -19,13 +19,23 @@ Committed on `feat/phase6` (not pushed):
 
 Also **CS1/LA1** (program support-card full-bleed) are satisfied by the C4 render change. **D1** resolved (site-wide).
 
-### Still open (need assets / decisions / heavier block work)
+### Decided (walkthrough 2) — to implement
 
-- **M1** — mission gallery: +2 photos (needs photo pick) and smaller tiles (needs a MediaGallery `density` field — schema). Not done.
-- **JU1** — Jumuah map: a pin per location (Maps JavaScript API + client child; largest block change).
-- **C6** — intra-group team member ordering by role rank (group order is now correct; per-member order needs an order field/sort). Authoritative ordered lists are gathered.
-- **CS4 data** — render guard hides the junk; the source has no real author names (re-import/anonymize is the deeper cleanup).
-- **HITL** — **D2/G1** header menu, **C5** sticky TOC scope, **C7** per-page testimonial mapping, **JU2** slug rename.
+- **M1** — MediaGallery: add a `density: compact` option (4-col, square, tighter gaps), set the mission gallery to it. **+2 photos held** — user will supply the 2 community images.
+- **JU1** — MapLocationCards: replace the single Embed iframe with a **Maps JavaScript API** map dropping a pin per `locations` entry (`'use client'` child; uses `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`; degrades to cards-only with no key).
+- **C6** — enforce **exact source member order** across every team group (board ×4, advisory, 9 state committees) from the gathered live-site lists. Set an explicit per-member order; Team block sorts by it.
+- **G1 / D2** — header menu: **hamburger overlay at all breakpoints**, proposed IA (About Us / Programs / Resources / Members groups + Press · Events · Contact · Donate/Join), plus the Outseta login/logout control ([#115]). Keep the current hero.
+- **C5** — sticky left scroll-spy **TOC on all long content pages** (auto-derive anchors from headings; render only when 3+ sections).
+- **C7** — add a `program` tag field to the Testimonials collection; scrape each **live** program page for which testimonials it shows; tag + filter each block by program.
+- **JU2** — rename slug → `/resources/jumuah-services`; add a redirect from the old slug; update internal links.
+
+### Closed
+
+- **CS4** — keep imported testimonials as quote-only (source has no names). Render guard already in place. **Done.**
+
+### Still HITL / not yet decided
+
+- (none — all walked through)
 
 When the walkthrough finishes, the feature-level clusters here get converted to
 proper issues (header nav, carousel primitive, card pattern); the small tweaks
