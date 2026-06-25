@@ -267,7 +267,6 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
           blockType: 'mapLocationCards',
           enableMap: true,
           heading: 'Our chapters',
-          mapQuery: 'Washington, DC',
           locations: [
             {
               name: 'MAPS National',
@@ -1878,7 +1877,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
     galleryImages.push({ image: imageId })
   }
 
-  const layout = [...featureBlocks]
+  const layout: PageData['layout'] = [...featureBlocks] as unknown as PageData['layout']
   if (galleryImages.length > 0) {
     layout.push({
       blockType: 'mediaGallery',
@@ -1887,7 +1886,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       columns: '3',
       enableLightbox: true,
       images: galleryImages,
-    })
+    } as unknown as PageData['layout'][number])
   }
 
   return [
@@ -3280,7 +3279,6 @@ const jumuahServicesSlice: PageSlice = async (_payload) => {
             ),
           ),
           enableMap: true,
-          mapQuery: 'Washington, DC',
           locations: [
             {
               name: 'George Washington University (1:15pm)',

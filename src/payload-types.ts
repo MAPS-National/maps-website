@@ -1758,7 +1758,7 @@ export interface MapLocationCardsBlock {
    */
   enableMap?: boolean | null;
   /**
-   * What the map centers on, e.g. an address or "MAPS National, Washington DC". Defaults to the first location’s address.
+   * Deprecated — the map centers on the location pins.
    */
   mapQuery?: string | null;
   locations?:

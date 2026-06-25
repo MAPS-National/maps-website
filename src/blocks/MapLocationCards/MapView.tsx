@@ -51,7 +51,12 @@ const loadMaps = (apiKey: string): Promise<void> => {
     s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}`
     s.async = true
     s.onload = () => resolve()
-    s.onerror = () => reject(new Error('Google Maps failed to load'))
+    s.onerror = () => {
+      // Don't cache the failure — let a later mount retry the load.
+      mapsPromise = null
+      s.remove()
+      reject(new Error('Google Maps failed to load'))
+    }
     document.head.appendChild(s)
   })
   return mapsPromise
@@ -75,6 +80,9 @@ export const MapView: React.FC<{ apiKey: string; pins: MapPin[]; className?: str
 
   useEffect(() => {
     let cancelled = false
+    // Reset before each (re)load so a prior failure doesn't stick.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFailed(false)
     loadMaps(apiKey)
       .then(() => {
         if (cancelled || !ref.current) return

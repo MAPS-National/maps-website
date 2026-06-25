@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { SearchIcon } from 'lucide-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { cn } from '@/utilities/ui'
 
@@ -79,12 +80,20 @@ const FLAT: NavLink[] = [
  */
 export const NavMenu: React.FC = () => {
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
+  const dialogRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const wasOpenRef = useRef(false)
 
   const close = useCallback(() => setOpen(false), [])
+
+  // Portal target is only available on the client.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true)
+  }, [])
 
   // Close when the route changes (a link was followed).
   useEffect(() => {
@@ -92,7 +101,7 @@ export const NavMenu: React.FC = () => {
     setOpen(false)
   }, [pathname])
 
-  // Lock body scroll, manage focus, and wire Esc while open.
+  // Lock body scroll, manage focus, and trap Tab + wire Esc while open.
   useEffect(() => {
     if (open && !wasOpenRef.current) closeRef.current?.focus()
     else if (!open && wasOpenRef.current) triggerRef.current?.focus()
@@ -102,7 +111,28 @@ export const NavMenu: React.FC = () => {
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
+      if (e.key === 'Escape') {
+        close()
+        return
+      }
+      if (e.key !== 'Tab') return
+      // Keep focus inside the dialog (aria-modal doesn't enforce this).
+      const root = dialogRef.current
+      if (!root) return
+      const focusables = root.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )
+      if (focusables.length === 0) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      const activeEl = document.activeElement as HTMLElement | null
+      if (e.shiftKey && (activeEl === first || !root.contains(activeEl))) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && (activeEl === last || !root.contains(activeEl))) {
+        e.preventDefault()
+        first.focus()
+      }
     }
     document.addEventListener('keydown', onKey)
     return () => {
@@ -129,14 +159,17 @@ export const NavMenu: React.FC = () => {
         <span className="text-sm font-medium uppercase tracking-wide">Menu</span>
       </button>
 
-      {open && (
-        <div
-          aria-label="Site menu"
-          aria-modal="true"
-          className="fixed inset-0 z-[200] overflow-y-auto bg-background text-content"
-          id="primary-menu"
-          role="dialog"
-        >
+      {open &&
+        mounted &&
+        createPortal(
+          <div
+            aria-label="Site menu"
+            aria-modal="true"
+            className="fixed inset-0 z-[200] overflow-y-auto bg-background text-content"
+            id="primary-menu"
+            ref={dialogRef}
+            role="dialog"
+          >
           <div className="container flex items-center justify-between py-8">
             <span className="font-serif text-lg font-semibold">Menu</span>
             <button
@@ -183,11 +216,16 @@ export const NavMenu: React.FC = () => {
             <div className="flex flex-wrap items-center gap-3">
               {/* Outseta auth state — anonymous vs authenticated, bound by the
                   no-code module on load/DOM change. */}
+              {/* Anchors so Outseta's no-code module binds by id; role=button +
+                  preventDefault keep them from jumping to '#' (e.g. before the
+                  SDK binds) and announce them as the actions they are. */}
               <a
                 className="text-sm font-medium text-content-secondary hover:text-primary"
                 data-o-anonymous="true"
                 href="#"
                 id="o-login-link"
+                onClick={(e) => e.preventDefault()}
+                role="button"
               >
                 Member login
               </a>
@@ -196,6 +234,8 @@ export const NavMenu: React.FC = () => {
                 data-o-authenticated="true"
                 href="#"
                 id="o-logout-link"
+                onClick={(e) => e.preventDefault()}
+                role="button"
               >
                 Log out
               </a>
@@ -215,8 +255,9 @@ export const NavMenu: React.FC = () => {
               </Link>
             </div>
           </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

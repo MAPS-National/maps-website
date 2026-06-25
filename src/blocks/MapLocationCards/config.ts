@@ -56,13 +56,15 @@ export const MapLocationCards: Block = {
       },
     },
     {
+      // Deprecated by JU1: the map now centers on the location pins (fitBounds),
+      // so this is no longer read. Kept (hidden) only so the DB column isn't
+      // dropped — removing it would trigger a destructive schema push.
       name: 'mapQuery',
       type: 'text',
       label: 'Map center',
       admin: {
-        condition: (_, siblingData) => Boolean(siblingData?.enableMap),
-        description:
-          'What the map centers on, e.g. an address or "MAPS National, Washington DC". Defaults to the first location’s address.',
+        hidden: true,
+        description: 'Deprecated — the map centers on the location pins.',
       },
     },
     {
