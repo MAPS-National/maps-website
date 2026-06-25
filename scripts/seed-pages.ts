@@ -14,6 +14,10 @@
 
 import 'dotenv/config'
 
+import { existsSync } from 'node:fs'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+
 import configPromise from '@payload-config'
 import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
 import type { Payload } from 'payload'
@@ -431,10 +435,12 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
 }
 
 const missionSlice: PageSlice = async (payload) => {
-  // Resolve a re-hosted prose image to its Media doc id by filename.
-  // Returns null (and warns) if the image was never imported, so callers can
-  // gracefully drop the gallery rather than pass undefined to a required upload.
-  const mediaId = async (filename: string): Promise<number | null> => {
+  // Resolve a re-hosted prose image to its Media doc id by filename. If it isn't
+  // in Media yet, create it from the tracked source under public/import/prose so
+  // a fresh DB (where `import:prose` hasn't run, or for photos added outside the
+  // Webflow export) still gets the image. Returns null (and warns) only when no
+  // source file exists, so callers can gracefully drop the gallery.
+  const mediaId = async (filename: string, alt: string): Promise<number | null> => {
     const res = await payload.find({
       collection: 'media',
       where: { filename: { equals: filename } },
@@ -442,11 +448,21 @@ const missionSlice: PageSlice = async (payload) => {
       depth: 0,
     })
     const id = res.docs[0]?.id
-    if (typeof id !== 'number') {
-      payload.logger.warn(`mission: media "${filename}" not found — omitting from gallery`)
-      return null
+    if (typeof id === 'number') return id
+
+    const source = path.join(process.cwd(), 'public/import/prose', filename)
+    if (existsSync(source)) {
+      const data = await readFile(source)
+      const created = await payload.create({
+        collection: 'media',
+        data: { alt },
+        file: { name: filename, data, mimetype: 'image/webp', size: data.length },
+      })
+      payload.logger.info(`mission: created media "${filename}" from tracked source`)
+      return created.id
     }
-    return id
+    payload.logger.warn(`mission: media "${filename}" not found — omitting from gallery`)
+    return null
   }
 
   // Content block helper: one full-width prose column.
@@ -465,11 +481,13 @@ const missionSlice: PageSlice = async (payload) => {
     { file: '95.webp', caption: 'MAPS community in Washington, DC' },
     { file: '4_2.webp', caption: 'MAPS members connecting' },
     { file: '14.webp', caption: 'MAPS National event' },
+    { file: 'community-georgetown-panel.webp', caption: 'MAPS panel discussion at Georgetown Law' },
+    { file: 'community-doj.webp', caption: 'MAPS members at the U.S. Department of Justice' },
   ]
   const galleryImages = (
     await Promise.all(
       galleryFiles.map(async ({ file, caption }) => {
-        const id = await mediaId(file)
+        const id = await mediaId(file, caption)
         return id ? { image: id, caption } : null
       }),
     )
