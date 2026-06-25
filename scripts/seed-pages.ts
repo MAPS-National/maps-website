@@ -3808,6 +3808,9 @@ const contactUsSlice: PageSlice = async (payload) => {
     emails: [
       {
         emailTo: 'info@mapsnational.org',
+        // CC operations + CTO on every contact submission (comma-separated; the
+        // form-builder passes the string through to the adapter).
+        cc: 'operations@mapsnational.org, cto@mapsnational.org',
         // Sender must be on a domain verified with the email provider (Resend).
         // Driven by the same env as the adapter's defaultFromAddress so the
         // verified sender is set in one place; falls back to a sensible default.
