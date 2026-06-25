@@ -3796,7 +3796,7 @@ const contactUsSlice: PageSlice = async (payload) => {
     submitButtonLabel: 'Send message',
     confirmationType: 'message' as const,
     confirmationMessage: richText(
-      heading('Thank you — your message has been sent.', 'h3'),
+      heading('Thank you. Your message has been sent.', 'h3'),
       paragraph("We'll be in touch with you shortly."),
     ),
     fields: [
@@ -3873,7 +3873,7 @@ const contactUsSlice: PageSlice = async (payload) => {
           richText: richText(
             heading('Sending a donation?', 'h3'),
             paragraph(
-              "Please don't mail a check to this address. Online gifts reach MAPS right away and are far easier for us to process — please donate securely online instead.",
+              "Please don't mail a check to this address. Online gifts reach MAPS right away and are far easier for us to process, so please donate securely online instead.",
             ),
           ),
           links: [
