@@ -41,11 +41,11 @@ const GROUPS: NavGroup[] = [
       { label: 'Federal Employment', href: '/resources/federal-employment' },
       { label: 'Jumuah Services', href: '/resources/jumuah-services' },
       {
-        label: 'Fellowships — Young Professionals',
+        label: 'Fellowships (Young Professionals)',
         href: '/resources/public-service-fellowships-young-professionals',
       },
       {
-        label: 'Fellowships — Mid-Career to Senior',
+        label: 'Fellowships (Mid-Career to Senior)',
         href: '/resources/public-service-fellowships-mid-career-to-senior-professionals',
       },
     ],
@@ -143,14 +143,39 @@ export const NavMenu: React.FC = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <Link aria-label="Search" className="p-2 text-content hover:text-primary" href="/search">
+      {/* Outseta auth control — the no-code module (monitorDom) binds these by id
+          and shows exactly one based on auth state. Lives here (the always-visible
+          top bar), before the search icon, so login is prominent. text-foreground
+          tracks the header's per-page data-theme. The ids must be unique, so this
+          is the ONLY copy of these anchors. */}
+      <a
+        className="text-sm font-medium uppercase tracking-wide text-foreground hover:text-primary"
+        data-o-anonymous="true"
+        href="#"
+        id="o-login-link"
+        onClick={(e) => e.preventDefault()}
+        role="button"
+      >
+        Login
+      </a>
+      <a
+        className="text-sm font-medium uppercase tracking-wide text-foreground hover:text-primary"
+        data-o-authenticated="true"
+        href="#"
+        id="o-logout-link"
+        onClick={(e) => e.preventDefault()}
+        role="button"
+      >
+        Logout
+      </a>
+      <Link aria-label="Search" className="p-2 text-foreground hover:text-primary" href="/search">
         <SearchIcon className="size-5" />
       </Link>
       <button
         aria-controls="primary-menu"
         aria-expanded={open}
         aria-label="Open menu"
-        className="inline-flex items-center gap-2 rounded-md p-2 text-content hover:text-primary"
+        className="inline-flex items-center gap-2 rounded-md p-2 text-foreground hover:text-primary"
         onClick={() => setOpen(true)}
         ref={triggerRef}
         type="button"
@@ -214,31 +239,9 @@ export const NavMenu: React.FC = () => {
             </ul>
 
             <div className="flex flex-wrap items-center gap-3">
-              {/* Outseta auth state — anonymous vs authenticated, bound by the
-                  no-code module on load/DOM change. */}
-              {/* Anchors so Outseta's no-code module binds by id; role=button +
-                  preventDefault keep them from jumping to '#' (e.g. before the
-                  SDK binds) and announce them as the actions they are. */}
-              <a
-                className="text-sm font-medium text-content-secondary hover:text-primary"
-                data-o-anonymous="true"
-                href="#"
-                id="o-login-link"
-                onClick={(e) => e.preventDefault()}
-                role="button"
-              >
-                Member login
-              </a>
-              <a
-                className="text-sm font-medium text-content-secondary hover:text-primary"
-                data-o-authenticated="true"
-                href="#"
-                id="o-logout-link"
-                onClick={(e) => e.preventDefault()}
-                role="button"
-              >
-                Log out
-              </a>
+              {/* Member login/logout moved to the always-visible header top bar
+                  (see the NavMenu top row); the Outseta no-code binder keys off the
+                  o-login-link / o-logout-link ids, which must be unique. */}
               <Link
                 className="rounded-md border border-primary px-5 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                 href="/donate"

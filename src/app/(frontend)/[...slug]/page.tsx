@@ -10,7 +10,6 @@ import { homeStatic } from '@/endpoints/seed/home-static'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
-import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageTOC } from '@/components/PageTOC'
 
@@ -51,6 +50,34 @@ type Args = {
 const resolveSlug = (segments?: string[]): string =>
   segments?.length ? segments.map(decodeURIComponent).join('/') : 'home'
 
+const SECTION_LABELS: Record<string, string> = {
+  'about-us': 'About Us',
+  members: 'Members',
+  programs: 'Programs',
+  resources: 'Resources',
+}
+
+// No-dashes-in-copy rule: render any em/en dash in a title as a comma.
+const cleanLabel = (s: string): string => s.replace(/\s*[—–]\s*/g, ', ')
+
+/**
+ * Breadcrumbs derived from the page's slug + title so every interior page shares
+ * one trail shape — Home → (section, plain text) → current page (plain text) —
+ * and no crumb can point at a section-index slug that doesn't exist (there are no
+ * /about-us, /programs, /resources, /members landing pages). This overrides the
+ * per-page hero.breadcrumbs seed data, which had drifted into inconsistent styles
+ * and four broken links. Only the lowImpact hero renders breadcrumbs.
+ */
+const deriveBreadcrumbs = (slug: string, title: string): { label: string; url?: string }[] => {
+  const segments = slug.split('/')
+  const crumbs: { label: string; url?: string }[] = [{ label: 'Home', url: '/' }]
+  if (segments.length > 1) {
+    crumbs.push({ label: SECTION_LABELS[segments[0]] ?? cleanLabel(segments[0]) })
+  }
+  crumbs.push({ label: cleanLabel(title) })
+  return crumbs
+}
+
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
   const { slug: segments } = await paramsPromise
@@ -76,15 +103,17 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   return (
     <article className="pt-16 pb-24">
-      <PageClient />
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
       {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} />
+      <RenderHero
+        {...hero}
+        breadcrumbs={slug === 'home' ? undefined : deriveBreadcrumbs(slug, page.title ?? '')}
+      />
       <div className="relative" data-toc-content>
-        <PageTOC />
+        {slug !== 'home' && <PageTOC />}
         <RenderBlocks blocks={layout} />
       </div>
     </article>
