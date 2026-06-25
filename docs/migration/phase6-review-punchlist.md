@@ -86,6 +86,14 @@ are applied in a batch against the seed/blocks.
 
 - [x] **G5 — Footer does not match the live site** _(done, uncommitted)_ → rebuilt `src/Footer/Component.tsx` to mirror the live footer: brand logo + intro copy, **3 columns** (Programs & Services / About / Follow us), **5 social** links (new tab), and copyright. Structure is **hardcoded** (footer no longer reads the `footer` CMS global — matches the header-nav precedent), brand tokens only. Newsletter is an **inert placeholder** (input + Subscribe), not wired to any provider per request (Mailchimp dropped). Theme selector kept, tucked into the bottom credit row. _(port)_
 
+- [x] **G6 — Home "Latest Updates" slider has no "View all updates" CTA** _(done, uncommitted)_ → added a `cta` block directly after the home Latest Updates slider with a "View all updates" → `/latest-updates` outline button (reused the existing CallToAction block, seed-only — no schema change, avoids cross-branch drift). Reseeded. _(AFK — seed)_
+
+- [x] **G7 — Add a "Latest Updates" link to the header nav + footer** _(done, uncommitted)_ → added "Latest Updates" → `/latest-updates` to the header overlay flat row (`Press · Events · Latest Updates · Contact`, `src/Header/NavMenu.tsx`) and to the footer's "Programs & Services" column (`src/Footer/Component.tsx`, after Events). _(AFK)_
+
+- [ ] **G8 — Events not a primary header-nav item** → Events is only in the secondary flat row at the bottom of the overlay (Press · Events · Contact), not among the four primary columns; reported as "missing." Decide whether to promote it to a more prominent slot. _Verified current state: the link does exist (Events → /events), just low in the menu (and it IS in the footer's Programs & Services column)._ _(HITL — placement)_
+
+- [ ] **G9 — Members nav section reported empty** → on review the Members column was seen empty. **Verified: current `feat/phase6` renders 7 Members items** (Member Portal, Community Building, New York State, Policy & Legal Advocacy, Professional Development, MAPS Academy Videos, Points of Contact) — so confirm which build was reviewed (prod/`master` predates the G1 hamburger nav and would show the old logo + Home + Search). If member pages should be gated in the nav, decide the treatment for anonymous users (show + redirect to login, vs hide). _(HITL — verify build / gating UX)_
+
 ---
 
 ## Home (`/`)
