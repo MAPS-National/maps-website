@@ -1149,6 +1149,21 @@ const homeSlice: PageSlice = async (payload) => {
             ),
           ),
         },
+        // "View all updates" CTA -> the full Latest Updates feed (G6).
+        {
+          blockType: 'cta',
+          richText: richText(paragraph('See the full archive of MAPS news, events, and updates.')),
+          links: [
+            {
+              link: {
+                type: 'custom',
+                appearance: 'outline',
+                label: 'View all updates',
+                url: '/latest-updates',
+              },
+            },
+          ],
+        },
         // MAPS Programs — three program cards. Images flagged (need Media docs);
         // seeded mediaType 'none' so cards render text + button.
         {

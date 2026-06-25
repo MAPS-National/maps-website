@@ -16,6 +16,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     title: 'Programs & Services',
     links: [
       { label: 'Events', href: '/events' },
+      { label: 'Latest Updates', href: '/latest-updates' },
       { label: 'Career Support', href: '/programs/career-support' },
       { label: 'Community Building', href: '/programs/community-building' },
       { label: 'Policy & Advocacy', href: '/programs/policy-initiatives' },

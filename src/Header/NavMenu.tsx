@@ -67,6 +67,7 @@ const GROUPS: NavGroup[] = [
 const FLAT: NavLink[] = [
   { label: 'Press', href: '/press' },
   { label: 'Events', href: '/events' },
+  { label: 'Latest Updates', href: '/latest-updates' },
   { label: 'Contact', href: '/contact-us' },
 ]
 
