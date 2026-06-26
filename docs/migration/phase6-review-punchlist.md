@@ -106,6 +106,8 @@ are applied in a batch against the seed/blocks.
 - [x] **Outseta `[domain]` init error** — fixed: single script sets `window.o_options` then injects the SDK (was a `beforeInteractive` race in the route-group layout). _(done, uncommitted in working tree)_
 - [ ] **H6 — Small gap above the hero background image** → a thin strip of page background shows between the top of the viewport and the top of the HighImpact hero image. Likely the article wrapper's `pt-16` vs the hero's `-mt-[10.4rem]` pull-up not fully meeting under the fixed header (unverified — confirm in browser). _(AFK — hero/article top offset)_
 
+- [x] **H7 — Member login loops back to home on localhost** → reported: signing in just bounces between login and home. Root cause: [src/middleware.ts](../../src/middleware.ts) redirected anonymous `/members/*` to Outseta's **hosted** login, whose post-login redirect is the **prod** domain — on localhost the token cookie lands on the wrong origin and never returns, so the gate loops (and localhost can't be whitelisted as an Outseta callback). Fix: middleware now bounces anonymous `/members/*` to `/` on `localhost`/`127.0.0.1` instead of the hosted page; devs log in via the **embedded** top-bar Login widget, which writes the cookie same-origin. Prod keeps the hosted gate unchanged. Verified: anon `/members/community-building` → `localhost:3000/` (200), `/members/portal` stays public. _(dev-only)_
+
 ## About Us
 
 ### `/about-us/mission`

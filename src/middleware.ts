@@ -56,6 +56,15 @@ async function hasValidToken(req: NextRequest): Promise<boolean> {
 export async function middleware(req: NextRequest) {
   if (PUBLIC_MEMBER_PATHS.has(req.nextUrl.pathname)) return NextResponse.next()
   if (await hasValidToken(req)) return NextResponse.next()
+
+  // On localhost the hosted Outseta login can't redirect back (its post-login URL
+  // is the prod domain), so sending devs there sets the cookie on the wrong origin
+  // and loops. Bounce to home instead — log in via the embedded top-bar widget,
+  // which writes the cookie same-origin on localhost. Prod keeps the hosted gate.
+  const host = req.nextUrl.hostname
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return NextResponse.redirect(new URL('/', req.url))
+  }
   return NextResponse.redirect(new URL(LOGIN_URL))
 }
 
