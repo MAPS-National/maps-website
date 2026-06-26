@@ -2158,20 +2158,60 @@ const memberPortalSlice: PageSlice = async (_payload) => {
       },
       layout: [
         {
-          blockType: 'content',
-          columns: [
-            {
-              size: 'full',
-              richText: richText(
-                heading('Coming soon', 'h2'),
-                paragraph(
-                  'We are building the new MAPS Member Portal. This secure area will give members continued direct and central access to internal, non-public content based on your membership category — balancing member support and exclusive services with network security and privacy.',
-                ),
-                paragraph(
-                  'Soon you will be able to register for member-only events, update your profile, and explore career, community, and policy resources all in one place. Check back here as we roll out access.',
-                ),
+          blockType: 'cardGrid',
+          columns: '3',
+          mediaType: 'none',
+          header: {
+            enableHeader: true,
+            heading: 'Member resources',
+            body: richText(
+              paragraph(
+                'Jump into your member areas below. We are rolling out more portal features, including member-only event registration and profile management, soon.',
               ),
-              enableLink: false,
+            ),
+          },
+          items: [
+            {
+              heading: 'Professional Development',
+              body: richText(
+                paragraph('Career services, mentorship, templates, and the member resource library.'),
+              ),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/professional-development', newTab: false },
+            },
+            {
+              heading: 'MAPS Academy Videos',
+              body: richText(paragraph('Recorded webinars and workshops from MAPS Academy.')),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/maps-academy-vids', newTab: false },
+            },
+            {
+              heading: 'Community Building',
+              body: richText(
+                paragraph('Connect with members near you and across the MAPS network.'),
+              ),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/community-building', newTab: false },
+            },
+            {
+              heading: 'Policy & Legal Advocacy',
+              body: richText(paragraph('Member briefings and tools for policy and legal advocacy.')),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/policy-legal-advocacy', newTab: false },
+            },
+            {
+              heading: 'New York State',
+              body: richText(
+                paragraph('Resources and updates for the New York State member community.'),
+              ),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/new-york-state', newTab: false },
+            },
+            {
+              heading: 'Points of Contact',
+              body: richText(paragraph('Key contacts and how to reach the right MAPS team.')),
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/resources-points-of-contact', newTab: false },
             },
           ],
         },

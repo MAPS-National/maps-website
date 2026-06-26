@@ -163,6 +163,10 @@ are applied in a batch against the seed/blocks.
 
 ## Members
 
+### `/members/portal`
+
+- [x] **MP1 — Portal landing was a "Coming soon" placeholder** → the post-login landing only had a stub content block (the live site's real portal content was behind Outseta auth, so it wasn't in the static export). Rebuilt it as a **member hub**: a CardGrid of whole-card links to the six existing member areas (Professional Development, MAPS Academy Videos, Community Building, Policy & Legal Advocacy, New York State, Points of Contact), with a short "more rolling out" intro. Verified: `/members/portal` renders the hub with all six links, no placeholder. Expand with real member-only content (event registration, profile) when available. _(AFK seed)_
+
 ### `/members/community-building`
 
 - [x] **MCB1 — Make the Signal-chat cards fully clickable, remove buttons** → the **"Join Signal Chat Groups"** cards (MAPS Member & Associate Chat, MAPS Social Chat, MAPS Affiliate Chat) have a "Join" button — make the **whole card** the clickable surface (target = the button's href) and **remove the button**. Same whole-card-clickable + no-button intent as [C4], but these are **imageless** text cards. **Scope: only this Signal-chat section.** _(AFK — CardGrid `enableCardLink` for imageless cards)_
