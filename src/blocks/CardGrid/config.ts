@@ -140,6 +140,15 @@ export const CardGrid: Block = {
           },
         },
         {
+          name: 'lucideIcon',
+          type: 'text',
+          label: 'Decorative icon',
+          admin: {
+            description:
+              'Optional Lucide icon name shown in a tinted chip above the heading (e.g. "file-text", "users", "briefcase"). Best on imageless cards. Unknown or empty names render nothing.',
+          },
+        },
+        {
           name: 'featured',
           type: 'checkbox',
           label: 'Featured (filled navy accent)',
@@ -156,8 +165,8 @@ export const CardGrid: Block = {
         },
         linkGroup({
           overrides: {
-            label: 'Button',
-            maxRows: 1,
+            label: 'Buttons',
+            maxRows: 2,
             admin: { initCollapsed: true },
           },
         }),

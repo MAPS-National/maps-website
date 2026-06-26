@@ -61,6 +61,25 @@ const SECTION_LABELS: Record<string, string> = {
 // No-dashes-in-copy rule: render any em/en dash in a title as a comma.
 const cleanLabel = (s: string): string => s.replace(/\s*[—–]\s*/g, ', ')
 
+// Member sub-pages whose parent section is State Committees rather than Resources.
+const MEMBER_STATE_COMMITTEES = new Set(['new-york-state'])
+
+// The Member Portal section a sub-page belongs to. One source of truth so the
+// breadcrumb trail and the hero eyebrow always name the same section.
+const memberSection = (sub: string): { label: string; url: string } =>
+  MEMBER_STATE_COMMITTEES.has(sub)
+    ? { label: 'State Committees', url: '/members/portal#state-committee' }
+    : { label: 'Resources', url: '/members/portal#programs-services' }
+
+// Returns the sub-page segment ("professional-development") for a /members/* page
+// other than the portal hub itself, else null.
+const memberSubPage = (slug: string): string | null => {
+  const segments = slug.split('/')
+  return segments[0] === 'members' && segments.length > 1 && segments[1] !== 'portal'
+    ? segments[1]
+    : null
+}
+
 /**
  * Breadcrumbs derived from the page's slug + title so every interior page shares
  * one trail shape — Home → (section, plain text) → current page (plain text) —
@@ -68,8 +87,20 @@ const cleanLabel = (s: string): string => s.replace(/\s*[—–]\s*/g, ', ')
  * /about-us, /programs, /resources, /members landing pages). This overrides the
  * per-page hero.breadcrumbs seed data, which had drifted into inconsistent styles
  * and four broken links. Only the lowImpact hero renders breadcrumbs.
+ *
+ * Member sub-pages are the exception: they hang off the Member Portal hub rather
+ * than Home, as Member Portal → (section) → page.
  */
 const deriveBreadcrumbs = (slug: string, title: string): { label: string; url?: string }[] => {
+  const sub = memberSubPage(slug)
+  if (sub) {
+    return [
+      { label: 'Member Portal', url: '/members/portal' },
+      memberSection(sub),
+      { label: cleanLabel(title) },
+    ]
+  }
+
   const segments = slug.split('/')
   const crumbs: { label: string; url?: string }[] = [{ label: 'Home', url: '/' }]
   if (segments.length > 1) {
@@ -101,6 +132,9 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
 
   const { hero, layout } = page
+  // Member sub-pages already carry "Member Portal" as the first breadcrumb crumb,
+  // so the hero eyebrow names the section instead (Resources / State Committees).
+  const memberSub = memberSubPage(slug)
 
   return (
     <article className="pt-16 pb-24">
@@ -111,6 +145,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       <RenderHero
         {...hero}
+        eyebrow={memberSub ? memberSection(memberSub).label : hero.eyebrow}
         breadcrumbs={slug === 'home' ? undefined : deriveBreadcrumbs(slug, page.title ?? '')}
       />
       <div className="relative" data-toc-content>
