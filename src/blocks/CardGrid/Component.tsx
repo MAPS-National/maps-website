@@ -40,7 +40,18 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
 
       <div className={cn('grid grid-cols-1 gap-x-8 gap-y-12', cols)}>
         {items?.map((item, index) => {
-          const { icon, image, heading, body, links, enableCardLink, cardLink, requiredPlans } = item
+          const {
+            icon,
+            image,
+            heading,
+            badge,
+            body,
+            links,
+            enableCardLink,
+            cardLink,
+            requiredPlans,
+            featured,
+          } = item
           const media = mediaType === 'icon' ? icon : mediaType === 'image' ? image : null
           const hasImage = mediaType === 'image' && media && typeof media === 'object'
           const hasIcon = mediaType === 'icon' && media && typeof media === 'object'
@@ -50,14 +61,28 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
 
           const textBody = (
             <>
+              {badge && (
+                <span className="mb-2 inline-flex w-fit items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {badge}
+                </span>
+              )}
               {heading && <h3 className="text-xl font-semibold">{heading}</h3>}
               {body && (
-                <RichText className="mt-3 text-muted-foreground" data={body} enableGutter={false} />
+                <RichText
+                  className={cn('mt-3', featured ? 'text-primary-foreground/80' : 'text-muted-foreground')}
+                  data={body}
+                  enableGutter={false}
+                />
               )}
               {!isCardLink && Array.isArray(links) && links.length > 0 && (
                 <div className="relative z-20 mt-auto flex flex-wrap gap-3 pt-6">
                   {links.map(({ link }, i) => (
-                    <CMSLink key={i} {...link} />
+                    // sr-only heading suffix disambiguates otherwise-identical CTA
+                    // labels (e.g. eight "Get started" tiles) for screen-reader
+                    // link navigation — WCAG 2.4.4. Visible text is unchanged.
+                    <CMSLink key={i} {...link}>
+                      {heading && <span className="sr-only">{`: ${heading}`}</span>}
+                    </CMSLink>
                   ))}
                 </div>
               )}
@@ -69,7 +94,10 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
               className={cn(
                 'group relative flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors',
                 !hasImage && 'p-6',
-                isCardLink && 'hover:border-primary',
+                isCardLink && !featured && 'hover:border-primary',
+                // Featured: filled navy accent (matches the portal quick-action tile)
+                // so the active card stands out from neutral/placeholder siblings.
+                featured && 'border-primary bg-primary text-primary-foreground hover:bg-primary/90',
               )}
               data-required-plans={
                 Array.isArray(requiredPlans) && requiredPlans.length > 0

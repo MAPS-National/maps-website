@@ -131,6 +131,24 @@ export const CardGrid: Block = {
           required: true,
         },
         {
+          name: 'badge',
+          type: 'text',
+          label: 'Status badge',
+          admin: {
+            description:
+              'Optional pill above the heading, e.g. "Coming soon" or "New". Purely visual; does not change card behavior.',
+          },
+        },
+        {
+          name: 'featured',
+          type: 'checkbox',
+          label: 'Featured (filled navy accent)',
+          admin: {
+            description:
+              'Render this card filled with the navy primary color and light text (like the portal quick-action tile) to mark it as the primary/active card. Best on imageless cards.',
+          },
+        },
+        {
           name: 'body',
           type: 'richText',
           editor: introEditor,

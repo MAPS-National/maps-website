@@ -903,6 +903,14 @@ export interface CardGridBlock {
         icon?: (number | null) | Media;
         image?: (number | null) | Media;
         heading: string;
+        /**
+         * Optional pill above the heading, e.g. "Coming soon" or "New". Purely visual; does not change card behavior.
+         */
+        badge?: string | null;
+        /**
+         * Render this card filled with the navy primary color and light text (like the portal quick-action tile) to mark it as the primary/active card. Best on imageless cards.
+         */
+        featured?: boolean | null;
         body?: {
           root: {
             type: string;
@@ -2285,6 +2293,8 @@ export interface CardGridBlockSelect<T extends boolean = true> {
         icon?: T;
         image?: T;
         heading?: T;
+        badge?: T;
+        featured?: T;
         body?: T;
         links?:
           | T

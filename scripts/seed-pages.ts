@@ -2149,12 +2149,16 @@ const memberPortalSlice: PageSlice = async (payload) => {
   const linkBtn = (label: string, url: string) => ({
     link: { type: 'custom', url, label, newTab: false, appearance: 'default' },
   })
-  // "Get Involved" tile — title only, with a catch-all contact button. The live
-  // site's Get Involved buttons had no destinations (placeholder), so these
-  // route to /contact-us until real per-action targets exist (gaps[]).
-  const getInvolved = (heading: string) => ({
+  // "Get Involved" tile — title + a single external intake button (Google Form
+  // or similar), opened in a new tab. URLs below are PLACEHOLDERS: swap each
+  // `https://forms.gle/REPLACE-*` for the real intake form when available.
+  const getInvolved = (heading: string, formUrl: string) => ({
     heading,
-    links: [linkBtn('Get in touch', '/contact-us')],
+    links: [
+      {
+        link: { type: 'custom', url: formUrl, label: 'Get started', newTab: true, appearance: 'default' },
+      },
+    ],
     enableCardLink: false,
   })
 
@@ -2254,6 +2258,7 @@ const memberPortalSlice: PageSlice = async (payload) => {
           mediaType: 'none',
           header: {
             enableHeader: true,
+            eyebrow: 'Opportunities',
             heading: 'Get involved with MAPS',
             body: richText(
               paragraph(
@@ -2262,20 +2267,20 @@ const memberPortalSlice: PageSlice = async (payload) => {
             ),
           },
           items: [
-            getInvolved('Join our leadership team'),
-            getInvolved('Start a State Committee'),
-            getInvolved('Become an Institutional Representative'),
-            getInvolved('Start a MAPS Chapter'),
-            getInvolved('Register as a Speaker or Expert'),
-            getInvolved('Apply to the Advisory Council'),
-            getInvolved('Become a Mentor or Peer Guide'),
-            getInvolved('Share your feedback'),
+            getInvolved('Join our leadership team', 'https://forms.gle/REPLACE-leadership'),
+            getInvolved('Start a State Committee', 'https://forms.gle/REPLACE-state-committee'),
+            getInvolved('Become an Institutional Representative', 'https://forms.gle/REPLACE-institutional-rep'),
+            getInvolved('Start a MAPS Chapter', 'https://forms.gle/REPLACE-chapter'),
+            getInvolved('Register as a Speaker or Expert', 'https://forms.gle/REPLACE-speaker-expert'),
+            getInvolved('Apply to the Advisory Council', 'https://forms.gle/REPLACE-advisory-council'),
+            getInvolved('Become a Mentor or Peer Guide', 'https://forms.gle/REPLACE-mentor-peer-guide'),
+            getInvolved('Share your feedback', 'https://forms.gle/REPLACE-feedback'),
           ],
         },
         // 5. State Committee Pages.
         {
           blockType: 'cardGrid',
-          columns: '3',
+          columns: '4',
           mediaType: 'none',
           header: {
             enableHeader: true,
@@ -2291,12 +2296,25 @@ const memberPortalSlice: PageSlice = async (payload) => {
           items: [
             {
               heading: 'MAPS New York',
+              featured: true,
               body: richText(
                 paragraph('Resources and updates for the New York State member community.'),
               ),
               enableCardLink: true,
               cardLink: { type: 'custom', url: '/members/new-york-state', newTab: false },
             },
+            // Upcoming committees — placeholder cards until each State page ships.
+            // Source committees: NY (live), plus MA, TX, IL, MI, CA, NJ.
+            ...['Massachusetts', 'Texas', 'Illinois', 'Michigan', 'California', 'New Jersey'].map(
+              (state) => ({
+                heading: `MAPS ${state}`,
+                badge: 'Coming soon',
+                body: richText(
+                  paragraph(`Resources and updates for the ${state} member community.`),
+                ),
+                enableCardLink: false,
+              }),
+            ),
           ],
         },
       ],
