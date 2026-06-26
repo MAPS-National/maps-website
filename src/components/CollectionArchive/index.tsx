@@ -8,13 +8,14 @@ import { CollectionArchiveSlider } from './CollectionArchiveSlider'
 export type Props = {
   display?: 'grid' | 'slider'
   posts: CardPostData[]
+  showRegister?: boolean
 }
 
 export const CollectionArchive: React.FC<Props> = (props) => {
-  const { display = 'grid', posts } = props
+  const { display = 'grid', posts, showRegister } = props
 
   if (display === 'slider') {
-    return <CollectionArchiveSlider posts={posts} />
+    return <CollectionArchiveSlider posts={posts} showRegister={showRegister} />
   }
 
   return (
@@ -25,7 +26,7 @@ export const CollectionArchive: React.FC<Props> = (props) => {
             if (typeof result === 'object' && result !== null) {
               return (
                 <div className="col-span-4" key={index}>
-                  <Card className="h-full" doc={result} relationTo="posts" showCategories />
+                  <Card className="h-full" doc={result} relationTo="posts" showCategories showRegister={showRegister} />
                 </div>
               )
             }

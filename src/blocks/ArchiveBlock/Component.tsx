@@ -12,7 +12,7 @@ export const ArchiveBlock: React.FC<
     id?: string
   }
 > = async (props) => {
-  const { id, anchorId, categories, display, introContent, limit: limitFromProps, populateBy, selectedDocs } =
+  const { id, anchorId, categories, display, introContent, limit: limitFromProps, populateBy, selectedDocs, showRegisterLinks } =
     props
 
   const limit = limitFromProps || 3
@@ -31,6 +31,16 @@ export const ArchiveBlock: React.FC<
       collection: 'posts',
       depth: 1,
       limit,
+      // Fetch only what the cards render. membersOnlyUrl (the gated event
+      // sign-up link) is pulled in solely when this listing shows Register
+      // buttons, so it never ends up in public archive HTML otherwise.
+      select: {
+        slug: true,
+        categories: true,
+        meta: true,
+        title: true,
+        ...(showRegisterLinks ? { membersOnlyUrl: true } : {}),
+      },
       ...(flattenedCategories && flattenedCategories.length > 0
         ? {
             where: {
@@ -42,7 +52,7 @@ export const ArchiveBlock: React.FC<
         : {}),
     })
 
-    posts = fetchedPosts.docs
+    posts = fetchedPosts.docs as Post[]
   } else {
     if (selectedDocs?.length) {
       const filteredSelectedPosts = selectedDocs.map((post) => {
@@ -57,10 +67,16 @@ export const ArchiveBlock: React.FC<
     <div className="my-16 scroll-mt-24" id={anchorId || `block-${id}`}>
       {introContent && (
         <div className="container mb-16">
-          <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
+          {/* Heading matches the section-header treatment used by CardGrid/CTA
+              (text-3xl/4xl, semibold) instead of the smaller, heavier prose h2. */}
+          <RichText
+            className="ms-0 max-w-[48rem] prose-h2:text-3xl prose-h2:font-semibold md:prose-h2:text-4xl"
+            data={introContent}
+            enableGutter={false}
+          />
         </div>
       )}
-      <CollectionArchive display={display ?? 'grid'} posts={posts} />
+      <CollectionArchive display={display ?? 'grid'} posts={posts} showRegister={Boolean(showRegisterLinks)} />
     </div>
   )
 }

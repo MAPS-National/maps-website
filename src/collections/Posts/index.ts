@@ -212,6 +212,10 @@ export const Posts: CollectionConfig<'posts'> = {
       name: 'membersOnlyUrl',
       type: 'text',
       label: 'Members-only URL',
+      // Gated link, so keep it out of the public REST/GraphQL API — only
+      // authenticated requests get the value. Server-rendered listings use the
+      // Local API (access overridden by default), so the portal still reads it.
+      access: { read: ({ req: { user } }) => Boolean(user) },
       admin: {
         position: 'sidebar',
         description: 'Optional gated link from the Webflow "Members Only URL" field.',

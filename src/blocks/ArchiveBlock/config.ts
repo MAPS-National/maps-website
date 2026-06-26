@@ -45,6 +45,16 @@ export const Archive: Block = {
       ],
     },
     {
+      name: 'showRegisterLinks',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Show event registration buttons',
+      admin: {
+        description:
+          'Render a "Register" button on each card whose post has a Members-only URL (the event sign-up link). Off by default; enable on event listings like the member portal\'s Upcoming Events.',
+      },
+    },
+    {
       name: 'populateBy',
       type: 'select',
       defaultValue: 'collection',

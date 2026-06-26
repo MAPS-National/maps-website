@@ -6,9 +6,10 @@ import React, { Fragment } from 'react'
 
 import type { Post } from '@/payload-types'
 
+import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'membersOnlyUrl'>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -16,12 +17,13 @@ export const Card: React.FC<{
   doc?: CardPostData
   relationTo?: 'posts'
   showCategories?: boolean
+  showRegister?: boolean
   title?: string
 }> = (props) => {
   const { card, link } = useClickableCard({})
-  const { className, doc, relationTo, showCategories, title: titleFromProps } = props
+  const { className, doc, relationTo, showCategories, showRegister, title: titleFromProps } = props
 
-  const { slug, categories, meta, title } = doc || {}
+  const { slug, categories, meta, title, membersOnlyUrl } = doc || {}
   const { image: metaImage } = meta || {}
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
@@ -86,6 +88,19 @@ export const Card: React.FC<{
               </Link>
             </h3>
           </div>
+        )}
+        {/* Event sign-up: an inner <a> so useClickableCard defers to it (clicks
+            here open the form; the rest of the card still opens the post). */}
+        {showRegister && membersOnlyUrl && (
+          <CMSLink
+            className="mt-4"
+            type="custom"
+            url={membersOnlyUrl}
+            label="Register"
+            newTab
+            appearance="outline"
+            size="sm"
+          />
         )}
       </div>
     </article>

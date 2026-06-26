@@ -650,6 +650,10 @@ export interface ArchiveBlock {
     [k: string]: unknown;
   } | null;
   display?: ('grid' | 'slider') | null;
+  /**
+   * Render a "Register" button on each card whose post has a Members-only URL (the event sign-up link). Off by default; enable on event listings like the member portal's Upcoming Events.
+   */
+  showRegisterLinks?: boolean | null;
   populateBy?: ('collection' | 'selection') | null;
   relationTo?: 'posts' | null;
   categories?: (number | Category)[] | null;
@@ -2252,6 +2256,7 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
   anchorId?: T;
   introContent?: T;
   display?: T;
+  showRegisterLinks?: T;
   populateBy?: T;
   relationTo?: T;
   categories?: T;

@@ -2178,8 +2178,9 @@ const memberPortalSlice: PageSlice = async (payload) => {
         {
           blockType: 'archive',
           anchorId: 'upcoming-events',
+          showRegisterLinks: true,
           introContent: richText(
-            heading('Upcoming Member-Only Events', 'h2'),
+            heading('Upcoming Events', 'h2'),
             paragraph(
               'Mark your calendars and sign up for upcoming MAPS events. Registering takes you to the event page, where you can sign in with your MAPS-registered email.',
             ),
