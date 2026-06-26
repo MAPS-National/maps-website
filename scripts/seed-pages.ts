@@ -2146,9 +2146,6 @@ const memberPortalSlice: PageSlice = async (payload) => {
   const idBySlug = new Map(cats.docs.map((c) => [c.slug, c.id]))
   const upcomingId = idBySlug.get('upcoming-events')
 
-  const linkBtn = (label: string, url: string) => ({
-    link: { type: 'custom', url, label, newTab: false, appearance: 'default' },
-  })
   // "Get Involved" tile — title + a single external intake button (Google Form
   // or similar), opened in a new tab. URLs below are PLACEHOLDERS: swap each
   // `https://forms.gle/REPLACE-*` for the real intake form when available.
@@ -2156,7 +2153,7 @@ const memberPortalSlice: PageSlice = async (payload) => {
     heading,
     links: [
       {
-        link: { type: 'custom', url: formUrl, label: 'Get started', newTab: true, appearance: 'default' },
+        link: { type: 'custom', url: formUrl, label: 'Get started', newTab: true, appearance: 'outline' },
       },
     ],
     enableCardLink: false,
@@ -2216,8 +2213,8 @@ const memberPortalSlice: PageSlice = async (payload) => {
                   'Career resources, templates, guides, and webinar recordings, plus one-on-one services like resume reviews and mentorship.',
                 ),
               ),
-              links: [linkBtn('Explore Professional Development', '/members/professional-development')],
-              enableCardLink: false,
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/professional-development', newTab: false },
             },
             {
               heading: 'Community Building',
@@ -2226,8 +2223,8 @@ const memberPortalSlice: PageSlice = async (payload) => {
                   'Pathways to community engagement across our national membership, State Committee chat groups, and career Communities of Practice.',
                 ),
               ),
-              links: [linkBtn('Explore Community Building', '/members/community-building')],
-              enableCardLink: false,
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/community-building', newTab: false },
             },
             {
               heading: 'Policy & Legal Advocacy',
@@ -2236,8 +2233,8 @@ const memberPortalSlice: PageSlice = async (payload) => {
                   'MAPS policy initiatives, advocacy campaigns, memos and templates, plus individual member legal support via our intake process.',
                 ),
               ),
-              links: [linkBtn('Explore Policy & Legal Advocacy', '/members/policy-legal-advocacy')],
-              enableCardLink: false,
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/policy-legal-advocacy', newTab: false },
             },
             {
               heading: 'Experts & Points of Contact',
@@ -2246,8 +2243,8 @@ const memberPortalSlice: PageSlice = async (payload) => {
                   'Meet our internal career, community, and institutional points of contact, including mentors, resume reviewers, and agency representatives.',
                 ),
               ),
-              links: [linkBtn('Points of Contact', '/members/resources-points-of-contact')],
-              enableCardLink: false,
+              enableCardLink: true,
+              cardLink: { type: 'custom', url: '/members/resources-points-of-contact', newTab: false },
             },
           ],
         },

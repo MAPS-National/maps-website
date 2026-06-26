@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react'
 import React from 'react'
 
 import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
@@ -85,6 +86,14 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
                     </CMSLink>
                   ))}
                 </div>
+              )}
+              {/* Whole-card link with no button/image/fill to signal it: a rest-state
+                  arrow advertises the card as navigable on touch and at a glance.
+                  Decorative — the overlay link already carries the heading as its name. */}
+              {isCardLink && !featured && !hasImage && (
+                <span aria-hidden="true" className="mt-auto inline-flex items-center pt-6 text-primary">
+                  <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                </span>
               )}
             </>
           )
