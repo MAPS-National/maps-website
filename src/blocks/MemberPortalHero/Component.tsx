@@ -60,11 +60,11 @@ export const MemberPortalHeroBlock: React.FC<Props> = ({ eyebrow, welcomeText, s
         {showMosaic && (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 hidden w-2/3 bg-cover bg-center opacity-[0.12] md:block"
+            className="pointer-events-none absolute inset-y-0 right-0 hidden w-2/3 bg-cover bg-center opacity-[0.28] md:block"
             style={{
               backgroundImage: 'url(/portal/member-collage.webp)',
-              maskImage: 'linear-gradient(to right, transparent, black 55%)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent, black 55%)',
+              maskImage: 'linear-gradient(to right, transparent, black 40%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)',
             }}
           />
         )}
