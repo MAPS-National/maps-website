@@ -334,3 +334,15 @@ html[data-theme='light'] {
     animation: none;
   }
 }
+
+/* G9: Outseta's nocode module injects `a[href^="/members" i]{display:none!important}`
+   to hide member links from anonymous visitors. The /members/* routes are already
+   gated server-side (src/middleware.ts redirects anyone without a valid token), so
+   that client hiding only leaves an empty "Members" nav column. Show the nav links
+   to everyone — a logged-out click just hits the gate and redirects to login. The
+   #primary-menu id makes this rule (1,1,1) outweigh Outseta's (0,1,1) so it wins
+   the !important tie regardless of injection order; scoped to the menu so it never
+   un-hides member links elsewhere. */
+#primary-menu a[href^='/members' i] {
+  display: revert !important;
+}
