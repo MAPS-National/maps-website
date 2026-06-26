@@ -21,7 +21,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
     header?.enableHeader && (header.eyebrow || header.heading || header.body)
 
   return (
-    <section className="container" id={header?.anchorId || undefined}>
+    <section className="container scroll-mt-24" id={header?.anchorId || undefined}>
       {showHeader && (
         <div className="mb-12 max-w-2xl">
           {header?.eyebrow && (

@@ -2140,33 +2140,67 @@ const policyLegalAdvocacySlice: PageSlice = async (payload) => {
   ] as unknown as PageData[]
 }
 
-const memberPortalSlice: PageSlice = async (_payload) => {
+const memberPortalSlice: PageSlice = async (payload) => {
+  // Resolve the Upcoming Events category for the events archive section.
+  const cats = await payload.find({ collection: 'categories', limit: 0, depth: 0 })
+  const idBySlug = new Map(cats.docs.map((c) => [c.slug, c.id]))
+  const upcomingId = idBySlug.get('upcoming-events')
+
+  const linkBtn = (label: string, url: string) => ({
+    link: { type: 'custom', url, label, newTab: false, appearance: 'default' },
+  })
+  // "Get Involved" tile — title only, with a catch-all contact button. The live
+  // site's Get Involved buttons had no destinations (placeholder), so these
+  // route to /contact-us until real per-action targets exist (gaps[]).
+  const getInvolved = (heading: string) => ({
+    heading,
+    links: [linkBtn('Get in touch', '/contact-us')],
+    enableCardLink: false,
+  })
+
   return [
     {
       slug: 'members/portal',
       title: 'Member Portal',
       _status: 'published',
-      hero: {
-        type: 'lowImpact',
-        eyebrow: 'Member Portal',
-        richText: richText(
-          heading('Member Portal', 'h1'),
-          paragraph(
-            'A secure home for MAPS Members, Associates, Affiliates, and Allies — with event registrations and career, community, and policy resources, organized by membership category.',
-          ),
-        ),
-      },
+      hero: { type: 'none' },
       layout: [
+        // 1. Personalized welcome hero (client: Outseta greeting + wired actions).
+        {
+          blockType: 'memberPortalHero',
+          eyebrow: 'Member Portal',
+          welcomeText:
+            "You're in. Jump straight to events, your profile, member resources, or your state committee below.",
+          showMosaic: true,
+        },
+        // 2. Upcoming member-only events (Archive filtered to the Upcoming category).
+        {
+          blockType: 'archive',
+          anchorId: 'upcoming-events',
+          introContent: richText(
+            heading('Upcoming Member-Only Events', 'h2'),
+            paragraph(
+              'Mark your calendars and sign up for upcoming MAPS events. Registering takes you to the event page, where you can sign in with your MAPS-registered email.',
+            ),
+          ),
+          populateBy: 'collection',
+          relationTo: 'posts',
+          categories: upcomingId ? [upcomingId] : [],
+          limit: 3,
+        },
+        // 3. Programs & Services (2x2 resource cards).
         {
           blockType: 'cardGrid',
-          columns: '3',
+          columns: '2',
           mediaType: 'none',
           header: {
             enableHeader: true,
-            heading: 'Member resources',
+            eyebrow: 'Resources',
+            heading: 'MAPS programs and services',
+            anchorId: 'programs-services',
             body: richText(
               paragraph(
-                'Jump into your member areas below. We are rolling out more portal features, including member-only event registration and profile management, soon.',
+                'Continued, central access to member content based on your membership category, balancing member support and exclusive services with network security and privacy.',
               ),
             ),
           },
@@ -2174,44 +2208,94 @@ const memberPortalSlice: PageSlice = async (_payload) => {
             {
               heading: 'Professional Development',
               body: richText(
-                paragraph('Career services, mentorship, templates, and the member resource library.'),
+                paragraph(
+                  'Career resources, templates, guides, and webinar recordings, plus one-on-one services like resume reviews and mentorship.',
+                ),
               ),
-              enableCardLink: true,
-              cardLink: { type: 'custom', url: '/members/professional-development', newTab: false },
-            },
-            {
-              heading: 'MAPS Academy Videos',
-              body: richText(paragraph('Recorded webinars and workshops from MAPS Academy.')),
-              enableCardLink: true,
-              cardLink: { type: 'custom', url: '/members/maps-academy-vids', newTab: false },
+              links: [linkBtn('Explore Professional Development', '/members/professional-development')],
+              enableCardLink: false,
             },
             {
               heading: 'Community Building',
               body: richText(
-                paragraph('Connect with members near you and across the MAPS network.'),
+                paragraph(
+                  'Pathways to community engagement across our national membership, State Committee chat groups, and career Communities of Practice.',
+                ),
               ),
-              enableCardLink: true,
-              cardLink: { type: 'custom', url: '/members/community-building', newTab: false },
+              links: [linkBtn('Explore Community Building', '/members/community-building')],
+              enableCardLink: false,
             },
             {
               heading: 'Policy & Legal Advocacy',
-              body: richText(paragraph('Member briefings and tools for policy and legal advocacy.')),
-              enableCardLink: true,
-              cardLink: { type: 'custom', url: '/members/policy-legal-advocacy', newTab: false },
+              body: richText(
+                paragraph(
+                  'MAPS policy initiatives, advocacy campaigns, memos and templates, plus individual member legal support via our intake process.',
+                ),
+              ),
+              links: [linkBtn('Explore Policy & Legal Advocacy', '/members/policy-legal-advocacy')],
+              enableCardLink: false,
             },
             {
-              heading: 'New York State',
+              heading: 'Experts & Points of Contact',
+              body: richText(
+                paragraph(
+                  'Meet our internal career, community, and institutional points of contact, including mentors, resume reviewers, and agency representatives.',
+                ),
+              ),
+              links: [linkBtn('Points of Contact', '/members/resources-points-of-contact')],
+              enableCardLink: false,
+            },
+          ],
+        },
+        // 4. Get Involved action grid (8 tiles).
+        {
+          blockType: 'cardGrid',
+          columns: '4',
+          mediaType: 'none',
+          header: {
+            enableHeader: true,
+            heading: 'Get involved with MAPS',
+            body: richText(
+              paragraph(
+                'There are many ways to contribute. Reach out to get started with any of the opportunities below.',
+              ),
+            ),
+          },
+          items: [
+            getInvolved('Join our leadership team'),
+            getInvolved('Start a State Committee'),
+            getInvolved('Become an Institutional Representative'),
+            getInvolved('Start a MAPS Chapter'),
+            getInvolved('Register as a Speaker or Expert'),
+            getInvolved('Apply to the Advisory Council'),
+            getInvolved('Become a Mentor or Peer Guide'),
+            getInvolved('Share your feedback'),
+          ],
+        },
+        // 5. State Committee Pages.
+        {
+          blockType: 'cardGrid',
+          columns: '3',
+          mediaType: 'none',
+          header: {
+            enableHeader: true,
+            eyebrow: 'State Committees',
+            heading: 'MAPS State Committee pages',
+            anchorId: 'state-committee',
+            body: richText(
+              paragraph(
+                'Access resources, content, and local services offered by our State Committees.',
+              ),
+            ),
+          },
+          items: [
+            {
+              heading: 'MAPS New York',
               body: richText(
                 paragraph('Resources and updates for the New York State member community.'),
               ),
               enableCardLink: true,
               cardLink: { type: 'custom', url: '/members/new-york-state', newTab: false },
-            },
-            {
-              heading: 'Points of Contact',
-              body: richText(paragraph('Key contacts and how to reach the right MAPS team.')),
-              enableCardLink: true,
-              cardLink: { type: 'custom', url: '/members/resources-points-of-contact', newTab: false },
             },
           ],
         },

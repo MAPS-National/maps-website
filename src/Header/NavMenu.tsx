@@ -8,17 +8,7 @@ import { createPortal } from 'react-dom'
 
 import { cn } from '@/utilities/ui'
 
-// Outseta SDK surface we call (the SDK is loaded by OutsetaScript). Anchor
-// visibility is handled by the nocode module via the data-o-* attributes; these
-// methods drive the click actions.
-declare global {
-  interface Window {
-    Outseta?: {
-      auth?: { open: (opts: { widgetMode: 'login' | 'register' }) => void }
-      logout?: () => void
-    }
-  }
-}
+// window.Outseta is typed centrally in src/types/outseta.d.ts.
 
 type NavLink = { label: string; href: string }
 type NavGroup = { label: string; items: NavLink[] }

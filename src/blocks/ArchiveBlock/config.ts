@@ -12,6 +12,14 @@ export const Archive: Block = {
   interfaceName: 'ArchiveBlock',
   fields: [
     {
+      name: 'anchorId',
+      type: 'text',
+      label: 'Anchor ID',
+      admin: {
+        description: 'Optional in-page anchor target, e.g. "upcoming-events" makes the section reachable at #upcoming-events.',
+      },
+    },
+    {
       name: 'introContent',
       type: 'richText',
       editor: lexicalEditor({

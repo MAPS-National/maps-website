@@ -335,6 +335,15 @@ html[data-theme='light'] {
   }
 }
 
+/* In-page anchor jumps (e.g. the member-portal hero tiles) scroll smoothly,
+   unless the visitor prefers reduced motion. Targets carry scroll-mt-* so the
+   fixed header doesn't cover the heading. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* G9: Outseta's nocode module injects `a[href^="/members" i]{display:none!important}`
    to hide member links from anonymous visitors. The /members/* routes are already
    gated server-side (src/middleware.ts redirects anyone without a valid token), so

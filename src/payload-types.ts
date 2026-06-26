@@ -251,6 +251,7 @@ export interface Page {
     | TestimonialsBlock
     | AcademyVideosBlock
     | MapLocationCardsBlock
+    | MemberPortalHeroBlock
   )[];
   meta?: {
     title?: string | null;
@@ -629,6 +630,10 @@ export interface MediaBlock {
  * via the `definition` "ArchiveBlock".
  */
 export interface ArchiveBlock {
+  /**
+   * Optional in-page anchor target, e.g. "upcoming-events" makes the section reachable at #upcoming-events.
+   */
+  anchorId?: string | null;
   introContent?: {
     root: {
       type: string;
@@ -1793,6 +1798,21 @@ export interface MapLocationCardsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MemberPortalHeroBlock".
+ */
+export interface MemberPortalHeroBlock {
+  eyebrow?: string | null;
+  /**
+   * Short line under the greeting. The "Welcome, {name}!" line is generated client-side.
+   */
+  welcomeText?: string | null;
+  showMosaic?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'memberPortalHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -2141,6 +2161,7 @@ export interface PagesSelect<T extends boolean = true> {
         testimonials?: T | TestimonialsBlockSelect<T>;
         academyVideos?: T | AcademyVideosBlockSelect<T>;
         mapLocationCards?: T | MapLocationCardsBlockSelect<T>;
+        memberPortalHero?: T | MemberPortalHeroBlockSelect<T>;
       };
   meta?:
     | T
@@ -2220,6 +2241,7 @@ export interface MediaBlockSelect<T extends boolean = true> {
  * via the `definition` "ArchiveBlock_select".
  */
 export interface ArchiveBlockSelect<T extends boolean = true> {
+  anchorId?: T;
   introContent?: T;
   display?: T;
   populateBy?: T;
@@ -2613,6 +2635,17 @@ export interface MapLocationCardsBlockSelect<T extends boolean = true> {
         lng?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MemberPortalHeroBlock_select".
+ */
+export interface MemberPortalHeroBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  welcomeText?: T;
+  showMosaic?: T;
   id?: T;
   blockName?: T;
 }

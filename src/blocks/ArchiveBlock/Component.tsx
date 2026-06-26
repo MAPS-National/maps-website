@@ -12,7 +12,7 @@ export const ArchiveBlock: React.FC<
     id?: string
   }
 > = async (props) => {
-  const { id, categories, display, introContent, limit: limitFromProps, populateBy, selectedDocs } =
+  const { id, anchorId, categories, display, introContent, limit: limitFromProps, populateBy, selectedDocs } =
     props
 
   const limit = limitFromProps || 3
@@ -54,7 +54,7 @@ export const ArchiveBlock: React.FC<
   }
 
   return (
-    <div className="my-16" id={`block-${id}`}>
+    <div className="my-16 scroll-mt-24" id={anchorId || `block-${id}`}>
       {introContent && (
         <div className="container mb-16">
           <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />

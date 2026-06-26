@@ -13,6 +13,7 @@ import { FormBlock } from './Form/config'
 import { LogoStrip } from './LogoStrip/config'
 import { MapLocationCards } from './MapLocationCards/config'
 import { MediaBlock } from './MediaBlock/config'
+import { MemberPortalHero } from './MemberPortalHero/config'
 import { MediaGallery } from './MediaGallery/config'
 import { PricingTiers } from './PricingTiers/config'
 import { Team } from './Team/config'
@@ -48,4 +49,5 @@ export const layoutBlocks: Block[] = [
   Testimonials,
   AcademyVideos,
   MapLocationCards,
+  MemberPortalHero,
 ]
