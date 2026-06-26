@@ -8,6 +8,18 @@ import { createPortal } from 'react-dom'
 
 import { cn } from '@/utilities/ui'
 
+// Outseta SDK surface we call (the SDK is loaded by OutsetaScript). Anchor
+// visibility is handled by the nocode module via the data-o-* attributes; these
+// methods drive the click actions.
+declare global {
+  interface Window {
+    Outseta?: {
+      auth?: { open: (opts: { widgetMode: 'login' | 'register' }) => void }
+      logout?: () => void
+    }
+  }
+}
+
 type NavLink = { label: string; href: string }
 type NavGroup = { label: string; items: NavLink[] }
 
@@ -82,10 +94,11 @@ const FLAT: NavLink[] = [
 /**
  * Header navigation — a hamburger that opens a full-screen overlay menu at every
  * breakpoint (G1). The overlay lays the IA out in grouped columns, with the flat
- * links, the Donate/Join CTAs, search, and the Outseta login/logout control
- * beneath. Outseta's no-code module (monitorDom) binds the `o-login-link` /
- * `o-logout-link` anchors and toggles the `data-o-anonymous` / `data-o-authenticated`
- * blocks by auth state (#115). Closes on Esc, backdrop, route change, or a link.
+ * links, the Donate/Join CTAs, and search. The Outseta login/logout control sits
+ * in the always-visible top bar: the nocode module (monitorDom) shows exactly one
+ * by auth state via the `data-o-anonymous` / `data-o-authenticated` attributes, and
+ * each click calls the Outseta SDK directly (#115). Closes on Esc, backdrop, route
+ * change, or a link.
  */
 export const NavMenu: React.FC = () => {
   const [open, setOpen] = useState(false)
@@ -152,17 +165,21 @@ export const NavMenu: React.FC = () => {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Outseta auth control — the no-code module (monitorDom) binds these by id
-          and shows exactly one based on auth state. Lives here (the always-visible
-          top bar), before the search icon, so login is prominent. text-foreground
-          tracks the header's per-page data-theme. The ids must be unique, so this
-          is the ONLY copy of these anchors. */}
+      {/* Outseta auth control. The nocode module (monitorDom) toggles visibility
+          via data-o-anonymous / data-o-authenticated (verified: shows exactly one
+          by auth state). The click is the SDK directly — auth.open() pops the login
+          modal in-page (no hosted-page redirect, so the cookie is written
+          same-origin and it works on localhost); logout() clears the session. Top
+          bar, before search, so login is prominent. text-foreground tracks the
+          header's per-page data-theme. */}
       <a
         className="text-sm font-medium uppercase tracking-wide text-foreground hover:text-primary"
         data-o-anonymous="true"
         href="#"
-        id="o-login-link"
-        onClick={(e) => e.preventDefault()}
+        onClick={(e) => {
+          e.preventDefault()
+          window.Outseta?.auth?.open({ widgetMode: 'login' })
+        }}
         role="button"
       >
         Login
@@ -171,8 +188,10 @@ export const NavMenu: React.FC = () => {
         className="text-sm font-medium uppercase tracking-wide text-foreground hover:text-primary"
         data-o-authenticated="true"
         href="#"
-        id="o-logout-link"
-        onClick={(e) => e.preventDefault()}
+        onClick={(e) => {
+          e.preventDefault()
+          window.Outseta?.logout?.()
+        }}
         role="button"
       >
         Logout
@@ -248,9 +267,8 @@ export const NavMenu: React.FC = () => {
             </ul>
 
             <div className="flex flex-wrap items-center gap-3">
-              {/* Member login/logout moved to the always-visible header top bar
-                  (see the NavMenu top row); the Outseta no-code binder keys off the
-                  o-login-link / o-logout-link ids, which must be unique. */}
+              {/* Member login/logout live in the always-visible header top bar
+                  (see the NavMenu top row), wired to the Outseta SDK. */}
               <Link
                 className="rounded-md border border-primary px-5 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                 href="/donate"
