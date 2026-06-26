@@ -36,7 +36,7 @@ export const MediaGallery: Block = {
           required: true,
           admin: {
             width: '50%',
-            description: 'Number of columns in grid layout (ignored for the slider).',
+            description: 'Number of columns in grid layout (ignored when density is Compact or for the slider).',
           },
           options: [
             { label: 'Two', value: '2' },
@@ -44,6 +44,21 @@ export const MediaGallery: Block = {
             { label: 'Four', value: '4' },
           ],
         },
+      ],
+    },
+    {
+      name: 'density',
+      type: 'select',
+      defaultValue: 'comfortable',
+      label: 'Grid density',
+      required: true,
+      admin: {
+        description:
+          'Comfortable: 4:3 tiles at the chosen column count. Compact: small square tiles, four-up, tighter gaps — best for a dense photo wall. Ignored for the slider.',
+      },
+      options: [
+        { label: 'Comfortable', value: 'comfortable' },
+        { label: 'Compact — square photo wall', value: 'compact' },
       ],
     },
     {

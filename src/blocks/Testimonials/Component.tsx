@@ -5,6 +5,7 @@ import React from 'react'
 
 import type { Testimonial, TestimonialsBlock as TestimonialsBlockProps } from '@/payload-types'
 
+import { Carousel } from '@/components/Carousel'
 import RichText from '@/components/RichText'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
@@ -23,6 +24,16 @@ const headshotSrc = (t: Testimonial): string | null => {
   if (photo && typeof photo === 'object' && photo.url) return getMediaUrl(photo.url, photo.updatedAt)
   return null
 }
+
+/**
+ * The Webflow source had no real author names — the imported `author` is a
+ * legacy id code ("10", "11", "1b", "4a"). Treat an author that's just digits
+ * (optionally one trailing letter) as "no name" so we show an anonymous quote
+ * (no attribution block) instead of junk. Hand-seeded testimonials with real
+ * names ("Amina R.") are unaffected.
+ */
+const hasNamedAuthor = (t: Testimonial): boolean =>
+  Boolean(t.author && !/^\d+[a-z]?$/i.test(t.author.trim()))
 
 const Avatar: React.FC<{ testimonial: Testimonial; className?: string }> = ({
   testimonial,
@@ -117,11 +128,41 @@ export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string 
             <blockquote className="font-serif text-2xl font-medium leading-relaxed text-content md:text-3xl">
               <RichText data={docs[0].quote} enableGutter={false} />
             </blockquote>
-            <figcaption className="mt-8 flex items-center justify-center gap-4">
-              <Avatar className="size-14" testimonial={docs[0]} />
-              <Identity testimonial={docs[0]} />
-            </figcaption>
+            {hasNamedAuthor(docs[0]) && (
+              <figcaption className="mt-8 flex items-center justify-center gap-4">
+                <Avatar className="size-14" testimonial={docs[0]} />
+                <Identity testimonial={docs[0]} />
+              </figcaption>
+            )}
           </figure>
+        ) : variant === 'slider' ? (
+          <Carousel
+            ariaLabel={heading || 'Testimonials'}
+            autoPlay
+            slideClassName="w-[85%] sm:w-[46%] lg:w-[31%]"
+          >
+            {docs.map((t) => (
+              <div
+                className="flex h-full flex-col rounded-lg border border-border bg-card p-6 shadow-sm"
+                key={t.id}
+              >
+                <blockquote className="flex-1 text-content">
+                  <RichText
+                    className="prose-p:my-2 prose-p:text-[0.95rem] prose-p:leading-relaxed"
+                    data={t.quote}
+                    enableGutter={false}
+                    enableProse
+                  />
+                </blockquote>
+                {hasNamedAuthor(t) && (
+                  <figcaption className="mt-6 flex items-center gap-3">
+                    <Avatar className="size-12" testimonial={t} />
+                    <Identity testimonial={t} />
+                  </figcaption>
+                )}
+              </div>
+            ))}
+          </Carousel>
         ) : (
           <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {docs.map((t) => (
@@ -137,10 +178,12 @@ export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string 
                     enableProse
                   />
                 </blockquote>
-                <figcaption className="mt-6 flex items-center gap-3">
-                  <Avatar className="size-12" testimonial={t} />
-                  <Identity testimonial={t} />
-                </figcaption>
+                {hasNamedAuthor(t) && (
+                  <figcaption className="mt-6 flex items-center gap-3">
+                    <Avatar className="size-12" testimonial={t} />
+                    <Identity testimonial={t} />
+                  </figcaption>
+                )}
               </li>
             ))}
           </ul>

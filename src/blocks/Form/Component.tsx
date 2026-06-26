@@ -2,13 +2,14 @@
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
 import { useRouter } from 'next/navigation'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { fields } from './fields'
+import { getRecaptchaToken, preloadRecaptcha } from './recaptcha'
 import { getClientSideURL } from '@/utilities/getURL'
 
 export type FormBlockType = {
@@ -46,6 +47,11 @@ export const FormBlock: React.FC<
   const [error, setError] = useState<{ message: string; status?: string } | undefined>()
   const router = useRouter()
 
+  // Warm reCAPTCHA on mount (no-op unless NEXT_PUBLIC_RECAPTCHA_SITE_KEY is set).
+  useEffect(() => {
+    preloadRecaptcha()
+  }, [])
+
   const onSubmit = useCallback(
     (data: FormFieldBlock[]) => {
       let loadingTimerID: ReturnType<typeof setTimeout>
@@ -63,10 +69,14 @@ export const FormBlock: React.FC<
         }, 1000)
 
         try {
+          // Invisible reCAPTCHA v3 token; undefined when reCAPTCHA isn't configured.
+          const recaptchaToken = await getRecaptchaToken('form_submit')
+
           const req = await fetch(`${getClientSideURL()}/api/form-submissions`, {
             body: JSON.stringify({
               form: formID,
               submissionData: dataToSend,
+              recaptchaToken,
             }),
             headers: {
               'Content-Type': 'application/json',

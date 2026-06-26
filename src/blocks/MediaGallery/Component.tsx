@@ -13,7 +13,7 @@ import { MediaGalleryClient, type GalleryImage } from './MediaGalleryClient'
  * owns the interactive grid/slider and the lightbox dialog.
  */
 export const MediaGalleryBlock: React.FC<MediaGalleryBlockProps> = (props) => {
-  const { columns, enableLightbox, heading, images, layout } = props
+  const { columns, density, enableLightbox, heading, images, layout } = props
 
   const resolved: GalleryImage[] = []
   for (const { caption, image } of images || []) {
@@ -36,6 +36,7 @@ export const MediaGalleryBlock: React.FC<MediaGalleryBlockProps> = (props) => {
       )}
       <MediaGalleryClient
         columns={columns ?? '3'}
+        density={density ?? 'comfortable'}
         images={resolved}
         layout={layout ?? 'grid'}
         lightbox={enableLightbox ?? true}

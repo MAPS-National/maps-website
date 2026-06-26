@@ -15,6 +15,8 @@ export type VideoCard = {
   embedUrl: string
   description?: string
   thumbSrc?: string
+  /** thumbSrc is a third-party URL (YouTube) — render with <img>, not next/image. */
+  thumbRemote?: boolean
   thumbAlt?: string
   categories: VideoTab[]
 }
@@ -144,13 +146,23 @@ const VideoTile: React.FC<{
   >
     <span className="relative block aspect-video w-full overflow-hidden rounded-lg bg-surface-secondary ring-1 ring-border/60 transition group-hover:ring-2 group-hover:ring-primary group-focus-visible:ring-2 group-focus-visible:ring-primary">
       {video.thumbSrc ? (
-        <NextImage
-          alt={video.thumbAlt || video.title}
-          className="object-cover"
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          src={video.thumbSrc}
-        />
+        video.thumbRemote ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            alt={video.thumbAlt || video.title}
+            className="absolute inset-0 size-full object-cover"
+            loading="lazy"
+            src={video.thumbSrc}
+          />
+        ) : (
+          <NextImage
+            alt={video.thumbAlt || video.title}
+            className="object-cover"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            src={video.thumbSrc}
+          />
+        )
       ) : (
         <span className="absolute inset-0 bg-primary/10" aria-hidden="true" />
       )}

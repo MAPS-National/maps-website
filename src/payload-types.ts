@@ -251,6 +251,7 @@ export interface Page {
     | TestimonialsBlock
     | AcademyVideosBlock
     | MapLocationCardsBlock
+    | MemberPortalHeroBlock
   )[];
   meta?: {
     title?: string | null;
@@ -629,6 +630,10 @@ export interface MediaBlock {
  * via the `definition` "ArchiveBlock".
  */
 export interface ArchiveBlock {
+  /**
+   * Optional in-page anchor target, e.g. "upcoming-events" makes the section reachable at #upcoming-events.
+   */
+  anchorId?: string | null;
   introContent?: {
     root: {
       type: string;
@@ -644,6 +649,11 @@ export interface ArchiveBlock {
     };
     [k: string]: unknown;
   } | null;
+  display?: ('grid' | 'slider') | null;
+  /**
+   * Render a "Register" button on each card whose post has a Members-only URL (the event sign-up link). Off by default; enable on event listings like the member portal's Upcoming Events.
+   */
+  showRegisterLinks?: boolean | null;
   populateBy?: ('collection' | 'selection') | null;
   relationTo?: 'posts' | null;
   categories?: (number | Category)[] | null;
@@ -897,6 +907,14 @@ export interface CardGridBlock {
         icon?: (number | null) | Media;
         image?: (number | null) | Media;
         heading: string;
+        /**
+         * Optional pill above the heading, e.g. "Coming soon" or "New". Purely visual; does not change card behavior.
+         */
+        badge?: string | null;
+        /**
+         * Render this card filled with the navy primary color and light text (like the portal quick-action tile) to mark it as the primary/active card. Best on imageless cards.
+         */
+        featured?: boolean | null;
         body?: {
           root: {
             type: string;
@@ -1156,9 +1174,13 @@ export interface MediaGalleryBlock {
    */
   layout: 'grid' | 'slider';
   /**
-   * Number of columns in grid layout (ignored for the slider).
+   * Number of columns in grid layout (ignored when density is Compact or for the slider).
    */
   columns: '2' | '3' | '4';
+  /**
+   * Comfortable: 4:3 tiles at the chosen column count. Compact: small square tiles, four-up, tighter gaps — best for a dense photo wall. Ignored for the slider.
+   */
+  density: 'comfortable' | 'compact';
   /**
    * Let visitors click an image to view it full-size in an overlay, with next/previous.
    */
@@ -1534,6 +1556,10 @@ export interface Team {
    */
   orderSecondary?: number | null;
   /**
+   * Hide this member from every team grid without deleting them.
+   */
+  inactive?: boolean | null;
+  /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
@@ -1568,9 +1594,9 @@ export interface TestimonialsBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Grid: cards. Single: one large featured pull-quote.
+   * Grid: cards. Single: one large featured pull-quote. Slider: autoplaying carousel.
    */
-  variant: 'grid' | 'single';
+  variant: 'grid' | 'single' | 'slider';
   type: 'all' | 'career' | 'programs';
   populateBy?: ('collection' | 'selection') | null;
   /**
@@ -1753,7 +1779,7 @@ export interface MapLocationCardsBlock {
    */
   enableMap?: boolean | null;
   /**
-   * What the map centers on, e.g. an address or "MAPS National, Washington DC". Defaults to the first location’s address.
+   * Deprecated — the map centers on the location pins.
    */
   mapQuery?: string | null;
   locations?:
@@ -1767,12 +1793,35 @@ export interface MapLocationCardsBlock {
         email?: string | null;
         linkLabel?: string | null;
         linkUrl?: string | null;
+        /**
+         * Decimal degrees. With lng, drops a map pin for this location.
+         */
+        lat?: number | null;
+        /**
+         * Decimal degrees.
+         */
+        lng?: number | null;
         id?: string | null;
       }[]
     | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mapLocationCards';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MemberPortalHeroBlock".
+ */
+export interface MemberPortalHeroBlock {
+  eyebrow?: string | null;
+  /**
+   * Short line under the greeting. The "Welcome, {name}!" line is generated client-side.
+   */
+  welcomeText?: string | null;
+  showMosaic?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'memberPortalHero';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2124,6 +2173,7 @@ export interface PagesSelect<T extends boolean = true> {
         testimonials?: T | TestimonialsBlockSelect<T>;
         academyVideos?: T | AcademyVideosBlockSelect<T>;
         mapLocationCards?: T | MapLocationCardsBlockSelect<T>;
+        memberPortalHero?: T | MemberPortalHeroBlockSelect<T>;
       };
   meta?:
     | T
@@ -2203,7 +2253,10 @@ export interface MediaBlockSelect<T extends boolean = true> {
  * via the `definition` "ArchiveBlock_select".
  */
 export interface ArchiveBlockSelect<T extends boolean = true> {
+  anchorId?: T;
   introContent?: T;
+  display?: T;
+  showRegisterLinks?: T;
   populateBy?: T;
   relationTo?: T;
   categories?: T;
@@ -2245,6 +2298,8 @@ export interface CardGridBlockSelect<T extends boolean = true> {
         icon?: T;
         image?: T;
         heading?: T;
+        badge?: T;
+        featured?: T;
         body?: T;
         links?:
           | T
@@ -2379,6 +2434,7 @@ export interface MediaGalleryBlockSelect<T extends boolean = true> {
   heading?: T;
   layout?: T;
   columns?: T;
+  density?: T;
   enableLightbox?: T;
   images?:
     | T
@@ -2590,8 +2646,21 @@ export interface MapLocationCardsBlockSelect<T extends boolean = true> {
         email?: T;
         linkLabel?: T;
         linkUrl?: T;
+        lat?: T;
+        lng?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MemberPortalHeroBlock_select".
+ */
+export interface MemberPortalHeroBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  welcomeText?: T;
+  showMosaic?: T;
   id?: T;
   blockName?: T;
 }
@@ -2774,6 +2843,7 @@ export interface TeamSelect<T extends boolean = true> {
   linkedin?: T;
   order?: T;
   orderSecondary?: T;
+  inactive?: T;
   generateSlug?: T;
   slug?: T;
   legacyItemId?: T;

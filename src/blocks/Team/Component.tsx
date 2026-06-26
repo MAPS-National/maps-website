@@ -74,7 +74,7 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
   if (populateBy === 'selection') {
     docs = (selectedMembers || [])
       .map((m) => (typeof m === 'object' ? m : null))
-      .filter((m): m is Team => Boolean(m))
+      .filter((m): m is Team => m !== null && !m.inactive)
   } else {
     const categoryIds = (categories || []).map((c) => (typeof c === 'object' ? c.id : c))
     if (categoryIds.length > 0) {
@@ -88,12 +88,21 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
       }
     }
     const payload = await getPayload({ config: configPromise })
+    // Hide inactive members. Null-safe: a freshly-added column leaves existing
+    // rows NULL, and `not_equals: true` would drop them, so match false OR null.
+    const activeFilter = {
+      or: [{ inactive: { equals: false } }, { inactive: { exists: false } }],
+    }
+    const where =
+      categoryIds.length > 0
+        ? { and: [{ categories: { in: categoryIds } }, activeFilter] }
+        : activeFilter
     const result = await payload.find({
       collection: 'team',
       depth: 1,
       limit: limit && limit > 0 ? limit : 0,
       sort: 'order',
-      ...(categoryIds.length > 0 ? { where: { categories: { in: categoryIds } } } : {}),
+      where,
     })
     docs = result.docs
   }

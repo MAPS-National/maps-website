@@ -43,8 +43,9 @@ export const FeatureSplitBlock: React.FC<FeatureSplitBlockProps> = (props) => {
         <div className={cn(imageLeft && 'md:order-1')}>
           {image && typeof image === 'object' && (
             <Media
-              className="overflow-hidden rounded"
-              imgClassName="h-auto w-full object-cover"
+              className="relative aspect-video overflow-hidden rounded"
+              fill
+              imgClassName="object-cover"
               resource={image}
             />
           )}

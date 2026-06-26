@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { s3Storage } from '@payloadcms/storage-s3'
 import sharp from 'sharp'
 import path from 'path'
@@ -51,6 +52,48 @@ const storagePlugins = s3Enabled
     ]
   : []
 
+// Transactional email: Resend adapter, gated on env (mirrors the S3 pattern).
+// With RESEND_API_KEY unset the adapter stays inactive and Payload falls back to
+// its console "email writer" — form submissions still persist to the
+// form-submissions collection, they just aren't emailed (the dev/local default).
+// Activate by setting RESEND_API_KEY and verifying the sending domain in Resend;
+// the form-builder then delivers each form's notification emails. Backend swap is
+// a credentials-only change, one code path — same philosophy as the S3 adapter.
+// A comma-separated recipient string -> a trimmed array. The form-builder's
+// cc/bcc/to are single text fields, but Resend rejects a comma-joined string
+// (422 "Invalid cc field") — it wants one address per entry or an array.
+const splitRecipients = (v: unknown) =>
+  typeof v === 'string' && v.includes(',')
+    ? v.split(',').map((s) => s.trim()).filter(Boolean)
+    : v
+
+const resendBase = process.env.RESEND_API_KEY
+  ? resendAdapter({
+      defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'no-reply@mapsnational.org',
+      defaultFromName: process.env.EMAIL_FROM_NAME || 'MAPS National',
+      apiKey: process.env.RESEND_API_KEY,
+    })
+  : undefined
+
+// Wrap the adapter so multi-recipient text fields (e.g. a contact form CC-ing
+// operations + cto) are normalized to arrays before they reach Resend.
+const emailAdapter: typeof resendBase = resendBase
+  ? (deps) => {
+      const adapter = resendBase(deps)
+      const sendEmail = adapter.sendEmail
+      return {
+        ...adapter,
+        sendEmail: (message) =>
+          sendEmail({
+            ...message,
+            to: splitRecipients(message.to) as typeof message.to,
+            cc: splitRecipients(message.cc) as typeof message.cc,
+            bcc: splitRecipients(message.bcc) as typeof message.bcc,
+          }),
+      }
+    }
+  : undefined
+
 export default buildConfig({
   admin: {
     components: {
@@ -90,6 +133,7 @@ export default buildConfig({
   },
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
+  email: emailAdapter,
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',

@@ -10,12 +10,14 @@ const introEditor = lexicalEditor({
  * Map + Location Cards — a list of locations (name, address, contact, link)
  * alongside an optional embedded map.
  *
- * Map provider decision (#70): Google Maps Embed API (a plain iframe, no JS SDK
- * or extra dependency), keyed by NEXT_PUBLIC_GOOGLE_MAPS_API_KEY. The key is
- * env-gated exactly like the S3 adapter — when it's unset the map is omitted and
- * the block degrades to cards-only with no error. `enableMap` lets an editor opt
- * out of the map even when a key is configured. Locations are inline array
- * fields (there's no Webflow CMS source for them), not a separate collection.
+ * Map provider decision (#70, revised for JU1): Google Maps JavaScript API,
+ * loaded client-side, dropping one marker per location that has lat/lng — so a
+ * multi-location page shows every pin, not a single generic place. Keyed by
+ * NEXT_PUBLIC_GOOGLE_MAPS_API_KEY and env-gated like the S3 adapter: with no key
+ * (or no geocoded locations) the map is omitted and the block degrades to
+ * cards-only with no error. `enableMap` lets an editor opt out even when a key
+ * is configured. Locations are inline array fields (there's no Webflow CMS
+ * source for them), not a separate collection.
  */
 export const MapLocationCards: Block = {
   slug: 'mapLocationCards',
@@ -54,13 +56,15 @@ export const MapLocationCards: Block = {
       },
     },
     {
+      // Deprecated by JU1: the map now centers on the location pins (fitBounds),
+      // so this is no longer read. Kept (hidden) only so the DB column isn't
+      // dropped — removing it would trigger a destructive schema push.
       name: 'mapQuery',
       type: 'text',
       label: 'Map center',
       admin: {
-        condition: (_, siblingData) => Boolean(siblingData?.enableMap),
-        description:
-          'What the map centers on, e.g. an address or "MAPS National, Washington DC". Defaults to the first location’s address.',
+        hidden: true,
+        description: 'Deprecated — the map centers on the location pins.',
       },
     },
     {
@@ -108,6 +112,26 @@ export const MapLocationCards: Block = {
               type: 'text',
               label: 'Link URL',
               admin: { width: '50%' },
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'lat',
+              type: 'number',
+              label: 'Latitude',
+              admin: {
+                width: '50%',
+                description: 'Decimal degrees. With lng, drops a map pin for this location.',
+              },
+            },
+            {
+              name: 'lng',
+              type: 'number',
+              label: 'Longitude',
+              admin: { width: '50%', description: 'Decimal degrees.' },
             },
           ],
         },

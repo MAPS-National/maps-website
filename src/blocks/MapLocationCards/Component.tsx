@@ -4,13 +4,9 @@ import type { MapLocationCardsBlock as MapLocationCardsBlockProps } from '@/payl
 
 import RichText from '@/components/RichText'
 
-type Location = NonNullable<MapLocationCardsBlockProps['locations']>[number]
+import { MapView, type MapPin } from './MapView'
 
-/** Build the Google Maps Embed API URL, or null when we can't (no key/target). */
-const buildMapSrc = (apiKey: string | undefined, query: string | undefined): string | null => {
-  if (!apiKey || !query) return null
-  return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(query)}`
-}
+type Location = NonNullable<MapLocationCardsBlockProps['locations']>[number]
 
 const LocationCard: React.FC<{ location: Location }> = ({ location }) => (
   <li className="flex flex-col rounded-lg border border-border bg-card p-6 shadow-sm">
@@ -60,23 +56,36 @@ const LocationCard: React.FC<{ location: Location }> = ({ location }) => (
 )
 
 /**
- * Map + Location Cards — location cards beside an optional embedded Google map.
- * The map is env-gated on NEXT_PUBLIC_GOOGLE_MAPS_API_KEY (the #70 decision):
- * with a key it renders an Embed-API iframe; without one the block degrades to
- * cards-only. A plain iframe needs no client JS, so this stays server-only.
+ * Map + Location Cards — location cards beside an optional Google map. The map
+ * is env-gated on NEXT_PUBLIC_GOOGLE_MAPS_API_KEY (the #70 decision, revised for
+ * JU1): with a key and geocoded locations it renders a client map with one
+ * marker per location; without a key (or with no coordinates) the block degrades
+ * to cards-only. Only the map itself is client-side; the cards stay server-only.
  */
 export const MapLocationCardsBlock: React.FC<MapLocationCardsBlockProps & { id?: string }> = (
   props,
 ) => {
-  const { enableMap, eyebrow, heading, intro, locations, mapQuery } = props
+  const { enableMap, eyebrow, heading, intro, locations } = props
 
   const items = (locations || []).filter(Boolean)
   if (items.length === 0) return null
 
-  const mapTarget = mapQuery || items[0]?.address || undefined
-  const mapSrc = enableMap
-    ? buildMapSrc(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, mapTarget || undefined)
-    : null
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  const pins: MapPin[] = items
+    .filter((l): l is Location & { lat: number; lng: number } =>
+      typeof l.lat === 'number' && typeof l.lng === 'number',
+    )
+    .map((l) => ({
+      lat: l.lat,
+      lng: l.lng,
+      name: l.name,
+      ...(l.address ? { address: l.address } : {}),
+      ...(l.phone ? { phone: l.phone } : {}),
+      ...(l.email ? { email: l.email } : {}),
+      ...(l.linkLabel ? { linkLabel: l.linkLabel } : {}),
+      ...(l.linkUrl ? { linkUrl: l.linkUrl } : {}),
+    }))
+  const showMap = Boolean(enableMap && apiKey && pins.length > 0)
 
   const hasHeader = eyebrow || heading || intro
 
@@ -97,20 +106,21 @@ export const MapLocationCardsBlock: React.FC<MapLocationCardsBlockProps & { id?:
           </div>
         )}
 
-        <div className="grid gap-10 lg:grid-cols-2">
-          {mapSrc && (
-            <div className="aspect-[4/3] w-full overflow-hidden rounded-lg border border-border bg-surface-secondary lg:aspect-auto lg:min-h-[24rem]">
-              <iframe
-                allowFullScreen
-                className="size-full"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                src={mapSrc}
-                title={heading ? `Map: ${heading}` : 'Location map'}
-              />
-            </div>
+        <div className={showMap ? 'grid gap-10 lg:grid-cols-2' : ''}>
+          {showMap && (
+            <MapView
+              apiKey={apiKey!}
+              className="aspect-[4/3] w-full overflow-hidden rounded-lg border border-border bg-surface-secondary lg:sticky lg:top-24 lg:aspect-auto lg:h-[28rem]"
+              pins={pins}
+            />
           )}
-          <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-1">
+          <ul
+            className={
+              showMap
+                ? 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-1'
+                : 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'
+            }
+          >
             {items.map((loc, i) => (
               <LocationCard key={loc.id || i} location={loc} />
             ))}

@@ -14,6 +14,7 @@ import { logoStripGallery } from './LogoStrip/gallery'
 import { mapLocationCardsGallery } from './MapLocationCards/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
 import { mediaGalleryGallery } from './MediaGallery/gallery'
+import { memberPortalHeroGallery } from './MemberPortalHero/gallery'
 import { pricingTiersGallery } from './PricingTiers/gallery'
 import { teamGallery } from './Team/gallery'
 import { testimonialsGallery } from './Testimonials/gallery'
@@ -54,4 +55,5 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   testimonialsGallery,
   academyVideosGallery,
   mapLocationCardsGallery,
+  memberPortalHeroGallery,
 ]

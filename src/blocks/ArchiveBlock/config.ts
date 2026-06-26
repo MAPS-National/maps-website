@@ -12,6 +12,14 @@ export const Archive: Block = {
   interfaceName: 'ArchiveBlock',
   fields: [
     {
+      name: 'anchorId',
+      type: 'text',
+      label: 'Anchor ID',
+      admin: {
+        description: 'Optional in-page anchor target, e.g. "upcoming-events" makes the section reachable at #upcoming-events.',
+      },
+    },
+    {
       name: 'introContent',
       type: 'richText',
       editor: lexicalEditor({
@@ -25,6 +33,26 @@ export const Archive: Block = {
         },
       }),
       label: 'Intro Content',
+    },
+    {
+      name: 'display',
+      type: 'select',
+      defaultValue: 'grid',
+      label: 'Display As',
+      options: [
+        { label: 'Grid', value: 'grid' },
+        { label: 'Slider', value: 'slider' },
+      ],
+    },
+    {
+      name: 'showRegisterLinks',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Show event registration buttons',
+      admin: {
+        description:
+          'Render a "Register" button on each card whose post has a Members-only URL (the event sign-up link). Off by default; enable on event listings like the member portal\'s Upcoming Events.',
+      },
     },
     {
       name: 'populateBy',

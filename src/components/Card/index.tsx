@@ -6,9 +6,10 @@ import React, { Fragment } from 'react'
 
 import type { Post } from '@/payload-types'
 
+import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'membersOnlyUrl'>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -16,17 +17,17 @@ export const Card: React.FC<{
   doc?: CardPostData
   relationTo?: 'posts'
   showCategories?: boolean
+  showRegister?: boolean
   title?: string
 }> = (props) => {
   const { card, link } = useClickableCard({})
-  const { className, doc, relationTo, showCategories, title: titleFromProps } = props
+  const { className, doc, relationTo, showCategories, showRegister, title: titleFromProps } = props
 
-  const { slug, categories, meta, title } = doc || {}
-  const { description, image: metaImage } = meta || {}
+  const { slug, categories, meta, title, membersOnlyUrl } = doc || {}
+  const { image: metaImage } = meta || {}
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
-  const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = `/${relationTo}/${slug}`
 
   return (
@@ -39,9 +40,21 @@ export const Card: React.FC<{
       // eslint-disable-next-line react-hooks/refs
       ref={card.ref}
     >
-      <div className="relative w-full ">
-        {!metaImage && <div className="">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
+      <div className="relative aspect-square w-full overflow-hidden bg-muted">
+        {!metaImage && (
+          <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+            No image
+          </div>
+        )}
+        {metaImage && typeof metaImage !== 'string' && (
+          <Media
+            resource={metaImage}
+            size="33vw"
+            fill
+            imgClassName="object-cover"
+            pictureClassName="absolute inset-0 block h-full w-full"
+          />
+        )}
       </div>
       <div className="p-4">
         {showCategories && hasCategories && (
@@ -76,7 +89,19 @@ export const Card: React.FC<{
             </h3>
           </div>
         )}
-        {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
+        {/* Event sign-up: an inner <a> so useClickableCard defers to it (clicks
+            here open the form; the rest of the card still opens the post). */}
+        {showRegister && membersOnlyUrl && (
+          <CMSLink
+            className="mt-4"
+            type="custom"
+            url={membersOnlyUrl}
+            label="Register"
+            newTab
+            appearance="outline"
+            size="sm"
+          />
+        )}
       </div>
     </article>
   )

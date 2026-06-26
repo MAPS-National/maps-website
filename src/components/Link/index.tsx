@@ -1,3 +1,5 @@
+import { ExternalLink } from 'lucide-react'
+
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
 import Link from 'next/link'
@@ -45,12 +47,18 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
+  // New-tab links warn the user before the context change (WCAG 3.2.5 / G201):
+  // a visually-hidden cue for assistive tech (both styles), plus a visible
+  // external-link glyph on button-style links for sighted users.
+  const newTabSrOnly = newTab ? <span className="sr-only"> (opens in new tab)</span> : null
+
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
       <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
+        {newTabSrOnly}
       </Link>
     )
   }
@@ -60,6 +68,12 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
       <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
         {label && label}
         {children && children}
+        {newTab && (
+          <span className="inline-flex items-center">
+            <ExternalLink aria-hidden="true" className="size-4" />
+            {newTabSrOnly}
+          </span>
+        )}
       </Link>
     </Button>
   )

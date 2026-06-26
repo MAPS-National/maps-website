@@ -3,6 +3,7 @@
 import NextImage from 'next/image'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
+import { Carousel } from '@/components/Carousel'
 import { cn } from '@/utilities/ui'
 
 export type GalleryImage = {
@@ -19,6 +20,14 @@ const gridCols: Record<string, string> = {
   '4': 'grid-cols-2 lg:grid-cols-4',
 }
 
+// Compact: a dense photo wall — tight gaps, 4:3 tiles. Honors `columns` as the
+// max column count (2/3/4); defaults to a four-up wall.
+const compactCols: Record<string, string> = {
+  '2': 'grid-cols-2',
+  '3': 'grid-cols-2 sm:grid-cols-3',
+  '4': 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
+}
+
 /**
  * Interactive surface for the Media Gallery block: a tiled grid or a swipeable
  * horizontal slider, plus an optional click-to-zoom lightbox. The lightbox is a
@@ -27,14 +36,15 @@ const gridCols: Record<string, string> = {
  */
 export const MediaGalleryClient: React.FC<{
   columns: string
+  density?: string
   images: GalleryImage[]
   layout: string
   lightbox: boolean
-}> = ({ columns, images, layout, lightbox }) => {
+}> = ({ columns, density = 'comfortable', images, layout, lightbox }) => {
+  const compact = density === 'compact'
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
-  const trackRef = useRef<HTMLUListElement>(null)
   const wasOpenRef = useRef(false)
 
   const isSlider = layout === 'slider'
@@ -75,54 +85,30 @@ export const MediaGalleryClient: React.FC<{
     return () => document.removeEventListener('keydown', onKey)
   }, [openIndex, close, step])
 
-  const scrollByPage = (dir: number) => {
-    const el = trackRef.current
-    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' })
-  }
-
   return (
     <>
       {isSlider ? (
-        <div className="relative">
-          <ul
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            ref={trackRef}
-          >
-            {images.map((image, i) => (
-              <li
-                className="w-[78%] shrink-0 snap-start sm:w-[46%] lg:w-[31%]"
-                key={i}
-              >
-                <Thumb image={image} index={i} lightbox={lightbox} onOpen={open} />
-              </li>
-            ))}
-          </ul>
-          {images.length > 1 && (
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                aria-label="Previous images"
-                className="rounded-md border border-border p-2 transition-colors hover:bg-surface-secondary"
-                onClick={() => scrollByPage(-1)}
-                type="button"
-              >
-                <Chevron dir="left" />
-              </button>
-              <button
-                aria-label="Next images"
-                className="rounded-md border border-border p-2 transition-colors hover:bg-surface-secondary"
-                onClick={() => scrollByPage(1)}
-                type="button"
-              >
-                <Chevron dir="right" />
-              </button>
-            </div>
-          )}
-        </div>
+        <Carousel
+          ariaLabel="Image gallery"
+          autoPlay
+          slideClassName="w-[78%] sm:w-[46%] lg:w-[31%]"
+        >
+          {images.map((image, i) => (
+            <Thumb image={image} index={i} key={i} lightbox={lightbox} onOpen={open} />
+          ))}
+        </Carousel>
       ) : (
-        <ul className={cn('grid grid-cols-1 gap-4', gridCols[columns] ?? gridCols['3'])}>
+        <ul
+          className={cn(
+            'grid grid-cols-1',
+            compact
+              ? cn('gap-2', compactCols[columns] ?? compactCols['4'])
+              : cn('gap-4', gridCols[columns] ?? gridCols['3']),
+          )}
+        >
           {images.map((image, i) => (
             <li key={i}>
-              <Thumb image={image} index={i} lightbox={lightbox} onOpen={open} />
+              <Thumb compact={compact} image={image} index={i} lightbox={lightbox} onOpen={open} />
             </li>
           ))}
         </ul>
@@ -198,21 +184,30 @@ export const MediaGalleryClient: React.FC<{
  * lightbox captured for focus restoration.
  */
 const Thumb: React.FC<{
+  compact?: boolean
   image: GalleryImage
   index: number
   lightbox: boolean
   onOpen: (index: number, el: HTMLElement) => void
-}> = ({ image, index, lightbox, onOpen }) => {
+}> = ({ compact, image, index, lightbox, onOpen }) => {
   const inner = (
     <NextImage
       alt={image.alt}
       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       fill
-      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      sizes={
+        compact
+          ? '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw'
+          : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+      }
       src={image.src}
     />
   )
-  const wrapperCls = 'group relative block aspect-[4/3] w-full overflow-hidden bg-surface-secondary'
+  // 4:3 tiles for both densities — a uniform grid that crops far less than a
+  // square would, so landscape (and portrait) photos keep their subject.
+  const wrapperCls = cn(
+    'group relative block w-full overflow-hidden bg-surface-secondary aspect-[4/3]',
+  )
 
   return lightbox ? (
     <button

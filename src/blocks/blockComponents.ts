@@ -26,6 +26,8 @@ import { MapLocationCards } from './MapLocationCards/config'
 import { MapLocationCardsBlock } from './MapLocationCards/Component'
 import { MediaBlock as MediaConfig } from './MediaBlock/config'
 import { MediaBlock } from './MediaBlock/Component'
+import { MemberPortalHero as MemberPortalHeroConfig } from './MemberPortalHero/config'
+import { MemberPortalHeroBlock } from './MemberPortalHero/Component'
 import { MediaGallery as MediaGalleryConfig } from './MediaGallery/config'
 import { MediaGalleryBlock } from './MediaGallery/Component'
 import { PricingTiers } from './PricingTiers/config'
@@ -69,4 +71,5 @@ export const blockComponents: Record<string, BlockComponent> = {
   [Testimonials.slug]: TestimonialsBlock,
   [AcademyVideos.slug]: AcademyVideosBlock,
   [MapLocationCards.slug]: MapLocationCardsBlock,
+  [MemberPortalHeroConfig.slug]: MemberPortalHeroBlock,
 }

@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react'
 import React from 'react'
 
 import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
@@ -21,7 +22,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
     header?.enableHeader && (header.eyebrow || header.heading || header.body)
 
   return (
-    <section className="container" id={header?.anchorId || undefined}>
+    <section className="container scroll-mt-24" id={header?.anchorId || undefined}>
       {showHeader && (
         <div className="mb-12 max-w-2xl">
           {header?.eyebrow && (
@@ -40,28 +41,73 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
 
       <div className={cn('grid grid-cols-1 gap-x-8 gap-y-12', cols)}>
         {items?.map((item, index) => {
-          const { icon, image, heading, body, links, enableCardLink, cardLink, requiredPlans } = item
+          const {
+            icon,
+            image,
+            heading,
+            badge,
+            body,
+            links,
+            enableCardLink,
+            cardLink,
+            requiredPlans,
+            featured,
+          } = item
           const media = mediaType === 'icon' ? icon : mediaType === 'image' ? image : null
+          const hasImage = mediaType === 'image' && media && typeof media === 'object'
+          const hasIcon = mediaType === 'icon' && media && typeof media === 'object'
+          // Whole-card link: an absolute overlay makes the entire surface (image
+          // included) clickable; the button is suppressed when the card links.
+          const isCardLink = Boolean(enableCardLink && cardLink)
 
-          const head = (
+          const textBody = (
             <>
-              {media && typeof media === 'object' && mediaType === 'image' && (
-                <div className="relative mb-5 aspect-video overflow-hidden rounded-md">
-                  <Media fill imgClassName="object-cover" resource={media} />
-                </div>
-              )}
-              {media && typeof media === 'object' && mediaType === 'icon' && (
-                <div className="relative mb-4 h-12 w-12">
-                  <Media fill imgClassName="object-contain" resource={media} />
-                </div>
+              {badge && (
+                <span className="mb-2 inline-flex w-fit items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {badge}
+                </span>
               )}
               {heading && <h3 className="text-xl font-semibold">{heading}</h3>}
+              {body && (
+                <RichText
+                  className={cn('mt-3', featured ? 'text-primary-foreground/80' : 'text-muted-foreground')}
+                  data={body}
+                  enableGutter={false}
+                />
+              )}
+              {!isCardLink && Array.isArray(links) && links.length > 0 && (
+                <div className="relative z-20 mt-auto flex flex-wrap gap-3 pt-6">
+                  {links.map(({ link }, i) => (
+                    // sr-only heading suffix disambiguates otherwise-identical CTA
+                    // labels (e.g. eight "Get started" tiles) for screen-reader
+                    // link navigation — WCAG 2.4.4. Visible text is unchanged.
+                    <CMSLink key={i} {...link}>
+                      {heading && <span className="sr-only">{`: ${heading}`}</span>}
+                    </CMSLink>
+                  ))}
+                </div>
+              )}
+              {/* Whole-card link with no button/image/fill to signal it: a rest-state
+                  arrow advertises the card as navigable on touch and at a glance.
+                  Decorative — the overlay link already carries the heading as its name. */}
+              {isCardLink && !featured && !hasImage && (
+                <span aria-hidden="true" className="mt-auto inline-flex items-center pt-6 text-primary">
+                  <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+                </span>
+              )}
             </>
           )
 
           return (
             <div
-              className="flex h-full flex-col rounded-lg border bg-card p-6"
+              className={cn(
+                'group relative flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors',
+                !hasImage && 'p-6',
+                isCardLink && !featured && 'hover:border-primary',
+                // Featured: filled navy accent (matches the portal quick-action tile)
+                // so the active card stands out from neutral/placeholder siblings.
+                featured && 'border-primary bg-primary text-primary-foreground hover:bg-primary/90',
+              )}
               data-required-plans={
                 Array.isArray(requiredPlans) && requiredPlans.length > 0
                   ? requiredPlans.join(',')
@@ -69,22 +115,31 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
               }
               key={index}
             >
-              {enableCardLink && cardLink ? (
-                <CMSLink {...cardLink} className="block transition-opacity hover:opacity-80">
-                  {head}
+              {isCardLink && (
+                <CMSLink {...cardLink} className="absolute inset-0 z-10">
+                  <span className="sr-only">{heading || 'View'}</span>
                 </CMSLink>
-              ) : (
-                head
               )}
 
-              {body && <RichText className="mt-3 text-muted-foreground" data={body} enableGutter={false} />}
-
-              {Array.isArray(links) && links.length > 0 && (
-                <div className="mt-auto flex flex-wrap gap-3 pt-6">
-                  {links.map(({ link }, i) => (
-                    <CMSLink key={i} {...link} />
-                  ))}
+              {hasImage && (
+                <div className="relative aspect-video w-full overflow-hidden">
+                  <Media
+                    fill
+                    imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
+                    resource={media}
+                  />
                 </div>
+              )}
+              {hasIcon && (
+                <div className="relative mb-4 h-12 w-12">
+                  <Media fill imgClassName="object-contain" resource={media} />
+                </div>
+              )}
+
+              {hasImage ? (
+                <div className="flex flex-1 flex-col px-6 pb-6 pt-5">{textBody}</div>
+              ) : (
+                textBody
               )}
             </div>
           )

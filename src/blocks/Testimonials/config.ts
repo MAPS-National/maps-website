@@ -48,11 +48,13 @@ export const Testimonials: Block = {
           defaultValue: 'grid',
           admin: {
             width: '50%',
-            description: 'Grid: cards. Single: one large featured pull-quote.',
+            description:
+              'Grid: cards. Single: one large featured pull-quote. Slider: autoplaying carousel.',
           },
           options: [
             { label: 'Card grid', value: 'grid' },
             { label: 'Single pull-quote', value: 'single' },
+            { label: 'Autoplay slider', value: 'slider' },
           ],
         },
         {

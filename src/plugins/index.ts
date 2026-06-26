@@ -3,7 +3,7 @@ import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
-import { Plugin } from 'payload'
+import { APIError, Plugin, type CollectionBeforeValidateHook } from 'payload'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -22,6 +22,52 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
   const url = getServerSideURL()
 
   return doc?.slug ? `${url}/${doc.slug}` : url
+}
+
+// Server-side reCAPTCHA v3 verification for public form submissions. Env-gated:
+// with RECAPTCHA_SECRET_KEY unset this is a no-op (dev/local default). Reads the
+// token the FormBlock posts alongside the submission, verifies it with Google,
+// and rejects missing-token or low-score requests before the submission is
+// stored or emailed. The token is stripped so it never reaches submission
+// validation. Same "set the env to activate" pattern as the S3 / Resend adapters.
+const RECAPTCHA_SECRET = process.env.RECAPTCHA_SECRET_KEY
+const RECAPTCHA_MIN_SCORE = Number(process.env.RECAPTCHA_MIN_SCORE ?? '0.5')
+
+const verifyRecaptcha: CollectionBeforeValidateHook = async ({ data, operation, req }) => {
+  // Only guard new public submissions; skip when unconfigured or admin-created.
+  if (!RECAPTCHA_SECRET || operation !== 'create' || req.user) return data
+
+  const raw = data as Record<string, unknown> | undefined
+  const token = typeof raw?.recaptchaToken === 'string' ? raw.recaptchaToken : undefined
+  if (raw && 'recaptchaToken' in raw) delete raw.recaptchaToken
+
+  const reject = () =>
+    new APIError('Spam check failed. Please reload the page and try again.', 403)
+  if (!token) throw reject()
+
+  const params = new URLSearchParams({ secret: RECAPTCHA_SECRET, response: token })
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+  if (ip) params.set('remoteip', ip)
+
+  let result: { success?: boolean; score?: number } = {}
+  try {
+    const resp = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    })
+    result = await resp.json()
+  } catch {
+    throw reject()
+  }
+
+  if (!result.success || (typeof result.score === 'number' && result.score < RECAPTCHA_MIN_SCORE)) {
+    // Keep visibility on blocks so a legit user reporting "can't submit" (a v3
+    // false positive / low score) is diagnosable; tune RECAPTCHA_MIN_SCORE if so.
+    req.payload.logger.warn({ msg: 'reCAPTCHA rejected a form submission', result })
+    throw reject()
+  }
+  return data
 }
 
 export const plugins: Plugin[] = [
@@ -58,6 +104,11 @@ export const plugins: Plugin[] = [
   formBuilderPlugin({
     fields: {
       payment: false,
+    },
+    formSubmissionOverrides: {
+      hooks: {
+        beforeValidate: [verifyRecaptcha],
+      },
     },
     formOverrides: {
       fields: ({ defaultFields }) => {

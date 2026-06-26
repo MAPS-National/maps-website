@@ -48,7 +48,6 @@ export const mapLocationCardsGallery: GalleryBlock<MapLocationCardsBlockProps> =
         eyebrow: 'Find us',
         heading: 'Our chapters',
         intro: prose('Visit a MAPS chapter or reach out to the team near you.'),
-        mapQuery: 'Washington, DC',
         locations,
       },
     },

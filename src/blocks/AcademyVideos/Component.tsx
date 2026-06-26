@@ -29,9 +29,26 @@ const toEmbed = (url: string | null | undefined): string | null => {
   return url
 }
 
+/**
+ * Derive a poster image from the video URL without fetching it. YouTube exposes
+ * a static thumbnail per id; Vimeo does not (needs oEmbed), so we skip it and
+ * let an uploaded `thumbnail` cover those. Returns null when none can be derived.
+ */
+const deriveThumb = (url: string | null | undefined): string | null => {
+  if (!url) return null
+  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/)
+  if (yt) return `https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg`
+  return null
+}
+
+/** Strip a "MAPS Academy: " / "MAPS Policy & Advocacy: " style prefix from a
+ *  category label (everything up to and including the first colon). Keeps a
+ *  colon-less title intact. */
+const stripCatPrefix = (title: string): string => title.replace(/^[^:]*:\s*/, '').trim() || title
+
 const toTab = (c: number | VideoCategory): { value: string; label: string } | null => {
   if (typeof c !== 'object') return null
-  return { value: c.slug || String(c.id), label: c.title }
+  return { value: c.slug || String(c.id), label: stripCatPrefix(c.title) }
 }
 
 const toCard = (doc: AcademyVideo): VideoCard | null => {
@@ -39,6 +56,7 @@ const toCard = (doc: AcademyVideo): VideoCard | null => {
   if (!embedUrl) return null
   const thumb = doc.thumbnail
   const hasThumb = thumb && typeof thumb === 'object' && thumb.url
+  const derived = deriveThumb(doc.videoUrl)
   const categories = (doc.categories || [])
     .map(toTab)
     .filter((c): c is { value: string; label: string } => Boolean(c))
@@ -51,7 +69,9 @@ const toCard = (doc: AcademyVideo): VideoCard | null => {
     ...(doc.description ? { description: doc.description } : {}),
     ...(hasThumb
       ? { thumbSrc: getMediaUrl(thumb.url!, thumb.updatedAt), thumbAlt: thumb.alt || doc.title }
-      : {}),
+      : derived
+        ? { thumbSrc: derived, thumbRemote: true, thumbAlt: doc.title }
+        : {}),
   }
 }
 
