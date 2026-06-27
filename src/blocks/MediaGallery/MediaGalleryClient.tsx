@@ -155,10 +155,10 @@ export const MediaGalleryClient: React.FC<{
             </>
           )}
 
-          <figure className="flex max-h-full max-w-5xl flex-col items-center">
+          <figure className="flex max-h-full max-w-[75vw] flex-col items-center">
             <NextImage
               alt={images[openIndex].alt}
-              className="h-auto max-h-[82vh] w-auto object-contain"
+              className="h-auto max-h-[75vh] w-auto max-w-full object-contain"
               height={images[openIndex].height}
               priority
               // Lightbox is a deliberate click-to-zoom: serve the full original
