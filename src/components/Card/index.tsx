@@ -8,6 +8,7 @@ import type { Post } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
+import { collectionHref } from '@/utilities/collectionHref'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'membersOnlyUrl'>
 
@@ -28,7 +29,7 @@ export const Card: React.FC<{
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
-  const href = `/${relationTo}/${slug}`
+  const href = collectionHref(relationTo ?? 'posts', slug ?? '')
 
   return (
     <article
