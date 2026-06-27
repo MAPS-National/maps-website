@@ -196,7 +196,7 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     role: 'Program graduate',
     type: 'programs',
     quote: quote(
-      'The MAPS Academy gave me a roadmap into public service I didn’t know existed — and the network to act on it.',
+      'The MAPS Academy gave me a roadmap into public service I didn’t know existed, and the network to act on it.',
     ),
   })
   await upsertBySlug(payload, 'testimonials', 'yusuf-k', {
@@ -224,7 +224,7 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     order: 1,
   })
   await upsertBySlug(payload, 'academy-videos', 'cfr-fellowship-info-session', {
-    title: 'Pipelines into Foreign Policy — CFR Fellowship & Term Member Programs',
+    title: 'Pipelines into Foreign Policy: CFR Fellowship & Term Member Programs',
     videoUrl: 'https://www.youtube.com/watch?v=9brMSH0HuBc',
     description: 'An info session on the Council on Foreign Relations fellowship and term-member tracks.',
     categories: [pathways],
@@ -238,61 +238,11 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     order: 1,
   })
 
-  return [
-    {
-      slug: 'phase-4-blocks',
-      title: 'Phase 4 Block Showcase',
-      _status: 'published',
-      hero: {
-        type: 'lowImpact',
-        eyebrow: 'Internal',
-        richText: richText(
-          heading('Phase 4 — Block Showcase'),
-          paragraph(
-            'Live placement of the Phase 4 collection-backed blocks: testimonials, academy videos, and map + location cards.',
-          ),
-        ),
-      },
-      layout: [
-        {
-          blockType: 'testimonials',
-          variant: 'grid',
-          type: 'all',
-          populateBy: 'collection',
-          limit: 0,
-          eyebrow: 'In their words',
-          heading: 'What our community says',
-        },
-        {
-          blockType: 'academyVideos',
-          populateBy: 'collection',
-          limit: 0,
-          eyebrow: 'MAPS Academy',
-          heading: 'Watch & learn',
-        },
-        {
-          blockType: 'mapLocationCards',
-          enableMap: true,
-          heading: 'Our chapters',
-          locations: [
-            {
-              name: 'MAPS National',
-              address: '1100 13th St NW\nWashington, DC 20005',
-              phone: '(202) 555-0142',
-              email: 'hello@example.org',
-              linkLabel: 'Get directions',
-              linkUrl: 'https://maps.google.com',
-            },
-            {
-              name: 'MAPS New York',
-              address: '120 Broadway\nNew York, NY 10271',
-              email: 'ny@example.org',
-            },
-          ],
-        },
-      ],
-    },
-  ] as unknown as PageData[]
+  // The /phase-4-blocks showcase page was migration scaffolding to satisfy the
+  // "block placed on at least one Page" acceptance; the blocks now live on real
+  // pages, so the page is gone. This slice still seeds the sample collection data
+  // above (testimonials, academy videos) that other pages query.
+  return [] as unknown as PageData[]
 }
 
 // ---------------------------------------------------------------------------
