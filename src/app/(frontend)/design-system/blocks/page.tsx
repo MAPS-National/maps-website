@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { galleryEntries } from '@/blocks/gallery-entries'
+import { getGalleryUsage, usageTotal } from '@/blocks/usage'
 
 import { CatalogBrowser } from './CatalogBrowser'
 import { GalleryCard } from './GalleryCard'
 import { ThemeToggle } from '../ThemeToggle'
 
-export default function BlocksGalleryPage() {
+export default async function BlocksGalleryPage() {
+  const usage = await getGalleryUsage()
   return (
     <main className="container flex flex-col gap-xl py-xl">
       <header className="flex flex-col gap-s">
@@ -32,7 +34,7 @@ export default function BlocksGalleryPage() {
         }))}
       >
         {galleryEntries.map((entry) => (
-          <GalleryCard entry={entry} key={entry.slug} />
+          <GalleryCard entry={entry} key={entry.slug} uses={usageTotal(usage[entry.slug])} />
         ))}
       </CatalogBrowser>
     </main>

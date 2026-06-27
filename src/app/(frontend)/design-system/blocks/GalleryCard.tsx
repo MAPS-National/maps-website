@@ -16,7 +16,7 @@ import { EntryPreview } from './[slug]/EntryPreview'
  * order and pointer interaction, so the card reads as a single link and the
  * nested interactive elements never trap focus.
  */
-export const GalleryCard: React.FC<{ entry: GalleryEntry }> = ({ entry }) => {
+export const GalleryCard: React.FC<{ entry: GalleryEntry; uses?: number }> = ({ entry, uses }) => {
   const first = entry.variants[0]
 
   return (
@@ -35,9 +35,19 @@ export const GalleryCard: React.FC<{ entry: GalleryEntry }> = ({ entry }) => {
 
       <div className="flex items-center justify-between gap-2 p-4">
         <span className="font-medium group-hover:underline">{entry.title}</span>
-        <span className="shrink-0 border border-border/40 px-2 py-0.5 text-xs text-content-secondary">
-          {entry.category}
-        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          {uses !== undefined && (
+            <span
+              className="border border-border/40 px-2 py-0.5 text-xs text-content-secondary"
+              title="Times used across pages"
+            >
+              {uses === 0 ? 'Unused' : `${uses} use${uses === 1 ? '' : 's'}`}
+            </span>
+          )}
+          <span className="border border-border/40 px-2 py-0.5 text-xs text-content-secondary">
+            {entry.category}
+          </span>
+        </div>
       </div>
 
       <Link

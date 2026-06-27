@@ -5,6 +5,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { galleryEntries, getGalleryEntry } from '@/blocks/gallery-entries'
+import { getGalleryUsage, usageTotal } from '@/blocks/usage'
 
 import { EntryPreview } from './EntryPreview'
 import { VariantSwitcher } from './VariantSwitcher'
@@ -38,6 +39,10 @@ export default async function GalleryEntryPage({
   const { slug } = await params
   const entry = getGalleryEntry(slug)
   if (!entry) notFound()
+
+  const usage = await getGalleryUsage()
+  const sites = [...(usage[entry.slug] ?? [])].sort((a, b) => b.count - a.count)
+  const total = usageTotal(sites)
 
   return (
     <main className="container flex flex-col gap-xl py-xl">
@@ -82,6 +87,34 @@ export default async function GalleryEntryPage({
           ))}
         </VariantSwitcher>
       )}
+
+      <section className="flex flex-col gap-s border-t border-border/40 pt-l">
+        <h2 className="text-lg">
+          Usage{' '}
+          <span className="text-content-secondary">
+            (
+            {total === 0
+              ? 'not used on any page'
+              : `${total} time${total === 1 ? '' : 's'} on ${sites.length} page${sites.length === 1 ? '' : 's'}`}
+            )
+          </span>
+        </h2>
+        {sites.length > 0 && (
+          <ul className="flex flex-col gap-xs text-sm">
+            {sites.map((s) => (
+              <li className="flex flex-wrap items-baseline gap-2" key={s.href}>
+                <Link className="hover:text-foreground hover:underline" href={s.href}>
+                  {s.title}
+                </Link>
+                <code className="text-xs text-content-secondary">{s.href}</code>
+                {s.count > 1 && (
+                  <span className="text-xs text-content-secondary">· {s.count}× on this page</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </main>
   )
 }
