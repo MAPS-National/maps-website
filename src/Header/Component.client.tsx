@@ -29,7 +29,7 @@ export const HeaderClient: React.FC = () => {
 
   return (
     <header className="container relative z-20   " {...(theme ? { 'data-theme': theme } : {})}>
-      <div className="py-8 flex justify-between">
+      <div className="h-[var(--header-height)] flex items-center justify-between">
         <Link href="/">
           <Logo variant="primary" loading="eager" priority="high" />
         </Link>

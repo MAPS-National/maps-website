@@ -17,7 +17,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, overlay, 
 
   return (
     <div
-      className="relative -mt-[10.4rem] flex items-center justify-center text-white"
+      className="relative -mt-[calc(var(--header-height)+var(--page-top-pad))] flex items-center justify-center text-white"
       data-theme="dark"
     >
       <div className="container mb-8 z-10 relative flex items-center justify-center">
@@ -39,7 +39,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, overlay, 
       {overlay !== 'none' && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-brand-primary/85 to-brand-primary/65"
+          className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-brand-primary/90 via-brand-primary/80 via-25% to-brand-primary/65"
         />
       )}
       <div className="min-h-[80vh] select-none">

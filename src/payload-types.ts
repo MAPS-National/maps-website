@@ -912,6 +912,10 @@ export interface CardGridBlock {
          */
         badge?: string | null;
         /**
+         * Optional Lucide icon name shown in a tinted chip above the heading (e.g. "file-text", "users", "briefcase"). Best on imageless cards. Unknown or empty names render nothing.
+         */
+        lucideIcon?: string | null;
+        /**
          * Render this card filled with the navy primary color and light text (like the portal quick-action tile) to mark it as the primary/active card. Best on imageless cards.
          */
         featured?: boolean | null;
@@ -2299,6 +2303,7 @@ export interface CardGridBlockSelect<T extends boolean = true> {
         image?: T;
         heading?: T;
         badge?: T;
+        lucideIcon?: T;
         featured?: T;
         body?: T;
         links?:

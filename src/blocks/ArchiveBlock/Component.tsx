@@ -31,6 +31,9 @@ export const ArchiveBlock: React.FC<
       collection: 'posts',
       depth: 1,
       limit,
+      // Newest-first; without an explicit sort Payload falls back to creation
+      // order, which surfaced stale 2022 posts in "Latest Updates".
+      sort: '-publishedAt',
       // Fetch only what the cards render. membersOnlyUrl (the gated event
       // sign-up link) is pulled in solely when this listing shows Register
       // buttons, so it never ends up in public archive HTML otherwise.
@@ -41,15 +44,15 @@ export const ArchiveBlock: React.FC<
         title: true,
         ...(showRegisterLinks ? { membersOnlyUrl: true } : {}),
       },
-      ...(flattenedCategories && flattenedCategories.length > 0
-        ? {
-            where: {
-              categories: {
-                in: flattenedCategories,
-              },
-            },
-          }
-        : {}),
+      // Published-only. The Local API runs with overrideAccess (so membersOnlyUrl
+      // stays readable), which also bypasses authenticatedOrPublished — so drafts
+      // would otherwise leak in as empty cards. Filter them out explicitly.
+      where: {
+        _status: { equals: 'published' },
+        ...(flattenedCategories && flattenedCategories.length > 0
+          ? { categories: { in: flattenedCategories } }
+          : {}),
+      },
     })
 
     posts = fetchedPosts.docs as Post[]

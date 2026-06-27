@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { SearchIcon } from 'lucide-react'
+import { Lock, SearchIcon } from 'lucide-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -11,7 +11,7 @@ import { cn } from '@/utilities/ui'
 // window.Outseta is typed centrally in src/types/outseta.d.ts.
 
 type NavLink = { label: string; href: string }
-type NavGroup = { label: string; items: NavLink[] }
+type NavGroup = { label: string; items: NavLink[]; gated?: boolean }
 
 // Site information architecture (G1). Hardcoded — this is the site's fixed
 // structure, not editorial content; the slugs match the seeded pages.
@@ -25,6 +25,15 @@ const GROUPS: NavGroup[] = [
       { label: 'Board & Leadership', href: '/about-us/board-leadership' },
       { label: 'Advisory Council', href: '/about-us/advisory-council' },
       { label: 'State Committees', href: '/about-us/state-committees' },
+    ],
+  },
+  {
+    label: 'Events',
+    items: [
+      { label: 'Upcoming Events', href: '/events/upcoming' },
+      { label: 'MAPS Events', href: '/events/maps' },
+      { label: 'Partner Events', href: '/events/partner' },
+      { label: 'All Events', href: '/events' },
     ],
   },
   {
@@ -53,25 +62,11 @@ const GROUPS: NavGroup[] = [
     ],
   },
   {
-    label: 'Events',
-    items: [
-      { label: 'Upcoming Events', href: '/events/upcoming' },
-      { label: 'MAPS Events', href: '/events/maps' },
-      { label: 'Partner Events', href: '/events/partner' },
-      { label: 'All Events', href: '/events' },
-    ],
-  },
-  {
     label: 'Members',
-    items: [
-      { label: 'Member Portal', href: '/members/portal' },
-      { label: 'Community Building', href: '/members/community-building' },
-      { label: 'New York State', href: '/members/new-york-state' },
-      { label: 'Policy & Legal Advocacy', href: '/members/policy-legal-advocacy' },
-      { label: 'Professional Development', href: '/members/professional-development' },
-      { label: 'MAPS Academy Videos', href: '/members/maps-academy-vids' },
-      { label: 'Points of Contact', href: '/members/resources-points-of-contact' },
-    ],
+    gated: true,
+    // Only the portal entry point is exposed publicly; the member-only sub-pages
+    // (Community Building, NY State, etc.) are reached from inside after sign-in.
+    items: [{ label: 'Member Portal', href: '/members/portal' }],
   },
 ]
 
@@ -235,7 +230,12 @@ export const NavMenu: React.FC = () => {
                 <ul className="space-y-2.5">
                   {group.items.map((item) => (
                     <li key={item.href}>
-                      <MenuLink active={pathname === item.href} href={item.href} onClick={close}>
+                      <MenuLink
+                        active={pathname === item.href}
+                        gated={group.gated}
+                        href={item.href}
+                        onClick={close}
+                      >
                         {item.label}
                       </MenuLink>
                     </li>
@@ -286,8 +286,9 @@ const MenuLink: React.FC<{
   active: boolean
   href: string
   onClick: () => void
+  gated?: boolean
   children: React.ReactNode
-}> = ({ active, href, onClick, children }) => (
+}> = ({ active, href, onClick, gated, children }) => (
   <Link
     className={cn(
       'text-base transition-colors hover:text-primary',
@@ -296,6 +297,9 @@ const MenuLink: React.FC<{
     href={href}
     onClick={onClick}
   >
+    {gated && (
+      <Lock aria-hidden="true" className="mr-1.5 inline-block size-3.5 align-[-0.15em]" />
+    )}
     {children}
   </Link>
 )

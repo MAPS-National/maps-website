@@ -52,6 +52,9 @@ const node = (type: string, extra: Record<string, unknown>, children: unknown[])
 const richText = (...children: unknown[]) => ({ root: node('root', {}, children) })
 const heading = (value: string, tag = 'h1') => node('heading', { tag }, [text(value)])
 const paragraph = (value: string) => node('paragraph', {}, [text(value)])
+// Inline rich-text link node (Lexical custom link) for cross-page references.
+const linkNode = (label: string, url: string, newTab = false) =>
+  node('link', { version: 3, fields: { linkType: 'custom', url, newTab } }, [text(label)])
 
 // ---------------------------------------------------------------------------
 // Slice: about-us roster pages (migrated from scripts/seed-about-pages.ts)
@@ -1651,9 +1654,17 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
           blockType: 'cardGrid',
           header: {
             enableHeader: true,
-            heading: 'Join Signal Chat Groups',
+            eyebrow: 'National',
+            heading: 'Connect nationally',
             body: richText(
-              paragraph('Find your community online and connect with MAPS members.'),
+              paragraph(
+                'Find your community and join nationwide conversations about public service and community building.',
+              ),
+              node('paragraph', {}, [
+                text('Looking for career specific groups? Explore our '),
+                linkNode('Communities of Practice', '/members/communities-of-practice'),
+                text('.'),
+              ]),
             ),
             anchorId: 'chat',
           },
@@ -1664,43 +1675,28 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
               heading: 'MAPS Member & Associate Chat',
               body: richText(
                 paragraph(
-                  'Our main chat for MAPS Members and Associates across the country, created and maintained to foster an inclusive, supportive, and focused professional communication space for personal success stories, professional development and networking opportunities, career postings and public policy where relevant to the organization and its mission.',
+                  'Our main national chat for MAPS Members and Associates: a supportive, professional space for success stories, career postings, networking, and public policy relevant to our mission.',
                 ),
               ),
-              enableCardLink: true,
-              cardLink: {
-                type: 'custom',
-                url: 'https://signal.group/#CjQKIJt0L3TEvNSeAM8cOxDYeQ4Rr-LkC3uMkSX1tWpTEwh7EhAhpJH42AqPlDsoaEt3xD4I',
-                newTab: true,
-              },
+              links: [joinBtn('https://signal.group/#CjQKIJt0L3TEvNSeAM8cOxDYeQ4Rr-LkC3uMkSX1tWpTEwh7EhAhpJH42AqPlDsoaEt3xD4I')],
             },
             {
               heading: 'MAPS Social Chat',
               body: richText(
                 paragraph(
-                  'This dedicated space allows MAPS Members and Associates to engage in an informal or social environment, where current affairs, politics, and broader issues on, or of concern to, the Muslim American community may be discussed freely from the perspective of Muslim American public servants. Personal attacks or inflammatory language intended to harm or disrespect others is prohibited.',
+                  'An informal space for MAPS Members and Associates to discuss current affairs, politics, and issues affecting the Muslim American community. Personal attacks and inflammatory language are not allowed.',
                 ),
               ),
-              enableCardLink: true,
-              cardLink: {
-                type: 'custom',
-                url: 'https://signal.group/#CjQKILO1Hppy2YF-fTgSZmAn26yVv0Ts_PyfVvGz53xK7UZQEhDs8WSDdFlluODjtVLv9ccE',
-                newTab: true,
-              },
+              links: [joinBtn('https://signal.group/#CjQKILO1Hppy2YF-fTgSZmAn26yVv0Ts_PyfVvGz53xK7UZQEhDs8WSDdFlluODjtVLv9ccE')],
             },
             {
               heading: 'MAPS Affiliate Chat',
               body: richText(
                 paragraph(
-                  'Our main chat for MAPS Affiliates across the country, aims to provide a supportive and focused professional communication space for professional development and networking opportunities, and career postings aimed as supporting and guiding Muslim Americans into a range of public service pathways.',
+                  'Our national chat for MAPS Affiliates: a professional space for development, networking, and career postings that guide Muslim Americans into public service pathways.',
                 ),
               ),
-              enableCardLink: true,
-              cardLink: {
-                type: 'custom',
-                url: 'https://signal.group/#CjQKINQPIyQoCZ-9PSel4CSYWjZ0fgAnhBuAGvd3Q4-BJBtoEhD3AGqTfUn1fMFIgP_vSQAY',
-                newTab: true,
-              },
+              links: [joinBtn('https://signal.group/#CjQKINQPIyQoCZ-9PSel4CSYWjZ0fgAnhBuAGvd3Q4-BJBtoEhD3AGqTfUn1fMFIgP_vSQAY')],
             },
           ],
         },
@@ -2035,7 +2031,7 @@ const policyLegalAdvocacySlice: PageSlice = async (payload) => {
             link: {
               type: 'custom',
               url: '#legal-resources',
-              label: 'Explore Policy Resources',
+              label: 'Policy Resources',
               appearance: 'default',
             },
           },
@@ -2043,7 +2039,7 @@ const policyLegalAdvocacySlice: PageSlice = async (payload) => {
             link: {
               type: 'custom',
               url: '#rights-issues',
-              label: 'Explore Trainings & Topical Videos',
+              label: 'Trainings & Topical Videos',
               appearance: 'outline',
             },
           },
@@ -2158,6 +2154,8 @@ const memberPortalSlice: PageSlice = async (payload) => {
     ],
     enableCardLink: false,
   })
+  // Opportunity not yet open: a heading + "Coming soon" badge, no button.
+  const comingSoon = (heading: string) => ({ heading, badge: 'Coming soon', enableCardLink: false })
 
   return [
     {
@@ -2209,6 +2207,7 @@ const memberPortalSlice: PageSlice = async (payload) => {
           items: [
             {
               heading: 'Professional Development',
+              lucideIcon: 'briefcase',
               body: richText(
                 paragraph(
                   'Career resources, templates, guides, and webinar recordings, plus one-on-one services like resume reviews and mentorship.',
@@ -2219,6 +2218,7 @@ const memberPortalSlice: PageSlice = async (payload) => {
             },
             {
               heading: 'Community Building',
+              lucideIcon: 'users',
               body: richText(
                 paragraph(
                   'Pathways to community engagement across our national membership, State Committee chat groups, and career Communities of Practice.',
@@ -2229,6 +2229,7 @@ const memberPortalSlice: PageSlice = async (payload) => {
             },
             {
               heading: 'Policy & Legal Advocacy',
+              lucideIcon: 'scale',
               body: richText(
                 paragraph(
                   'MAPS policy initiatives, advocacy campaigns, memos and templates, plus individual member legal support via our intake process.',
@@ -2239,6 +2240,7 @@ const memberPortalSlice: PageSlice = async (payload) => {
             },
             {
               heading: 'Experts & Points of Contact',
+              lucideIcon: 'network',
               body: richText(
                 paragraph(
                   'Meet our internal career, community, and institutional points of contact, including mentors, resume reviewers, and agency representatives.',
@@ -2265,14 +2267,17 @@ const memberPortalSlice: PageSlice = async (payload) => {
             ),
           },
           items: [
-            getInvolved('Join our leadership team', 'https://forms.gle/REPLACE-leadership'),
-            getInvolved('Start a State Committee', 'https://forms.gle/REPLACE-state-committee'),
-            getInvolved('Become an Institutional Representative', 'https://forms.gle/REPLACE-institutional-rep'),
-            getInvolved('Start a MAPS Chapter', 'https://forms.gle/REPLACE-chapter'),
-            getInvolved('Register as a Speaker or Expert', 'https://forms.gle/REPLACE-speaker-expert'),
-            getInvolved('Apply to the Advisory Council', 'https://forms.gle/REPLACE-advisory-council'),
-            getInvolved('Become a Mentor or Peer Guide', 'https://forms.gle/REPLACE-mentor-peer-guide'),
-            getInvolved('Share your feedback', 'https://forms.gle/REPLACE-feedback'),
+            getInvolved('Join our leadership team', 'https://forms.gle/sNfKvd21Q5TJeZnx8'),
+            getInvolved(
+              'Become an Institutional Representative',
+              'https://docs.google.com/forms/d/1tQzTXAft4ImOf7bFqplmu7adaiHrbk-ELLuE_HtPVmg/viewform',
+            ),
+            comingSoon('Start a State Committee'),
+            comingSoon('Start a MAPS Chapter'),
+            comingSoon('Register as a Speaker or Expert'),
+            comingSoon('Apply to the Advisory Council'),
+            comingSoon('Become a Mentor or Peer Guide'),
+            comingSoon('Share your feedback'),
           ],
         },
         // 5. State Committee Pages.
@@ -2327,7 +2332,7 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
   // ONE button; cards whose source had a second action fold that action's gist
   // into the body prose (flagged in gaps[] for manual refinement).
   const btn = (label: string, url: string, newTab = true) => ({
-    link: { type: 'custom', url, label, newTab, appearance: 'default' },
+    link: { type: 'custom', url, label, newTab, appearance: 'outline' },
   })
 
   return [
@@ -2345,8 +2350,8 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
           ),
         ),
         links: [
-          { link: { type: 'custom', url: '#programs-services', label: 'Explore our Programs & Services', newTab: false, appearance: 'default' } },
-          { link: { type: 'custom', url: '/members/maps-academy-vids', label: 'Explore our Recorded MAPS Academy Webinars', newTab: false, appearance: 'default' } },
+          { link: { type: 'custom', url: '#programs-services', label: 'Programs & Services', newTab: false, appearance: 'default' } },
+          { link: { type: 'custom', url: '/members/maps-academy-vids', label: 'Recorded MAPS Academy Webinars', newTab: false, appearance: 'outline' } },
         ],
       },
       layout: [
@@ -2361,17 +2366,19 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
           },
           items: [
             {
-              heading: '1. MAPS Resume Review Service',
+              heading: 'MAPS Resume Review Service',
+              lucideIcon: 'file-text',
               body: richText(
                 paragraph(
                   'Get your resume reviewed by our in-house experts and senior public servants for free. Just email it to resumereview@mapsnational.org and follow the instructions in the response email. (Due to volume, no responses can be sent to applicants; all must book review slots directly.)',
                 ),
               ),
-              links: [btn('E-Mail Your Resume for Review', 'mailto:resumereview@mapsnational.org?subject=Resume%20Review%20from%20Portal', false)],
+              links: [btn('Email Your Resume', 'mailto:resumereview@mapsnational.org?subject=Resume%20Review%20from%20Portal', false)],
               enableCardLink: false,
             },
             {
-              heading: '2. MAPS Mentorship Program',
+              heading: 'MAPS Mentorship Program',
+              lucideIcon: 'users',
               body: richText(
                 paragraph(
                   'MAPS Professional Development Committee invites the junior and mid-career professionals in our membership to sign up for our much-awaited Mentorship Program, connecting you to our most knowledgeable and senior members.',
@@ -2384,73 +2391,80 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
               enableCardLink: false,
             },
             {
-              heading: '3. MAPS Academy Resources',
+              heading: 'MAPS Academy Resources',
+              lucideIcon: 'folder-open',
               body: richText(
                 paragraph(
                   'Check out our depository of shared member and government career resources, including our custom resume templates and guides, and primers on everything from how to craft a resume, to interview tips and how to apply to the Federal Senior Executive Service (SES).',
                 ),
               ),
-              links: [btn('Explore our Shared Folder', 'https://drive.google.com/drive/folders/1blgzeucqN6_U96ka6uELlQCBBG9TWosL?usp=drive_link')],
+              links: [btn('Open Shared Folder', 'https://drive.google.com/drive/folders/1blgzeucqN6_U96ka6uELlQCBBG9TWosL?usp=drive_link')],
               enableCardLink: false,
             },
             {
-              heading: '4. MAPS Communities of Practice',
+              heading: 'MAPS Communities of Practice',
+              lucideIcon: 'network',
               body: richText(
                 paragraph(
                   'Join our career-specific Communities of Practice. These groups are only open to current practitioners in these fields, and will maintain additional entry and participation criteria.',
                 ),
-                paragraph(
-                  'Communities: Legal Professionals; Health Professionals; National Security & Foreign Policy Professionals; International Development Practitioners; Education Specialists; Economists; Government Contractors.',
-                ),
               ),
-              links: [btn('View the Communities of Practice', 'https://bit.ly/3VmhFFc')],
+              links: [btn('Explore CoPs', '/members/communities-of-practice', false)],
               enableCardLink: false,
             },
             {
-              heading: '5. MAPS Judicial Pipeline',
+              heading: 'MAPS Judicial Pipeline',
+              lucideIcon: 'scale',
               body: richText(
                 paragraph(
                   'Considering serving as a Judge at the Federal, State or local level in the near or distant future? Register for our Judicial pipeline list so we can begin to train you, connect you with sitting judges in our network, and keep you in mind when opportunities become available!',
                 ),
               ),
-              links: [btn('Register with MAPS as a Future Judge', 'https://forms.gle/dWtuQkKL9Rc2uxtHA')],
+              links: [btn('Register as a Future Judge', 'https://forms.gle/dWtuQkKL9Rc2uxtHA')],
               enableCardLink: false,
             },
             {
-              heading: '6. MAPS Appointments Pipeline',
+              heading: 'MAPS Appointments Pipeline',
+              lucideIcon: 'landmark',
               body: richText(
                 paragraph(
                   'Please review our exclusive MAPS Academy professional development content for Members, Associates, or Affiliates below. As many of these recordings are internal and not publicly available, for the privacy and security of our members and instructors, please do not share externally.',
                 ),
-                paragraph(
-                  'Apply for referral to NYC Jobs, or apply for referral to NYC Boards.',
-                ),
               ),
-              links: [btn('Apply for Referral to NYC Jobs', 'https://forms.gle/wpRvWiekcq4xTZRx6')],
+              links: [
+                btn('NYC Jobs Referral', 'https://forms.gle/wpRvWiekcq4xTZRx6'),
+                btn(
+                  'NYC Boards Referral',
+                  'https://docs.google.com/forms/d/e/1FAIpQLSeb4nED2forgqveGhswqzx2cX2q8p6bSZ9ljlFDDKUzzLh-7w/viewform',
+                ),
+              ],
               enableCardLink: false,
             },
             {
-              heading: '7. Government Jobs & Fellowships',
+              heading: 'Government Jobs & Fellowships',
+              lucideIcon: 'briefcase',
               body: richText(
                 paragraph(
                   'MAPS helps members navigate the many pathways to a career in Federal, State and local government. Outlined are many of the primary avenues to permanent careers, entry points to temporary Federal opportunities, fellowships, and jobs within the US Congress.',
                 ),
               ),
-              links: [btn('Explore Career Listings and Fellowships', '/resources/federal-employment')],
+              links: [btn('Jobs & Fellowships', '/resources/federal-employment', false)],
               enableCardLink: false,
             },
             {
-              heading: '8. MAPS Career Speaker Registry',
+              heading: 'MAPS Career Speaker Registry',
+              lucideIcon: 'mic',
               body: richText(
                 paragraph(
                   'Share your time, talents, and knowledge with our community through the MAPS Academy learning platform, or as a speaker or panelist for future MAPS or partner events. MAPS also refers its senior members to partner events and conferences as speakers and instructors.',
                 ),
               ),
-              links: [btn('Register as a Speaker or Expert Resource', 'https://forms.gle/x2tfK2n9qPaP7K5g7')],
+              links: [btn('Register as a Speaker/Expert', 'https://forms.gle/x2tfK2n9qPaP7K5g7')],
               enableCardLink: false,
             },
             {
-              heading: '9. MAPS Academy Recordings',
+              heading: 'MAPS Academy Recordings',
+              lucideIcon: 'video',
               body: richText(
                 paragraph(
                   'Please review our exclusive MAPS Academy professional development content for Members, Associates, or Affiliates below. Many of these recordings are internal and not publicly available. For the privacy and security of our members and instructors, please do not share externally.',
@@ -2458,6 +2472,140 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
               ),
               links: [btn('Watch Recordings', '/members/maps-academy-vids', false)],
               enableCardLink: false,
+            },
+          ],
+        },
+      ],
+    },
+  ] as unknown as PageData[]
+}
+
+const communitiesOfPracticeSlice: PageSlice = async (_payload) => {
+  // One card per Community of Practice, each linking to its Signal group invite.
+  // (cop() still supports a "Coming soon" card with no url for future groups.)
+  const cop = (heading: string, blurb: string, url?: string) => ({
+    heading,
+    body: richText(paragraph(blurb)),
+    ...(url
+      ? { enableCardLink: true, cardLink: { type: 'custom', url, newTab: true } }
+      : { badge: 'Coming soon', enableCardLink: false }),
+  })
+
+  return [
+    {
+      slug: 'members/communities-of-practice',
+      title: 'Communities of Practice',
+      _status: 'published',
+      hero: {
+        type: 'lowImpact',
+        richText: richText(
+          heading('MAPS Communities of Practice', 'h1'),
+          paragraph(
+            'MAPS convenes several professional Communities of Practice (COPs) that connect members based on common public service career tracks. These associations also serve to introduce and integrate prospective public servants directly into their desired public service professions.',
+          ),
+          paragraph('Review our engagement standards before joining.'),
+        ),
+        links: [
+          {
+            link: {
+              type: 'custom',
+              url: '/documents/MAPS-Messaging-Policy-for-Member-Chats-on-Signal-Platform-Revised.pdf',
+              newTab: true,
+              label: 'MAPS Chat Policy',
+              appearance: 'outline',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              url: '#communities',
+              newTab: false,
+              label: 'Join Chat Groups',
+              appearance: 'default',
+            },
+          },
+        ],
+      },
+      layout: [
+        {
+          blockType: 'cardGrid',
+          columns: '3',
+          mediaType: 'none',
+          header: {
+            enableHeader: true,
+            heading: 'Find your community',
+            anchorId: 'communities',
+            body: richText(
+              paragraph(
+                'Join our career specific Communities of Practice. These groups are only open to current practitioners in these fields, and will maintain additional entry and participation criteria.',
+              ),
+              node('paragraph', {}, [
+                text('For general or state level chats, visit '),
+                linkNode('Community Building', '/members/community-building'),
+                text('.'),
+              ]),
+            ),
+          },
+          items: [
+            cop(
+              'Legal Professionals',
+              'For attorneys, paralegals, and legal staff across government and public interest law. Connect on Signal, share openings, and access legal career resources.',
+              'https://bit.ly/3VmhFFc',
+            ),
+            cop(
+              'Health Professionals',
+              'For clinicians, public health practitioners, and health policy professionals serving in government and community institutions.',
+              'https://bit.ly/3ViDh5e',
+            ),
+            cop(
+              'National Security & Foreign Policy Professionals',
+              'For professionals across national security, foreign policy, defense, and intelligence in public service.',
+              'https://bit.ly/3HsCSWd',
+            ),
+            cop(
+              'Economists',
+              'For economists and economic policy professionals in government, research, and public institutions.',
+              'https://signal.group/#CjQKID7M0VXLYLNu2pmGkJMVkgc-JXgNCQ32TtFjiVmGmYKLEhB99_jBtJB1PkJ7nq0vGbtw',
+            ),
+            cop(
+              'Government Contractors',
+              'Professionals serving the mission in contracting roles.',
+              'https://signal.group/#CjQKIPPTGuztM0xNC4VJdcBwpPyjgo3SH3V0uQFGNRT2tIeAEhAQ3babjKgmz_8mtMyzgM6Y',
+            ),
+            cop(
+              'Legislative Staffers',
+              'For staff serving in Congress, state assemblies, and city councils across all levels of legislative government.',
+              'https://signal.group/#CjQKIMHu56zrxzMo-fHBkN0Tk7OJMGC_B8dhCnIFAvqYSCa9EhAqsv8WYqykcn-foPiE0pa0',
+            ),
+            cop(
+              'Communications & Media Professionals',
+              'For communications, public affairs, and media professionals across government and public institutions.',
+              'https://signal.group/#CjQKIInTV0E_861ki7VntxwNiQpKjbaaieg4mM9h4_YBmQsPEhDx-GMCMdDkmt23zjqgxI1T',
+            ),
+            cop(
+              'STEM Professionals',
+              'For professionals in science, technology, engineering, and mathematics across public service.',
+              'https://signal.group/#CjQKIAmr8DqYl7l-HmJl2K4N9tLn76PqNo_SvBTrZDzWUKUiEhChsw4hjWYQzJHq_lV8gsP_',
+            ),
+          ],
+        },
+        {
+          blockType: 'cta',
+          richText: richText(
+            heading('Lead a Community of Practice', 'h3'),
+            paragraph(
+              'Chief and Deputy Chief of Practice roles are open in several communities. If you have the qualifications and bandwidth, apply to help lead one.',
+            ),
+          ),
+          links: [
+            {
+              link: {
+                type: 'custom',
+                url: 'https://forms.gle/ScTj9N3r1ktauKxJA',
+                label: 'Apply to Lead',
+                newTab: true,
+                appearance: 'default',
+              },
             },
           ],
         },
@@ -4071,6 +4219,7 @@ const PAGE_SLICES: PageSlice[] = [
   policyLegalAdvocacySlice,
   memberPortalSlice,
   professionalDevelopmentSlice,
+  communitiesOfPracticeSlice,
   resourcesPointsOfContactSlice,
   pressSlice,
   careerSupportSlice,

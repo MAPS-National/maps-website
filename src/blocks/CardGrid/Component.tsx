@@ -1,4 +1,16 @@
-import { ArrowRight } from 'lucide-react'
+import {
+  ArrowRight,
+  Briefcase,
+  FileText,
+  FolderOpen,
+  Landmark,
+  Mic,
+  Network,
+  Scale,
+  Users,
+  Video,
+  type LucideIcon,
+} from 'lucide-react'
 import React from 'react'
 
 import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
@@ -12,6 +24,20 @@ const colsClasses: Record<string, string> = {
   '2': 'sm:grid-cols-2',
   '3': 'sm:grid-cols-2 lg:grid-cols-3',
   '4': 'sm:grid-cols-2 lg:grid-cols-4',
+}
+
+// Curated Lucide set the `lucideIcon` card field can name. Kept explicit (not the
+// full registry) so the bundle only ships the icons we use; extend as cards need them.
+const cardIcons: Record<string, LucideIcon> = {
+  briefcase: Briefcase,
+  'file-text': FileText,
+  'folder-open': FolderOpen,
+  landmark: Landmark,
+  mic: Mic,
+  network: Network,
+  scale: Scale,
+  users: Users,
+  video: Video,
 }
 
 export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
@@ -46,6 +72,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
             image,
             heading,
             badge,
+            lucideIcon,
             body,
             links,
             enableCardLink,
@@ -56,12 +83,28 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
           const media = mediaType === 'icon' ? icon : mediaType === 'image' ? image : null
           const hasImage = mediaType === 'image' && media && typeof media === 'object'
           const hasIcon = mediaType === 'icon' && media && typeof media === 'object'
+          // Decorative topic icon for imageless cards: a tinted brand-navy chip that
+          // anchors the eye per card. Aria-hidden — the heading carries the meaning.
+          const DecoIcon = !hasImage && lucideIcon ? cardIcons[lucideIcon] : undefined
           // Whole-card link: an absolute overlay makes the entire surface (image
           // included) clickable; the button is suppressed when the card links.
           const isCardLink = Boolean(enableCardLink && cardLink)
 
           const textBody = (
             <>
+              {/* Solid brand-navy tile with a reversed-out icon — a bold per-card
+                  anchor. Inverted on featured (navy-filled) cards so it stays legible. */}
+              {DecoIcon && (
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'mb-4 inline-flex size-12 items-center justify-center rounded-xl',
+                    featured ? 'bg-primary-foreground text-primary' : 'bg-primary text-primary-foreground',
+                  )}
+                >
+                  <DecoIcon className="size-6" />
+                </span>
+              )}
               {badge && (
                 <span className="mb-2 inline-flex w-fit items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {badge}

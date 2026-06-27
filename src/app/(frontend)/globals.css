@@ -136,6 +136,15 @@
   --warning: var(--system-warning);
   --error: var(--system-error);
 
+  /* === Header / hero overlay geometry (single source of truth) ===
+     The header overlays the hero, so full-bleed heros (HighImpact, PostHero)
+     slide up under it by exactly header height + the page's top padding.
+     Change these here only — the header is pinned to --header-height and the
+     heros derive their negative margin from both. Editing one hero's offset by
+     hand is what caused the recurring top-gap. */
+  --header-height: 6.5rem;
+  --page-top-pad: 4rem;
+
   /* === Semantic tiers (Relume background/text/border/link) === */
   --surface-secondary: var(--neutral-lightest);
   --surface-tertiary: var(--neutral-light);

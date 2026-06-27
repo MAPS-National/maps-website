@@ -155,13 +155,16 @@ export const MediaGalleryClient: React.FC<{
             </>
           )}
 
-          <figure className="flex max-h-full max-w-5xl flex-col items-center">
+          <figure className="flex max-h-full max-w-[75vw] flex-col items-center">
             <NextImage
               alt={images[openIndex].alt}
-              className="h-auto max-h-[82vh] w-auto object-contain"
+              className="h-auto max-h-[75vh] w-auto max-w-full object-contain"
               height={images[openIndex].height}
               priority
-              sizes="90vw"
+              // Lightbox is a deliberate click-to-zoom: serve the full original
+              // file, not a viewport-sized srcset candidate (the browser otherwise
+              // settles on a downscale even though the original is available).
+              unoptimized
               src={images[openIndex].src}
               width={images[openIndex].width}
             />
