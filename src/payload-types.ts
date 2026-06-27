@@ -226,6 +226,10 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Optional small pill shown above the heading (split layout).
+     */
+    badge?: string | null;
     media?: (number | null) | Media;
     /**
      * Navy scrim over the hero image for text legibility (brand-token gradient).
@@ -2153,6 +2157,7 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+        badge?: T;
         media?: T;
         overlay?: T;
       };

@@ -93,6 +93,15 @@ export const hero: Field = {
       },
     }),
     {
+      name: 'badge',
+      type: 'text',
+      label: 'Badge',
+      admin: {
+        condition: (_, { type } = {}) => type === 'mediumImpact',
+        description: 'Optional small pill shown above the heading (split layout).',
+      },
+    },
+    {
       name: 'media',
       type: 'upload',
       admin: {

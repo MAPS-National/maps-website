@@ -3288,7 +3288,7 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
   return [
     {
       slug: 'programs/public-sector-engagement',
-      title: 'Public Sector Engagement',
+      title: 'Private Sector Engagement',
       _status: 'published',
       hero: {
         type: 'lowImpact',
@@ -4201,8 +4201,394 @@ const latestUpdatesSlice: PageSlice = async (_payload) => {
   ] as unknown as PageData[]
 }
 
+// ---------------------------------------------------------------------------
+// Slice: /programs hub — the front door to the 5 program leaves.
+//
+// "On-Ramp" design (chosen by the hub-page design panel): a full-bleed navy
+// highImpact masthead, a two-sentence serif standfirst, then an EARLY icon-card
+// directory where every leaf is a whole-card link and one card is the navy
+// `featured` accent; two photo-led FeatureSplit features for the flagship
+// programs; a single pull-quote; a recent-updates strip; and a quiet join CTA.
+// Buildable from existing blocks only (no net-new). The navy comes solely from
+// the hero scrim and the one featured card — never a faked band.
+
+const programsHubSlice: PageSlice = async (payload) => {
+  const mediaId = async (filename: string): Promise<number | null> => {
+    const res = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+    })
+    return (res.docs[0]?.id as number | undefined) ?? null
+  }
+  // Flagship feature photos (re-hosted by the prose/program imports).
+  const [careerImg, communityImg] = await Promise.all([mediaId('4_1.webp'), mediaId('5_1.webp')])
+
+  // "Programs in motion" strip reuses the EVENT-type Post categories (programs
+  // run the events). Resolve at runtime; only emit the strip if at least one
+  // resolves, so we never seed an Archive scoped to nothing.
+  const cats = await payload.find({ collection: 'categories', limit: 0, depth: 0 })
+  const idBySlug = new Map(cats.docs.map((c) => [c.slug, c.id]))
+  const eventCategoryIds = ['cosponsored-event', 'events', 'partner-event', 'upcoming-events']
+    .map((s) => idBySlug.get(s))
+    .filter((v): v is number => typeof v === 'number')
+
+  const heroLinks = [
+    { link: { type: 'custom', appearance: 'default', label: 'Explore the programs', url: '#the-programs' } },
+    { link: { type: 'custom', appearance: 'outline', label: 'Become a member', url: '/join' } },
+  ]
+  const heroCopy = richText(
+    heading('Five ways to serve, and to rise.', 'h1'),
+    paragraph(
+      'Our programs help Muslim American public servants advance their careers, build community across government, and shape the policy that affects them. Pick a path, or start with the one that fits you today.',
+    ),
+  )
+  // mediumImpact REQUIRES a Media image (wide cover banner above the copy); fall
+  // back to an on-brand lowImpact header when the career photo isn't imported yet,
+  // so the seed always succeeds.
+  const hero = careerImg
+    ? {
+        type: 'mediumImpact',
+        badge: 'MAPS Programs',
+        media: careerImg,
+        richText: heroCopy,
+        links: heroLinks,
+      }
+    : { type: 'lowImpact', eyebrow: 'MAPS Programs', richText: heroCopy, links: heroLinks }
+
+  // Whole-card-link directory: all 5 leaves as navy icon-chip cards (mediaType
+  // 'none' renders the decorative `lucideIcon` chip), Policy Initiatives the
+  // single navy `featured` accent. mediaType 'none' keeps the grid independent
+  // of per-program photography (Legal Advocacy / Private Sector Engagement have none).
+  const dirCard = (
+    lucideIcon: string,
+    cardHeading: string,
+    body: string,
+    url: string,
+    featured = false,
+  ) => ({
+    lucideIcon,
+    heading: cardHeading,
+    body: richText(paragraph(body)),
+    featured,
+    enableCardLink: true,
+    cardLink: { type: 'custom', url, newTab: false },
+  })
+
+  const layout: PageData['layout'] = [
+    {
+      blockType: 'content',
+      columns: [
+        {
+          size: 'full',
+          enableLink: false,
+          richText: richText(
+            paragraph(
+              'MAPS is where Muslim American public servants find their footing and their people. From the MAPS Academy to fellowship placement, community to policy, every program below is a door into the same mission: serve with dignity, and never alone.',
+            ),
+          ),
+        },
+      ],
+    },
+    {
+      blockType: 'cardGrid',
+      columns: '3',
+      mediaType: 'none',
+      header: {
+        enableHeader: true,
+        eyebrow: 'The programs',
+        heading: 'Five ways MAPS moves your career and community forward.',
+        anchorId: 'the-programs',
+      },
+      items: [
+        dirCard('briefcase', 'Career Support', 'Academy webinars, 1:1 resume and interview help, and fellowship placement.', '/programs/career-support'),
+        dirCard('users', 'Community Building', 'Communities of Practice and Muslim staff associations across government.', '/programs/community-building'),
+        dirCard('scale', 'Legal Advocacy', 'Religious accommodation and legal support in the workplace.', '/programs/legal-advocacy'),
+        dirCard('landmark', 'Policy Initiatives', 'Nonpartisan policy and advocacy on issues affecting Muslim public servants.', '/programs/policy-initiatives', true),
+        dirCard('network', 'Private Sector Engagement', 'Government contracting support for Muslim-owned firms and contractors.', '/programs/public-sector-engagement'),
+      ],
+    },
+  ] as unknown as PageData['layout']
+
+  // FeatureSplit `image` is required — only place each feature when its photo
+  // resolved. Mirrored imageSide so the two read as a spread.
+  if (typeof careerImg === 'number') {
+    layout.push({
+      blockType: 'featureSplit',
+      eyebrow: 'Program 01',
+      imageSide: 'right',
+      heading: 'Advance your career, serve your country.',
+      body: richText(
+        paragraph(
+          'MAPS Academy webinars and workshops, 1:1 resume and interview services, and fellowship referrals and placement to White House, Statehouse, and local roles.',
+        ),
+      ),
+      links: [{ link: { type: 'custom', appearance: 'default', label: 'Explore Career Support', url: '/programs/career-support' } }],
+      image: careerImg,
+    } as unknown as PageData['layout'][number])
+  }
+  if (typeof communityImg === 'number') {
+    layout.push({
+      blockType: 'featureSplit',
+      eyebrow: 'Program 02',
+      imageSide: 'left',
+      heading: 'Find your people, in your field and your state.',
+      body: richText(
+        paragraph(
+          'Connect nationally and at the state level, join Communities of Practice by field, and get support forming Muslim employee staff associations across government.',
+        ),
+      ),
+      links: [{ link: { type: 'custom', appearance: 'outline', label: 'Explore Community Building', url: '/programs/community-building' } }],
+      image: communityImg,
+    } as unknown as PageData['layout'][number])
+  }
+
+  // Proof — one large career pull-quote (collection-backed; career testimonials
+  // are seeded by phase4ShowcaseSlice).
+  layout.push({
+    blockType: 'testimonials',
+    variant: 'single',
+    type: 'career',
+    populateBy: 'collection',
+    limit: 0,
+    eyebrow: 'In their words',
+    heading: 'From members who have been there',
+  } as unknown as PageData['layout'][number])
+
+  // Liveness — recent program/event updates. Skip if no event categories exist.
+  if (eventCategoryIds.length > 0) {
+    layout.push({
+      blockType: 'archive',
+      display: 'grid',
+      populateBy: 'collection',
+      relationTo: 'posts',
+      categories: eventCategoryIds,
+      limit: 3,
+      introContent: richText(heading('Programs in motion', 'h2')),
+    } as unknown as PageData['layout'][number])
+  }
+
+  // Close — quiet join CTA (CallToAction renders neutral bg-card, by design).
+  layout.push({
+    blockType: 'cta',
+    richText: richText(paragraph('Public service is better together. Membership is free and member-led.')),
+    links: [{ link: { type: 'custom', appearance: 'default', label: 'Become a member', url: '/join' } }],
+  } as unknown as PageData['layout'][number])
+
+  return [{ slug: 'programs', title: 'Programs', _status: 'published', hero, layout }] as unknown as PageData[]
+}
+
+// ---------------------------------------------------------------------------
+// Slice: /about-us hub — the front door to the 6 About leaves.
+//
+// Same "On-Ramp" skeleton as /programs (a sibling, not a clone): navy highImpact
+// masthead, serif standfirst, the early icon-card directory (Mission the navy
+// `featured` card), then About's own proof spine instead of program features:
+// a mission FeatureSplit, the founding Timeline, a partner LogoStrip teaser, a
+// compact Board teaser, a 4-question FAQ teaser, and a quiet join CTA. The three
+// Team rosters stay on their leaves and are only routed to here.
+
+const aboutUsHubSlice: PageSlice = async (payload) => {
+  const mediaId = async (filename: string): Promise<number | null> => {
+    const res = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+    })
+    return (res.docs[0]?.id as number | undefined) ?? null
+  }
+  const [communityImg, missionImg] = await Promise.all([mediaId('5_1.webp'), mediaId('29.webp')])
+
+  // Partner-logo teaser — resolve a representative subset of the 31 partner
+  // logos; only emit the strip if enough resolved (the logos are an import gap
+  // on a fresh DB, so degrade gracefully rather than show one logo).
+  const LOGO_SUBSET = ['mpac.webp', 'ispu.webp', 'naml.webp', 'cair.webp', 'saldef.webp', 'poligon.webp', 'wcaps.webp', 'muppies.webp', 'isf.webp', 'ai.webp', 'amba.webp', 'mcn.webp']
+  const logoDocs = await payload.find({ collection: 'media', where: { filename: { in: LOGO_SUBSET } }, limit: 0, depth: 0 })
+  const logoItems = logoDocs.docs
+    .filter((d): d is typeof d & { filename: string } => typeof d.filename === 'string')
+    .map((d) => ({ logo: d.id, enableLink: false }))
+
+  // Board teaser — resolve the Board of Directors team-category id at runtime.
+  const teamCats = await payload.find({ collection: 'team-categories', limit: 0, depth: 0 })
+  const boardCatId = teamCats.docs.find((c) => c.slug === 'board-of-directors')?.id
+
+  const heroLinks = [
+    { link: { type: 'custom', appearance: 'default', label: 'Get to know MAPS', url: '#inside-maps' } },
+    { link: { type: 'custom', appearance: 'outline', label: 'Meet the team', url: '/about-us/board-leadership' } },
+  ]
+  const heroCopy = richText(
+    heading('Muslim Americans, in public service.', 'h1'),
+    paragraph(
+      'A volunteer-run 501(c)(3) founded in 2021, connecting public servants across every level of government. Free to join, member-led, and nonpartisan.',
+    ),
+  )
+  // mediumImpact: wide cover banner above the copy. Falls back to a lowImpact
+  // header when the photo is missing.
+  const hero = communityImg
+    ? {
+        type: 'mediumImpact',
+        badge: 'About MAPS',
+        media: communityImg,
+        richText: heroCopy,
+        links: heroLinks,
+      }
+    : { type: 'lowImpact', eyebrow: 'About MAPS', richText: heroCopy, links: heroLinks }
+
+  const dirCard = (
+    lucideIcon: string,
+    cardHeading: string,
+    body: string,
+    url: string,
+    featured = false,
+  ) => ({
+    lucideIcon,
+    heading: cardHeading,
+    body: richText(paragraph(body)),
+    featured,
+    enableCardLink: true,
+    cardLink: { type: 'custom', url, newTab: false },
+  })
+
+  const faqItem = (question: string, answer: string) => ({
+    question,
+    answer: richText(paragraph(answer)),
+    defaultOpen: false,
+  })
+
+  const layout: PageData['layout'] = [
+    {
+      blockType: 'content',
+      columns: [
+        {
+          size: 'full',
+          enableLink: false,
+          richText: richText(
+            paragraph(
+              'MAPS exists so that no Muslim American in public service has to navigate it alone. We are 100 percent volunteer run, free to join, and built by members who serve at every level of government.',
+            ),
+          ),
+        },
+      ],
+    },
+    {
+      blockType: 'cardGrid',
+      columns: '3',
+      mediaType: 'none',
+      header: {
+        enableHeader: true,
+        eyebrow: 'Inside MAPS',
+        heading: 'Six ways to get to know who we are.',
+        anchorId: 'inside-maps',
+      },
+      items: [
+        dirCard('landmark', 'Mission, Values & History', 'Our mission, seven values, and the founding story.', '/about-us/mission', true),
+        dirCard('file-text', 'FAQ', 'Membership, funding, and advocacy, answered.', '/about-us/faq'),
+        dirCard('network', 'Partners', 'The organizations standing with MAPS.', '/about-us/partners'),
+        dirCard('users', 'Board & Leadership', 'The board and deputies who steer the work.', '/about-us/board-leadership'),
+        dirCard('mic', 'Advisory Council', 'The advisors who guide our direction.', '/about-us/advisory-council'),
+        dirCard('folder-open', 'State Committees', 'Member leaders organizing in your state.', '/about-us/state-committees'),
+      ],
+    },
+  ] as unknown as PageData['layout']
+
+  // Lead feature — mission and values as an editorial spread (only when the
+  // photo resolved, since FeatureSplit `image` is required).
+  if (typeof missionImg === 'number') {
+    layout.push({
+      blockType: 'featureSplit',
+      eyebrow: 'Who we are',
+      imageSide: 'right',
+      heading: 'A home for public servants, founded in 2021.',
+      body: richText(
+        paragraph(
+          'Our mission is to support the career, community, and workplace development of Muslim American public servants. Seven values guide the work, from public service and religious freedom to community building and broad-based inclusion.',
+        ),
+      ),
+      links: [{ link: { type: 'custom', appearance: 'default', label: 'Read our mission and values', url: '/about-us/mission' } }],
+      image: missionImg,
+    } as unknown as PageData['layout'][number])
+  }
+
+  // History — the founding timeline (self-contained, no media).
+  layout.push({
+    blockType: 'timeline',
+    header: {
+      enableHeader: true,
+      heading: 'From an idea to a movement',
+      body: richText(paragraph('Key milestones in the founding and growth of MAPS National.')),
+      anchorId: 'history',
+    },
+    items: [
+      { date: '2019', title: "DOT's first Muslim ERG", body: richText(paragraph("Muslim Federal employees at the US Department of Transportation create MAPS, the agency's first Employee Resource Group to support Muslim staff.")) },
+      { date: '2021', title: 'MAPS officially launches', body: richText(paragraph('Muslim Americans in Public Service incorporates as a 501(c)(3) and launches as the first national organization to support and represent Muslims across American government.')) },
+      { date: '2022', title: 'First National Iftar and first State Committee', body: richText(paragraph('MAPS holds its first National Iftar in DC and launches its first State Committee, MAPS New York.')) },
+      { date: '2023', title: 'The network grows', body: richText(paragraph('State committees, Communities of Practice, and the partner network expand across the country.')) },
+    ],
+  } as unknown as PageData['layout'][number])
+
+  // Credibility — a glimpse of the partner network (only when enough resolved).
+  if (logoItems.length >= 4) {
+    layout.push({
+      blockType: 'logoStrip',
+      heading: 'In good company',
+      layout: 'grid',
+      items: logoItems,
+    } as unknown as PageData['layout'][number])
+  }
+
+  // People — a compact Board teaser that routes onward to the full rosters,
+  // rather than embedding all three Team blocks on the hub.
+  if (typeof boardCatId === 'number') {
+    layout.push({
+      blockType: 'team',
+      layout: 'grouped',
+      density: 'compact',
+      populateBy: 'collection',
+      categories: [boardCatId],
+      limit: 6,
+      header: {
+        enableHeader: true,
+        eyebrow: 'Our people',
+        heading: 'The people behind MAPS',
+        body: richText(paragraph('A volunteer board and deputies steer the work. Meet the full board, advisory council, and state committees.')),
+      },
+    } as unknown as PageData['layout'][number])
+  }
+
+  // FAQ teaser — the make-or-break questions answered inline, then route to the
+  // full ~18-question leaf.
+  layout.push({
+    blockType: 'faq',
+    layout: 'sideBySide',
+    header: {
+      enableHeader: true,
+      eyebrow: 'Good to know',
+      heading: 'The questions everyone asks',
+      links: [{ link: { type: 'custom', url: '/about-us/faq', label: 'See all questions', appearance: 'outline', newTab: false } }],
+    },
+    items: [
+      faqItem('Is membership free?', 'Yes. MAPS membership is 100 percent opt-in and free. Unsubscribing from the MAPS email list ends your membership.'),
+      faqItem('How is MAPS funded?', 'By Muslim American and public-service foundations, state commissions, and tax-deductible donations from members and supporters. MAPS does not charge member dues and does not accept foreign-government funding.'),
+      faqItem('Is MAPS partisan?', 'No. MAPS is a nonpartisan 501(c)(3) and limits its policy work to issues affecting Muslim American public servants.'),
+      faqItem('Who can join?', 'US citizens, legal permanent residents, or those within six months of either. All others are welcome to follow MAPS via the general mailing list.'),
+    ],
+  } as unknown as PageData['layout'][number])
+
+  layout.push({
+    blockType: 'cta',
+    richText: richText(paragraph('Membership is free, and so is belonging.')),
+    links: [{ link: { type: 'custom', appearance: 'default', label: 'Become a member', url: '/join' } }],
+  } as unknown as PageData['layout'][number])
+
+  return [{ slug: 'about-us', title: 'About Us', _status: 'published', hero, layout }] as unknown as PageData[]
+}
+
 const PAGE_SLICES: PageSlice[] = [
   aboutUsSlice,
+  programsHubSlice,
+  aboutUsHubSlice,
   phase4ShowcaseSlice,
   contactUsSlice,
   latestUpdatesSlice,

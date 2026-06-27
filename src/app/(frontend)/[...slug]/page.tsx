@@ -149,7 +149,7 @@ export default async function Page({ params: paramsPromise }: Args) {
         breadcrumbs={slug === 'home' ? undefined : deriveBreadcrumbs(slug, page.title ?? '')}
       />
       <div className="relative" data-toc-content>
-        {slug !== 'home' && slug !== 'members/portal' && <PageTOC />}
+        {!['home', 'members/portal', 'programs', 'about-us'].includes(slug) && <PageTOC />}
         <RenderBlocks blocks={layout} />
       </div>
     </article>

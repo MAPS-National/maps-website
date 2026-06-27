@@ -60,12 +60,14 @@ const mediumImpactHeroGallery: GalleryHero<HeroData> = {
   type: 'mediumImpact',
   title: 'Medium Impact',
   description:
-    'In-flow hero: heading and buttons above a contained, captioned image. Lighter than High Impact, heavier than a mini-header.',
+    'In-flow split hero: an optional badge, heading, copy and buttons on the left with a contained aspect-video image on the right (stacks on mobile). Lighter than High Impact, heavier than a mini-header.',
   variants: [
     {
-      name: 'With captioned image',
+      name: 'With badge & captioned image',
+      description: 'Two-column intro with an optional badge; image stacks below on mobile.',
       props: {
         type: 'mediumImpact',
+        badge: 'Now enrolling',
         media: {
           ...sampleCityHall,
           caption: prose('MAPS members gathered at a city hall reception.'),
@@ -74,7 +76,7 @@ const mediumImpactHeroGallery: GalleryHero<HeroData> = {
           heading('Advance your career, serve your community and country', 'h2'),
           paragraph('Comprehensive career support resources for public servants at all levels.'),
         ),
-        links: [link('Explore programs')],
+        links: [link('Explore programs'), link('Become a member', 'outline')],
       },
     },
   ],
