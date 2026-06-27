@@ -75,11 +75,11 @@ try {
   if (existingId != null) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = await payload.update({ collection: imp.collection, id: existingId, data: finalDoc as any, overrideAccess: true, context })
-    console.log(`updated + published: ${res.slug} (_status=${(res as { _status?: string })._status})`)
+    console.log(`updated + published: ${(res as { slug?: string }).slug} (_status=${(res as { _status?: string })._status})`)
   } else {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = await payload.create({ collection: imp.collection, data: finalDoc as any, overrideAccess: true, context })
-    console.log(`created + published: ${res.slug} (_status=${(res as { _status?: string })._status})`)
+    console.log(`created + published: ${(res as { slug?: string }).slug} (_status=${(res as { _status?: string })._status})`)
   }
 } finally {
   await payload.destroy()

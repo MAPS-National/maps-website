@@ -1,4 +1,4 @@
-import type { Field } from 'payload'
+import type { Field, PayloadRequest } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -106,8 +106,11 @@ export const hero: Field = {
       // frame is fixed at aspect-[4/3]; a mismatched ratio gets cropped (and
       // letterboxed sources lose their subject). highImpact is full-bleed, so it
       // is exempt. Validation also covers the required check for both types.
-      validate: async (value, { req, siblingData }) => {
-        const type = (siblingData as { type?: string } | undefined)?.type
+      validate: async (
+        value: unknown,
+        { req, siblingData }: { req: PayloadRequest; siblingData?: { type?: string } },
+      ) => {
+        const type = siblingData?.type
         if (type !== 'highImpact' && type !== 'mediumImpact') return true
         if (!value) return 'A hero image is required.'
         if (type !== 'mediumImpact') return true
