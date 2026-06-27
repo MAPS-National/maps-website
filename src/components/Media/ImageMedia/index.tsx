@@ -63,6 +63,14 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let alt = altFromProps
   let src: StaticImageData | string = srcFromProps || ''
 
+  // Honor the asset's focal point (set per-image in admin) as object-position so
+  // object-cover crops around the subject instead of the geometric center —
+  // otherwise group photos lose heads on tall crops. Defaults to centre.
+  const focal =
+    resource && typeof resource === 'object'
+      ? { x: resource.focalX ?? 50, y: resource.focalY ?? 50 }
+      : null
+
   if (!src && resource && typeof resource === 'object') {
     const { alt: altFromResource, height: fullHeight, url, width: fullWidth } = resource
 
@@ -98,6 +106,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         loading={loading}
         sizes={sizes}
         src={src}
+        style={focal ? { objectPosition: `${focal.x}% ${focal.y}%` } : undefined}
         width={!fill ? width : undefined}
       />
     </picture>
