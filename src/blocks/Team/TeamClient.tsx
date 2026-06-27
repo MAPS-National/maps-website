@@ -132,7 +132,7 @@ export const TeamClient: React.FC<{
             {/* A lone group needs no divider label — the surrounding page or
                 block header already names it; a heading would just repeat it. */}
             {groups.length > 1 && (
-              <h3 className="mb-8 border-b border-[var(--brand-secondary-base)]/40 pb-3 font-serif text-2xl font-semibold text-content md:text-3xl">
+              <h3 className="mb-8 border-b border-[var(--brand-secondary-base)]/40 pb-3 type-h3 text-content">
                 {g.label}
               </h3>
             )}
@@ -169,7 +169,7 @@ export const TeamClient: React.FC<{
                 className="mx-auto mb-4 size-28 sm:float-left sm:mx-0 sm:mb-2 sm:mr-6 sm:size-32"
                 member={openMember}
               />
-              <h3 className="font-serif text-2xl font-semibold">{openMember.name}</h3>
+              <h3 className="type-h3">{openMember.name}</h3>
               {openMember.jobTitle && <p className="mt-1 text-primary">{openMember.jobTitle}</p>}
               {openMember.jobTitleSecondary && (
                 <p className="text-primary">{openMember.jobTitleSecondary}</p>

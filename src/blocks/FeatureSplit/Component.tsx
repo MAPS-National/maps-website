@@ -23,11 +23,11 @@ export const FeatureSplitBlock: React.FC<FeatureSplitBlockProps> = (props) => {
       <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
         <div className={cn(imageLeft && 'md:order-2')}>
           {eyebrow && (
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-primary">
+            <p className="mb-3 type-eyebrow text-primary">
               {eyebrow}
             </p>
           )}
-          {heading && <h2 className="text-3xl font-semibold md:text-4xl">{heading}</h2>}
+          {heading && <h2 className="type-h2">{heading}</h2>}
           {body && <RichText className="mt-4" data={body} enableGutter={false} />}
           {Array.isArray(links) && links.length > 0 && (
             <ul className="mt-6 flex flex-wrap gap-4">

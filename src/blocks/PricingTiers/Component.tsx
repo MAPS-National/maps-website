@@ -40,7 +40,7 @@ export const PricingTiersBlock: React.FC<PricingTiersBlockProps> = (props) => {
       {showHeader && (
         <div className="mb-12 max-w-2xl">
           {header?.heading && (
-            <h2 className="text-3xl font-semibold md:text-4xl">{header.heading}</h2>
+            <h2 className="type-h2">{header.heading}</h2>
           )}
           {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
         </div>
@@ -55,7 +55,7 @@ export const PricingTiersBlock: React.FC<PricingTiersBlockProps> = (props) => {
             )}
             key={i}
           >
-            <h3 className="text-xl font-semibold">{plan.name}</h3>
+            <h3 className="type-h4">{plan.name}</h3>
             {plan.price && <p className="mt-2 text-2xl font-bold text-primary">{plan.price}</p>}
             {plan.description && (
               <p className="mt-3 text-sm text-content-secondary">{plan.description}</p>

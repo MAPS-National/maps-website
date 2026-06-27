@@ -23,12 +23,12 @@ export const FAQBlock: React.FC<FAQBlockProps> = (props) => {
   const intro = showHeader ? (
     <div className={cn('max-w-2xl', sideBySide && 'md:sticky md:top-24')}>
       {header?.eyebrow && (
-        <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-primary">
+        <p className="mb-3 type-eyebrow text-primary">
           {header.eyebrow}
         </p>
       )}
       {header?.heading && (
-        <h2 className="text-3xl font-semibold md:text-4xl">{header.heading}</h2>
+        <h2 className="type-h2">{header.heading}</h2>
       )}
       {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
       {Array.isArray(header?.links) && header.links.length > 0 && (

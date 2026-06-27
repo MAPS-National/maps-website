@@ -10,7 +10,7 @@ type Location = NonNullable<MapLocationCardsBlockProps['locations']>[number]
 
 const LocationCard: React.FC<{ location: Location }> = ({ location }) => (
   <li className="flex flex-col rounded-lg border border-border bg-card p-6 shadow-sm">
-    <h3 className="font-serif text-xl font-semibold text-content">{location.name}</h3>
+    <h3 className="type-h4 text-content">{location.name}</h3>
     {location.address && (
       <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-content-secondary">
         {location.address}
@@ -95,12 +95,12 @@ export const MapLocationCardsBlock: React.FC<MapLocationCardsBlockProps & { id?:
         {hasHeader && (
           <div className="mb-12 max-w-2xl">
             {eyebrow && (
-              <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary">
+              <p className="mb-2 type-eyebrow text-primary">
                 {eyebrow}
               </p>
             )}
             {heading && (
-              <h2 className="font-serif text-4xl font-semibold md:text-5xl">{heading}</h2>
+              <h2 className="type-h2">{heading}</h2>
             )}
             {intro && <RichText className="mt-4" data={intro} enableGutter={false} />}
           </div>

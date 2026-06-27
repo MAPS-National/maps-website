@@ -63,7 +63,7 @@ export const LowImpactHero: React.FC<LowImpactHeroType> = ({
         )}
 
         {eyebrow && (
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-primary">
+          <p className="mb-3 type-eyebrow text-primary">
             {eyebrow}
           </p>
         )}

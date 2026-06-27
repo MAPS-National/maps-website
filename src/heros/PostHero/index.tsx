@@ -105,7 +105,7 @@ export const PostHero: React.FC<{
               {section.label}
             </p>
 
-            <h1 className="text-balance text-3xl leading-tight text-white md:text-4xl lg:text-5xl">
+            <h1 className="type-display text-white">
               {title}
             </h1>
 

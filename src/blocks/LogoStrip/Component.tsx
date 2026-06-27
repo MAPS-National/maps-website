@@ -47,7 +47,7 @@ export const LogoStripBlock: React.FC<LogoStripBlockProps> = (props) => {
   return (
     <section className="container">
       {heading && (
-        <p className="mb-8 text-center text-sm font-semibold uppercase tracking-wide text-content-secondary">
+        <p className="mb-8 text-center type-eyebrow text-content-secondary">
           {heading}
         </p>
       )}

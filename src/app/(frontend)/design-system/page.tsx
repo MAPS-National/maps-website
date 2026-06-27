@@ -43,6 +43,27 @@ const Swatch = ({ label, color }: { label: string; color: string }) => (
   </div>
 )
 
+const TypeSpec = ({
+  as: El = 'p',
+  className,
+  token,
+  spec,
+  sample,
+}: {
+  as?: React.ElementType
+  className?: string
+  token: string
+  spec: string
+  sample: string
+}) => (
+  <div className="flex flex-col gap-1 border-b border-border pb-4 last:border-b-0">
+    <El className={className}>{sample}</El>
+    <span className="text-xs text-muted-foreground">
+      <code>{token}</code> · {spec}
+    </span>
+  </div>
+)
+
 export default function StyleGuidePage() {
   return (
     <main className="container flex flex-col gap-xl py-xl">
@@ -126,14 +147,79 @@ export default function StyleGuidePage() {
       </Section>
 
       <Section title="Typography">
-        <div className="flex flex-col gap-xs">
-          <h1 className="text-5xl">Heading — Lora serif</h1>
-          <h2 className="text-3xl">Subheading — Lora serif</h2>
-          <p className="max-w-prose text-base">
-            Body copy is set in Montserrat. The quick brown fox jumps over the lazy dog. Headings
-            render in Lora, body in Montserrat, both self-hosted via next/font.
-          </p>
-          <p className="font-mono text-sm">Mono fallback (Geist) — 0123456789</p>
+        <p className="max-w-prose text-sm text-content-secondary">
+          One scale. Headings are Lora (serif) at a uniform 600 weight, so hierarchy is carried by
+          size alone and a section heading can never out-weigh the hero display. Body, lead, and
+          labels are Montserrat. Hardcoded headings use the <code>.type-*</code> classes; RichText /
+          prose headings get the same sizes from the typography config. Sizes show mobile →
+          desktop.
+        </p>
+        <div className="flex max-w-prose flex-col gap-4">
+          <TypeSpec
+            as="p"
+            className="type-display"
+            token=".type-display"
+            spec="Lora · 600 · 40 → 56px · hero headline (prose h1)"
+            sample="Empowering public servants"
+          />
+          <TypeSpec
+            as="h2"
+            className="type-h2"
+            token=".type-h2"
+            spec="Lora · 600 · 30 → 36px · section heading"
+            sample="What our community says"
+          />
+          <TypeSpec
+            as="h3"
+            className="type-h3"
+            token=".type-h3"
+            spec="Lora · 600 · 24 → 30px · subsection"
+            sample="Leadership and board"
+          />
+          <TypeSpec
+            as="h4"
+            className="type-h4"
+            token=".type-h4"
+            spec="Lora · 600 · 20px · card title"
+            sample="Program graduate"
+          />
+          <TypeSpec
+            as="p"
+            className="type-lead"
+            token=".type-lead"
+            spec="Montserrat · 400 · 18 → 20px · intro / standfirst"
+            sample="A short lead paragraph that introduces the section below it."
+          />
+          <TypeSpec
+            token="(base body)"
+            spec="Montserrat · 400 · 16px"
+            sample="Body copy. The quick brown fox jumps over the lazy dog."
+          />
+          <TypeSpec
+            className="type-quote"
+            token=".type-quote"
+            spec="Lora · 500 · 20 → 24px · pull-quote"
+            sample="The roadmap into public service I did not know existed."
+          />
+          <TypeSpec
+            as="span"
+            className="type-eyebrow text-primary"
+            token=".type-eyebrow"
+            spec="Montserrat · 600 · 14px · uppercase · label / eyebrow"
+            sample="In their words"
+          />
+          <TypeSpec
+            className="type-small text-content-secondary"
+            token=".type-small"
+            spec="Montserrat · 400 · 14px · caption / meta"
+            sample="Caption and metadata text."
+          />
+          <TypeSpec
+            className="font-mono text-sm"
+            token="font-mono"
+            spec="Geist Mono · code and data"
+            sample="const slug = 'maps' // 0123456789"
+          />
         </div>
       </Section>
 
