@@ -1,11 +1,24 @@
 import { formatDateTime } from 'src/utilities/formatDateTime'
-import React from 'react'
+import Link from 'next/link'
+import React, { Fragment } from 'react'
 
-import type { Post } from '@/payload-types'
+import type { Category, Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
 import { formatAuthors } from '@/utilities/formatAuthors'
+
+// Which section a post hangs off, by its category slug. Event categories each
+// have their own landing page under /events; press categories all roll up to the
+// single /press page; anything else (e.g. videos, uncategorized) falls back to
+// the full /latest-updates feed. One source of truth for the breadcrumb trail.
+const EVENT_CATEGORY_PAGE: Record<string, string> = {
+  'upcoming-events': '/events/upcoming',
+  events: '/events/maps',
+  'partner-event': '/events/partner',
+  'cosponsored-event': '/events',
+}
+const PRESS_CATEGORIES = new Set(['press-releases', 'statements', 'staff-announcements'])
 
 export const PostHero: React.FC<{
   post: Post
@@ -15,6 +28,29 @@ export const PostHero: React.FC<{
   const hasAuthors =
     populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors) !== ''
   const hasImage = heroImage && typeof heroImage !== 'string'
+
+  // Breadcrumb derived from the post's first category, mirroring the interior-page
+  // trail Home / Section / Category (e.g. Home / Events / Upcoming Events). The
+  // section also serves as the eyebrow, exactly as the /events/* pages render it.
+  const firstCategory = (Array.isArray(categories) ? categories : []).find(
+    (c): c is Category => typeof c === 'object' && c !== null,
+  )
+  const slug = firstCategory?.slug ?? ''
+  const section =
+    slug in EVENT_CATEGORY_PAGE
+      ? { label: 'Events', url: '/events' }
+      : PRESS_CATEGORIES.has(slug)
+        ? { label: 'Press', url: '/press' }
+        : { label: 'Latest Updates', url: '/latest-updates' }
+  const breadcrumbs: { label: string; url?: string }[] = [{ label: 'Home', url: '/' }, section]
+  if (firstCategory) {
+    // Event categories link to their own landing page; press/other categories have
+    // none, so the leaf is a plain label (avoids a duplicate link to the section).
+    breadcrumbs.push({
+      label: firstCategory.title,
+      url: EVENT_CATEGORY_PAGE[firstCategory.slug],
+    })
+  }
 
   return (
     // Full-bleed navy band that the overlay header sits on; pulls up under the
@@ -31,23 +67,43 @@ export const PostHero: React.FC<{
         >
           {/* Text column — leads the masthead, one clear H1 */}
           <div className="max-w-[42rem]">
-            {categories && categories.length > 0 && (
-              <div className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--brand-secondary-lighter)]">
-                {categories.map((category, index) => {
-                  if (typeof category === 'object' && category !== null) {
-                    const titleToUse = category.title || 'Untitled category'
-                    const isLast = index === categories.length - 1
-                    return (
-                      <React.Fragment key={index}>
-                        {titleToUse}
-                        {!isLast && <React.Fragment>,&nbsp;</React.Fragment>}
-                      </React.Fragment>
-                    )
-                  }
-                  return null
+            {/* Ancestor trail to where the post lives; the post itself is the H1
+                below, so no crumb is the current page (no aria-current). */}
+            <nav aria-label="Breadcrumb" className="mb-4">
+              <ol className="flex flex-wrap items-center gap-2 text-sm text-white/70">
+                {breadcrumbs.map(({ label, url }, i) => {
+                  const isLast = i === breadcrumbs.length - 1
+                  return (
+                    <Fragment key={i}>
+                      <li>
+                        {url ? (
+                          <Link
+                            className={cn(
+                              'transition-colors hover:text-white',
+                              isLast && 'text-white',
+                            )}
+                            href={url}
+                          >
+                            {label}
+                          </Link>
+                        ) : (
+                          <span className={cn(isLast && 'text-white')}>{label}</span>
+                        )}
+                      </li>
+                      {!isLast && (
+                        <li aria-hidden="true" className="text-white/40">
+                          /
+                        </li>
+                      )}
+                    </Fragment>
+                  )
                 })}
-              </div>
-            )}
+              </ol>
+            </nav>
+
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--brand-secondary-lighter)]">
+              {section.label}
+            </p>
 
             <h1 className="text-balance text-3xl leading-tight text-white md:text-4xl lg:text-5xl">
               {title}
