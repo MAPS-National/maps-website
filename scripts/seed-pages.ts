@@ -4407,8 +4407,8 @@ const programsHubSlice: PageSlice = async (payload) => {
 // Same "On-Ramp" skeleton as /programs (a sibling, not a clone): navy highImpact
 // masthead, serif standfirst, the early icon-card directory (Mission the navy
 // `featured` card), then About's own proof spine instead of program features:
-// a mission FeatureSplit, the founding Timeline, a partner LogoStrip teaser, a
-// compact Board teaser, a 4-question FAQ teaser, and a quiet join CTA. The three
+// a mission FeatureSplit, the founding Timeline, a compact Board teaser, a
+// 4-question FAQ teaser, and a quiet join CTA. The three
 // Team rosters stay on their leaves and are only routed to here.
 
 const aboutUsHubSlice: PageSlice = async (payload) => {
@@ -4443,19 +4443,6 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
     mediaId('about-us-hero.webp', 'MAPS community at a networking event'),
     mediaId('29.webp', 'MAPS mission'),
   ])
-
-  // Partner-logo teaser — resolve a representative subset of the 31 partner
-  // logos; only emit the strip if enough resolved (the logos are an import gap
-  // on a fresh DB, so degrade gracefully rather than show one logo).
-  const LOGO_SUBSET = ['mpac.webp', 'ispu.webp', 'naml.webp', 'cair.webp', 'saldef.webp', 'poligon.webp', 'wcaps.webp', 'muppies.webp', 'isf.webp', 'ai.webp', 'amba.webp', 'mcn.webp']
-  const logoDocs = await payload.find({ collection: 'media', where: { filename: { in: LOGO_SUBSET } }, limit: 0, depth: 0 })
-  const logoItems = logoDocs.docs
-    .filter((d): d is typeof d & { filename: string } => typeof d.filename === 'string')
-    .map((d) => ({ logo: d.id, enableLink: false }))
-
-  // Board teaser — resolve the Board of Directors team-category id at runtime.
-  const teamCats = await payload.find({ collection: 'team-categories', limit: 0, depth: 0 })
-  const boardCatId = teamCats.docs.find((c) => c.slug === 'board-of-directors')?.id
 
   const heroLinks = [
     { link: { type: 'custom', appearance: 'default', label: 'Get to know MAPS', url: '#inside-maps' } },
@@ -4570,34 +4557,18 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
     ],
   } as unknown as PageData['layout'][number])
 
-  // Credibility — a glimpse of the partner network (only when enough resolved).
-  if (logoItems.length >= 4) {
-    layout.push({
-      blockType: 'logoStrip',
-      heading: 'In good company',
-      layout: 'grid',
-      items: logoItems,
-    } as unknown as PageData['layout'][number])
-  }
-
-  // People — a compact Board teaser that routes onward to the full rosters,
-  // rather than embedding all three Team blocks on the hub.
-  if (typeof boardCatId === 'number') {
-    layout.push({
-      blockType: 'team',
-      layout: 'grouped',
-      density: 'compact',
-      populateBy: 'collection',
-      categories: [boardCatId],
-      limit: 6,
-      header: {
-        enableHeader: true,
-        eyebrow: 'Our people',
-        heading: 'The people behind MAPS',
-        body: richText(paragraph('A volunteer board and deputies steer the work. Meet the full board, advisory council, and state committees.')),
-      },
-    } as unknown as PageData['layout'][number])
-  }
+  // People — a teaser that routes to the full board roster rather than listing a
+  // partial set of members (the board is too large to excerpt, and listing only a
+  // few reads as arbitrary). The advisory-council and state-committee rosters are
+  // already linked from the "Inside MAPS" directory above.
+  layout.push({
+    blockType: 'cta',
+    richText: richText(
+      heading('The people behind MAPS', 'h2'),
+      paragraph('A volunteer board and deputies steer the work across every level of government.'),
+    ),
+    links: [{ link: { type: 'custom', appearance: 'default', label: 'Meet the board and leadership', url: '/about-us/board-leadership' } }],
+  } as unknown as PageData['layout'][number])
 
   // FAQ teaser — the make-or-break questions answered inline, then route to the
   // full ~18-question leaf.

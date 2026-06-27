@@ -58,6 +58,15 @@ const SECTION_LABELS: Record<string, string> = {
   resources: 'Resources',
 }
 
+// Sections that now have a real hub landing page — the breadcrumb section crumb
+// links to it. Sections without a hub (e.g. resources) stay plain text so a crumb
+// never points at a slug that 404s.
+const SECTION_HUBS: Record<string, string> = {
+  'about-us': '/about-us',
+  events: '/events',
+  programs: '/programs',
+}
+
 // No-dashes-in-copy rule: render any em/en dash in a title as a comma.
 const cleanLabel = (s: string): string => s.replace(/\s*[—–]\s*/g, ', ')
 
@@ -82,11 +91,11 @@ const memberSubPage = (slug: string): string | null => {
 
 /**
  * Breadcrumbs derived from the page's slug + title so every interior page shares
- * one trail shape — Home → (section, plain text) → current page (plain text) —
- * and no crumb can point at a section-index slug that doesn't exist (there are no
- * /about-us, /programs, /resources, /members landing pages). This overrides the
- * per-page hero.breadcrumbs seed data, which had drifted into inconsistent styles
- * and four broken links. Only the lowImpact hero renders breadcrumbs.
+ * one trail shape — Home → section → current page (plain text). The section crumb
+ * links to its hub when one exists (SECTION_HUBS: /about-us, /programs, /events)
+ * and stays plain text otherwise, so no crumb points at a slug that 404s. This
+ * overrides the per-page hero.breadcrumbs seed data, which had drifted into
+ * inconsistent styles and broken links. Only the lowImpact hero renders breadcrumbs.
  *
  * Member sub-pages are the exception: they hang off the Member Portal hub rather
  * than Home, as Member Portal → (section) → page.
@@ -104,7 +113,11 @@ const deriveBreadcrumbs = (slug: string, title: string): { label: string; url?: 
   const segments = slug.split('/')
   const crumbs: { label: string; url?: string }[] = [{ label: 'Home', url: '/' }]
   if (segments.length > 1) {
-    crumbs.push({ label: SECTION_LABELS[segments[0]] ?? cleanLabel(segments[0]) })
+    const section = segments[0]
+    crumbs.push({
+      label: SECTION_LABELS[section] ?? cleanLabel(section),
+      url: SECTION_HUBS[section],
+    })
   }
   crumbs.push({ label: cleanLabel(title) })
   return crumbs
