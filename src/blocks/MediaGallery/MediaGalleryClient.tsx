@@ -161,7 +161,10 @@ export const MediaGalleryClient: React.FC<{
               className="h-auto max-h-[82vh] w-auto object-contain"
               height={images[openIndex].height}
               priority
-              sizes="90vw"
+              // Lightbox is a deliberate click-to-zoom: serve the full original
+              // file, not a viewport-sized srcset candidate (the browser otherwise
+              // settles on a downscale even though the original is available).
+              unoptimized
               src={images[openIndex].src}
               width={images[openIndex].width}
             />
