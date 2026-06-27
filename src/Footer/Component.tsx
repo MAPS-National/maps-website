@@ -54,7 +54,7 @@ const SOCIAL: { label: string; href: string; Icon: React.FC<{ className?: string
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-[var(--neutral-darker)] text-[var(--neutral-lightest)]">
+    <footer className="mt-auto border-t border-border bg-[var(--brand-primary-darker)] text-[var(--neutral-lightest)]">
       <div className="container py-12">
         <div className="grid gap-10 lg:grid-cols-2">
           {/* Brand + newsletter */}
@@ -83,7 +83,7 @@ export function Footer() {
                 type="email"
               />
               <button
-                className="shrink-0 rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                className="shrink-0 rounded-md bg-[var(--neutral-lightest)] px-5 py-2 text-sm font-semibold text-[var(--brand-primary-base)] transition-colors hover:bg-white"
                 type="button"
               >
                 Subscribe

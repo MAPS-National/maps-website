@@ -93,22 +93,42 @@ export const hero: Field = {
       },
     }),
     {
-      name: 'badge',
-      type: 'text',
-      label: 'Badge',
-      admin: {
-        condition: (_, { type } = {}) => type === 'mediumImpact',
-        description: 'Optional small pill shown above the heading (split layout).',
-      },
-    },
-    {
       name: 'media',
       type: 'upload',
       admin: {
         condition: (_, { type } = {}) => ['highImpact', 'mediumImpact'].includes(type),
+        description:
+          'Medium Impact needs a 4:3 landscape image (e.g. 1600×1200) so the split frame fills with no crop.',
       },
       relationTo: 'media',
       required: true,
+      // Require a 4:3 landscape image for the Medium Impact split hero, whose
+      // frame is fixed at aspect-[4/3]; a mismatched ratio gets cropped (and
+      // letterboxed sources lose their subject). highImpact is full-bleed, so it
+      // is exempt. Validation also covers the required check for both types.
+      validate: async (value, { req, siblingData }) => {
+        const type = (siblingData as { type?: string } | undefined)?.type
+        if (type !== 'highImpact' && type !== 'mediumImpact') return true
+        if (!value) return 'A hero image is required.'
+        if (type !== 'mediumImpact') return true
+
+        const doc =
+          value && typeof value === 'object'
+            ? (value as { width?: number; height?: number })
+            : await req.payload
+                .findByID({ collection: 'media', id: value as string | number, depth: 0 })
+                .catch(() => null)
+        const width = doc?.width
+        const height = doc?.height
+        if (!width || !height) return true
+
+        const ratio = width / height
+        const target = 4 / 3
+        if (Math.abs(ratio - target) > target * 0.03) {
+          return `Use a 4:3 landscape image (e.g. 1600×1200). This one is ${width}×${height} (${ratio.toFixed(2)}:1).`
+        }
+        return true
+      },
     },
     {
       name: 'overlay',

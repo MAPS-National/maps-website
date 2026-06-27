@@ -4213,17 +4213,40 @@ const latestUpdatesSlice: PageSlice = async (_payload) => {
 // the hero scrim and the one featured card — never a faked band.
 
 const programsHubSlice: PageSlice = async (payload) => {
-  const mediaId = async (filename: string): Promise<number | null> => {
+  // Resolve a Media doc id by filename; create it from the tracked source under
+  // public/import/prose if missing (so a fresh DB, or a photo added outside the
+  // Webflow export, still seeds). `alt` is only used when creating.
+  const mediaId = async (filename: string, alt = ''): Promise<number | null> => {
     const res = await payload.find({
       collection: 'media',
       where: { filename: { equals: filename } },
       limit: 1,
       depth: 0,
     })
-    return (res.docs[0]?.id as number | undefined) ?? null
+    const id = res.docs[0]?.id
+    if (typeof id === 'number') return id
+
+    const source = path.join(process.cwd(), 'public/import/prose', filename)
+    if (existsSync(source)) {
+      const data = await readFile(source)
+      const created = await payload.create({
+        collection: 'media',
+        data: { alt },
+        file: { name: filename, data, mimetype: 'image/webp', size: data.length },
+      })
+      payload.logger.info(`programs: created media "${filename}" from tracked source`)
+      return created.id
+    }
+    return null
   }
-  // Flagship feature photos (re-hosted by the prose/program imports).
-  const [careerImg, communityImg] = await Promise.all([mediaId('4_1.webp'), mediaId('5_1.webp')])
+  // Flagship feature photos (re-hosted by the prose/program imports). The hero
+  // needs a 4:3 landscape image (validated); programs-hero.webp is 1600×1200,
+  // while careerImg (4_1) keeps feeding the FeatureSplit below.
+  const [heroImg, careerImg, communityImg] = await Promise.all([
+    mediaId('programs-hero.webp', 'MAPS members at a 2025 program event'),
+    mediaId('4_1.webp'),
+    mediaId('5_1.webp'),
+  ])
 
   // "Programs in motion" strip reuses the EVENT-type Post categories (programs
   // run the events). Resolve at runtime; only emit the strip if at least one
@@ -4247,11 +4270,10 @@ const programsHubSlice: PageSlice = async (payload) => {
   // mediumImpact REQUIRES a Media image (wide cover banner above the copy); fall
   // back to an on-brand lowImpact header when the career photo isn't imported yet,
   // so the seed always succeeds.
-  const hero = careerImg
+  const hero = heroImg
     ? {
         type: 'mediumImpact',
-        badge: 'MAPS Programs',
-        media: careerImg,
+        media: heroImg,
         richText: heroCopy,
         links: heroLinks,
       }
@@ -4390,16 +4412,37 @@ const programsHubSlice: PageSlice = async (payload) => {
 // Team rosters stay on their leaves and are only routed to here.
 
 const aboutUsHubSlice: PageSlice = async (payload) => {
-  const mediaId = async (filename: string): Promise<number | null> => {
+  // Resolve a Media doc id by filename; create it from the tracked source under
+  // public/import/prose if it isn't in Media yet (so a fresh DB, or a photo added
+  // outside the Webflow export, still seeds). Returns null only when no source exists.
+  const mediaId = async (filename: string, alt: string): Promise<number | null> => {
     const res = await payload.find({
       collection: 'media',
       where: { filename: { equals: filename } },
       limit: 1,
       depth: 0,
     })
-    return (res.docs[0]?.id as number | undefined) ?? null
+    const id = res.docs[0]?.id
+    if (typeof id === 'number') return id
+
+    const source = path.join(process.cwd(), 'public/import/prose', filename)
+    if (existsSync(source)) {
+      const data = await readFile(source)
+      const created = await payload.create({
+        collection: 'media',
+        data: { alt },
+        file: { name: filename, data, mimetype: 'image/webp', size: data.length },
+      })
+      payload.logger.info(`about-us: created media "${filename}" from tracked source`)
+      return created.id
+    }
+    return null
   }
-  const [communityImg, missionImg] = await Promise.all([mediaId('5_1.webp'), mediaId('29.webp')])
+  // The hero needs a 4:3 landscape image (validated); about-us-hero.webp is 1600×1200.
+  const [communityImg, missionImg] = await Promise.all([
+    mediaId('about-us-hero.webp', 'MAPS community at a networking event'),
+    mediaId('29.webp', 'MAPS mission'),
+  ])
 
   // Partner-logo teaser — resolve a representative subset of the 31 partner
   // logos; only emit the strip if enough resolved (the logos are an import gap
@@ -4429,7 +4472,6 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
   const hero = communityImg
     ? {
         type: 'mediumImpact',
-        badge: 'About MAPS',
         media: communityImg,
         richText: heroCopy,
         links: heroLinks,

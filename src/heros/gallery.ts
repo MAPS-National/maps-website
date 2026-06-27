@@ -60,14 +60,13 @@ const mediumImpactHeroGallery: GalleryHero<HeroData> = {
   type: 'mediumImpact',
   title: 'Medium Impact',
   description:
-    'In-flow split hero: an optional badge, heading, copy and buttons on the left with a contained aspect-video image on the right (stacks on mobile). Lighter than High Impact, heavier than a mini-header.',
+    'Split hero on a full-bleed lightest-neutral masthead band: heading, copy and buttons on the left with a contained aspect-video image on the right (stacks on mobile). Lighter than High Impact, heavier than a mini-header.',
   variants: [
     {
-      name: 'With badge & captioned image',
-      description: 'Two-column intro with an optional badge; image stacks below on mobile.',
+      name: 'With captioned image',
+      description: 'Two-column split intro; image stacks below the text on mobile.',
       props: {
         type: 'mediumImpact',
-        badge: 'Now enrolling',
         media: {
           ...sampleCityHall,
           caption: prose('MAPS members gathered at a city hall reception.'),

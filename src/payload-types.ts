@@ -227,9 +227,8 @@ export interface Page {
         }[]
       | null;
     /**
-     * Optional small pill shown above the heading (split layout).
+     * Medium Impact needs a 4:3 landscape image (e.g. 1600×1200) so the split frame fills with no crop.
      */
-    badge?: string | null;
     media?: (number | null) | Media;
     /**
      * Navy scrim over the hero image for text legibility (brand-token gradient).
@@ -2157,7 +2156,6 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               id?: T;
             };
-        badge?: T;
         media?: T;
         overlay?: T;
       };
