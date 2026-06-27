@@ -126,7 +126,11 @@ export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string 
         {variant === 'single' ? (
           <figure className="mx-auto max-w-3xl text-center">
             <blockquote className="font-serif text-2xl font-medium leading-relaxed text-content md:text-3xl">
-              <RichText data={docs[0].quote} enableGutter={false} />
+              <RichText
+                className="prose-p:text-xl prose-p:font-medium prose-p:leading-relaxed md:prose-p:text-2xl"
+                data={docs[0].quote}
+                enableGutter={false}
+              />
             </blockquote>
             {hasNamedAuthor(docs[0]) && (
               <figcaption className="mt-8 flex items-center justify-center gap-4">
@@ -136,31 +140,34 @@ export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string 
             )}
           </figure>
         ) : variant === 'slider' ? (
+          // One quote at a time, styled like the `single` variant (centered serif
+          // pull-quote, no card/border/background) but advanced as an autoplaying
+          // slider with prev/next controls.
           <Carousel
             ariaLabel={heading || 'Testimonials'}
             autoPlay
-            slideClassName="w-[85%] sm:w-[46%] lg:w-[31%]"
+            interval={10000}
+            slideClassName="w-full"
           >
             {docs.map((t) => (
-              <div
-                className="flex h-full flex-col rounded-lg border border-border bg-card p-6 shadow-sm"
+              <figure
+                className="mx-auto flex h-full max-w-3xl flex-col justify-center px-4 text-center"
                 key={t.id}
               >
-                <blockquote className="flex-1 text-content">
+                <blockquote className="font-serif text-xl font-medium leading-relaxed text-content md:text-2xl">
                   <RichText
-                    className="prose-p:my-2 prose-p:text-[0.95rem] prose-p:leading-relaxed"
+                    className="prose-p:text-xl prose-p:font-medium prose-p:leading-relaxed md:prose-p:text-2xl"
                     data={t.quote}
                     enableGutter={false}
-                    enableProse
                   />
                 </blockquote>
                 {hasNamedAuthor(t) && (
-                  <figcaption className="mt-6 flex items-center gap-3">
-                    <Avatar className="size-12" testimonial={t} />
+                  <figcaption className="mt-8 flex items-center justify-center gap-4">
+                    <Avatar className="size-14" testimonial={t} />
                     <Identity testimonial={t} />
                   </figcaption>
                 )}
-              </div>
+              </figure>
             ))}
           </Carousel>
         ) : (
