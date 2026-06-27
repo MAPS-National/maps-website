@@ -3,7 +3,7 @@ import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useEffect } from 'react'
 
 const PageClient: React.FC = () => {
-  /* Force the header to be dark mode while we have an image behind it */
+  /* Post hero is a full-bleed navy masthead, so the header uses its dark (white logo) theme */
   const { setHeaderTheme } = useHeaderTheme()
 
   useEffect(() => {

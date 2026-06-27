@@ -137,7 +137,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   const memberSub = memberSubPage(slug)
 
   return (
-    <article className="pt-16 pb-24">
+    <article className="pt-[var(--page-top-pad)] pb-24">
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
