@@ -39,12 +39,11 @@ test.describe('Admin Panel', () => {
     await expect(editViewArtifact).toBeVisible()
   })
 
-  // Full CRUD: build a Page from a block, publish it, and confirm the public
-  // route renders it. `layout` is required, so a successful publish (200) proves
-  // the page carries at least one block. (#129)
-  let createdSlug = ''
-
-  test('can create a page with a block and publish it', async () => {
+  // Full CRUD in one flow: build a Page from a block, publish it, and confirm the
+  // public route renders it. `layout` is required, so publishing at all proves the
+  // page carries a block. Kept as a single test so a retry re-runs the whole flow
+  // (the created slug isn't shared across tests). (#129)
+  test('can create a page with a block, publish it, and render it on the front-end', async () => {
     await page.goto('http://localhost:3000/admin/collections/pages/create')
     await expect(page.locator('#field-title')).toBeVisible()
 
@@ -52,30 +51,26 @@ test.describe('Admin Panel', () => {
     await page.fill('#field-title', `E2E CRUD ${Date.now()}`)
 
     // The layout blocks field lives under the "Content" tab. Add one block (Call
-    // to Action has no required fields) from the blocks drawer.
+    // to Action has no required fields) from the blocks drawer, then publish
+    // (drafts are enabled, so the action reads "Publish changes").
     await page.locator('.tabs-field__tab-button', { hasText: 'Content' }).click()
     await page.getByRole('button', { name: 'Add Layout' }).click()
     await page.locator('.blocks-drawer__block', { hasText: 'Call to Action' }).click()
+    await page.getByRole('button', { name: 'Publish changes' }).click()
 
-    // Publish (drafts are enabled, so the action reads "Publish changes"). Wait
-    // for the save request itself rather than the transient toast.
-    const [resp] = await Promise.all([
-      page.waitForResponse(
-        (r) => /\/api\/pages/.test(r.url()) && r.request().method() === 'PATCH',
-        { timeout: 20000 },
-      ),
-      page.getByRole('button', { name: 'Publish changes' }).click(),
-    ])
-    expect(resp.status()).toBe(200)
+    // Slug auto-generates from the title once saved.
+    await expect(page.locator('#field-slug')).not.toHaveValue('')
+    const slug = await page.locator('#field-slug').inputValue()
 
-    createdSlug = await page.locator('#field-slug').inputValue()
-    expect(createdSlug).toBeTruthy()
-  })
+    // Poll the public route until the just-published page resolves (the anon
+    // front-end only serves published docs, so a 404 here means it never
+    // published). Polling absorbs publish/revalidation lag.
+    await expect(async () => {
+      const res = await page.request.get(`http://localhost:3000/${slug}`)
+      expect(res.status()).toBeLessThan(400)
+    }).toPass({ timeout: 20000 })
 
-  test('the published page renders on the front-end', async () => {
-    expect(createdSlug).toBeTruthy()
-    const res = await page.goto(`http://localhost:3000/${createdSlug}`)
-    expect(res?.status()).toBeLessThan(400)
+    await page.goto(`http://localhost:3000/${slug}`)
     await expect(page.locator('article')).toBeVisible()
   })
 })
