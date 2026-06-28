@@ -94,7 +94,12 @@ export const Carousel: React.FC<{
     >
       <ul
         ref={trackRef}
+        // Keyboard-focusable scrollable region (axe scrollable-region-focusable):
+        // some slides (e.g. the testimonials pull-quotes) carry no focusable child,
+        // so the track itself must be tabbable to be reachable/scrollable by keyboard.
+        aria-label={ariaLabel}
         className="relative flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        tabIndex={0}
       >
         {slides.map((slide, i) => (
           <li key={i} className={cn('shrink-0 snap-start', slideClassName)}>

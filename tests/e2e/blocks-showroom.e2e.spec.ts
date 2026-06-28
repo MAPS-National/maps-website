@@ -13,6 +13,8 @@ test('blocks gallery index lists the catalog', async ({ page }) => {
 })
 
 test('every block/hero detail route renders without app errors', async ({ page }) => {
+  // Visits ~30 detail routes, each a first-time `next dev` compile, in one test.
+  test.setTimeout(240_000)
   const errors = trackConsoleErrors(page)
   await page.goto('/design-system/blocks')
 

@@ -20,8 +20,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Single worker: the suite runs against a `next dev` server that compiles routes
+     on demand — parallel workers triggering concurrent cold compiles makes it
+     flaky (aborted navigations, partial RSC payloads). Serial keeps it stable. */
+  workers: 1,
   timeout: 60_000,
   expect: { timeout: 10_000 },
   /* 'list' for terminal output; the HTML report is written but never auto-served

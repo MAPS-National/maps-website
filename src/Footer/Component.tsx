@@ -54,7 +54,10 @@ const SOCIAL: { label: string; href: string; Icon: React.FC<{ className?: string
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-[var(--brand-primary-darker)] text-[var(--neutral-lightest)]">
+    <footer
+      className="mt-auto border-t border-border bg-[var(--brand-primary-darker)] text-[var(--neutral-lightest)]"
+      data-theme="dark"
+    >
       <div className="container py-12">
         <div className="grid gap-10 lg:grid-cols-2">
           {/* Brand + newsletter */}
@@ -89,7 +92,7 @@ export function Footer() {
                 Subscribe
               </button>
             </div>
-            <p className="mt-2 text-xs text-[var(--neutral-base)]">
+            <p className="mt-2 text-xs text-[var(--neutral-light)]">
               By subscribing you agree to receive updates from us.
             </p>
           </div>

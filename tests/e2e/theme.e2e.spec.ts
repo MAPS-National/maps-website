@@ -11,7 +11,9 @@ test('footer theme selector flips and persists data-theme', async ({ page }) => 
   await page.getByRole('option', { name: 'Dark' }).click()
   await expect(html).toHaveAttribute('data-theme', 'dark')
 
-  await page.reload()
+  // Re-navigate (more robust than reload against the dev server) to prove the
+  // choice persists across a fresh page load.
+  await page.goto('/')
   await expect(html).toHaveAttribute('data-theme', 'dark')
 
   await selector.click()
