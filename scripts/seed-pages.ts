@@ -241,6 +241,48 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     order: 1,
   })
 
+  // Sample posts ("Latest Updates"). The collection is empty until the Phase 5
+  // CSV import, which reads the gitignored migration export, so a clean checkout
+  // or CI has zero posts and the latest-updates archive renders empty. Seed a
+  // couple of published fixtures (idempotent by slug) so the archive lists posts
+  // and a post detail resolves. The first slug/title is the one the e2e posts
+  // specs assert against.
+  const upsertPost = async (slug: string, title: string, body: string): Promise<void> => {
+    const existing = await payload.find({
+      collection: 'posts',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 0,
+    })
+    const data = {
+      slug,
+      title,
+      _status: 'published',
+      publishedAt: '2025-01-01T00:00:00.000Z',
+      content: richText(paragraph(body)),
+    } as never
+    if (existing.docs[0]) {
+      await payload.update({
+        collection: 'posts',
+        id: existing.docs[0].id,
+        data,
+        context: { disableRevalidate: true },
+      })
+    } else {
+      await payload.create({ collection: 'posts', data, context: { disableRevalidate: true } })
+    }
+  }
+  await upsertPost(
+    'maps-academy-climbing-the-federal-ladder',
+    'MAPS Academy: Climbing the Federal Ladder',
+    'A MAPS Academy session on advancing within federal service, covering promotion timelines, the senior pathways, and how members have moved from entry roles into leadership.',
+  )
+  await upsertPost(
+    'breaking-into-public-service',
+    'Breaking into Public Service: Where to Start',
+    'The entry points, timelines, and first moves for a public-service career, drawn from the MAPS Academy onboarding session.',
+  )
+
   // The /phase-4-blocks showcase page was migration scaffolding to satisfy the
   // "block placed on at least one Page" acceptance; the blocks now live on real
   // pages, so the page is gone. This slice still seeds the sample collection data
