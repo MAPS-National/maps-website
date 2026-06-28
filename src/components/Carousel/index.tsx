@@ -25,6 +25,10 @@ export const Carousel: React.FC<{
   /** Autoplay interval in ms (default 5000). */
   interval?: number
   showArrows?: boolean
+  /** Extra classes for the controls row, e.g. 'justify-start' to left-align it. */
+  controlsClassName?: string
+  /** Show an "NN / NN" position counter in the controls row. */
+  showCounter?: boolean
 }> = ({
   children,
   slideClassName,
@@ -33,6 +37,8 @@ export const Carousel: React.FC<{
   autoPlay = false,
   interval = 5000,
   showArrows = true,
+  controlsClassName,
+  showCounter = false,
 }) => {
   const slides = React.Children.toArray(children)
   const count = slides.length
@@ -41,14 +47,17 @@ export const Carousel: React.FC<{
   const [playing, setPlaying] = useState(autoPlay)
   const paused = useRef(false)
 
-  const goTo = useCallback((i: number, behavior: ScrollBehavior = 'smooth') => {
-    const track = trackRef.current
-    if (!track || count === 0) return
-    const next = ((i % count) + count) % count
-    const el = track.children[next] as HTMLElement | undefined
-    if (el) track.scrollTo({ left: el.offsetLeft, behavior })
-    setIndex(next)
-  }, [count])
+  const goTo = useCallback(
+    (i: number, behavior: ScrollBehavior = 'smooth') => {
+      const track = trackRef.current
+      if (!track || count === 0) return
+      const next = ((i % count) + count) % count
+      const el = track.children[next] as HTMLElement | undefined
+      if (el) track.scrollTo({ left: el.offsetLeft, behavior })
+      setIndex(next)
+    },
+    [count],
+  )
 
   // Reduced-motion users don't get an auto-start, but keep the play control so
   // they can opt in.
@@ -108,13 +117,23 @@ export const Carousel: React.FC<{
         ))}
       </ul>
 
-      {count > 1 && (showArrows || autoPlay) && (
-        <div className="mt-4 flex justify-end gap-2">
+      {/* Announce the active slide to assistive tech (axe: no live region before). */}
+      <div aria-live="polite" className="sr-only">
+        {`${ariaLabel}: ${index + 1} of ${count}`}
+      </div>
+
+      {count > 1 && (showArrows || autoPlay || showCounter) && (
+        <div className={cn('mt-4 flex items-center justify-end gap-3', controlsClassName)}>
+          {showCounter && (
+            <span aria-hidden="true" className="type-small tabular-nums text-content-secondary">
+              {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}
+            </span>
+          )}
           {autoPlay && (
             <button
               aria-label={playing ? 'Pause' : 'Play'}
               aria-pressed={!playing}
-              className="flex size-10 items-center justify-center rounded-full border border-border text-content transition-colors hover:bg-surface-secondary"
+              className="flex size-11 items-center justify-center rounded-full border border-border-strong text-content transition-colors hover:bg-surface-secondary"
               onClick={() => setPlaying((p) => !p)}
               type="button"
             >
@@ -125,7 +144,7 @@ export const Carousel: React.FC<{
             <>
               <button
                 aria-label="Previous"
-                className="flex size-10 items-center justify-center rounded-full border border-border text-content transition-colors hover:bg-surface-secondary"
+                className="flex size-11 items-center justify-center rounded-full border border-border-strong text-content transition-colors hover:bg-surface-secondary"
                 onClick={() => goTo(index - 1)}
                 type="button"
               >
@@ -133,7 +152,7 @@ export const Carousel: React.FC<{
               </button>
               <button
                 aria-label="Next"
-                className="flex size-10 items-center justify-center rounded-full border border-border text-content transition-colors hover:bg-surface-secondary"
+                className="flex size-11 items-center justify-center rounded-full border border-border-strong text-content transition-colors hover:bg-surface-secondary"
                 onClick={() => goTo(index + 1)}
                 type="button"
               >

@@ -1,0 +1,6 @@
+# Heavy gate before pushing: the full Playwright e2e + a11y suite.
+# Playwright starts the dev server itself (needs local Postgres up).
+# Ensure the browser is present first (fast no-op once installed) so the push
+# doesn't fail with an opaque "browser not installed" error.
+npx playwright install chromium
+npm run test:e2e
