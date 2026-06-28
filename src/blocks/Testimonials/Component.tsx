@@ -21,7 +21,8 @@ const initials = (name: string): string =>
 /** Resolve a headshot relationship to a usable src, if present. */
 const headshotSrc = (t: Testimonial): string | null => {
   const photo = t.headshot
-  if (photo && typeof photo === 'object' && photo.url) return getMediaUrl(photo.url, photo.updatedAt)
+  if (photo && typeof photo === 'object' && photo.url)
+    return getMediaUrl(photo.url, photo.updatedAt)
   return null
 }
 
@@ -43,13 +44,7 @@ const Avatar: React.FC<{ testimonial: Testimonial; className?: string }> = ({
   if (src) {
     return (
       <span className={cn('relative block aspect-square overflow-hidden rounded-full', className)}>
-        <NextImage
-          alt={testimonial.author}
-          className="object-cover"
-          fill
-          sizes="64px"
-          src={src}
-        />
+        <NextImage alt={testimonial.author} className="object-cover" fill sizes="64px" src={src} />
       </span>
     )
   }
@@ -71,6 +66,36 @@ const Identity: React.FC<{ testimonial: Testimonial }> = ({ testimonial }) => (
     <p className="font-serif font-semibold text-content">{testimonial.author}</p>
     {testimonial.role && <p className="text-sm text-content-secondary">{testimonial.role}</p>}
   </div>
+)
+
+/**
+ * A single featured pull-quote, left-aligned to the container edge like every other
+ * section: a maroon decorative quote glyph, the quote in the canonical pull-quote
+ * ramp (`.type-quote` — inner prose is disabled so the paragraph inherits it), then
+ * flush-left attribution. Shared by the `single` and `slider` variants, both of which
+ * show one testimonial at a time.
+ */
+const Quote: React.FC<{ testimonial: Testimonial; className?: string }> = ({
+  testimonial,
+  className,
+}) => (
+  <figure className={cn('max-w-2xl', className)}>
+    <span
+      aria-hidden="true"
+      className="block type-display leading-none text-brand-secondary dark:text-[var(--brand-secondary-light)]"
+    >
+      &ldquo;
+    </span>
+    <blockquote className="mt-1 type-quote text-content">
+      <RichText data={testimonial.quote} enableGutter={false} enableProse={false} />
+    </blockquote>
+    {hasNamedAuthor(testimonial) && (
+      <figcaption className="mt-8 flex items-center gap-4">
+        <Avatar className="size-14" testimonial={testimonial} />
+        <Identity testimonial={testimonial} />
+      </figcaption>
+    )}
+  </figure>
 )
 
 /**
@@ -108,94 +133,56 @@ export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string 
 
   return (
     <section className="container py-20 md:py-28">
-      <div className="mx-auto max-w-5xl">
-        {hasHeader && (
-          <div className="mb-12 max-w-2xl">
-            {eyebrow && (
-              <p className="mb-2 type-eyebrow text-primary">
-                {eyebrow}
-              </p>
-            )}
-            {heading && (
-              <h2 className="type-h2">{heading}</h2>
-            )}
-            {intro && <RichText className="mt-4" data={intro} enableGutter={false} />}
-          </div>
-        )}
+      {hasHeader && (
+        <div className="mb-12 max-w-2xl">
+          {eyebrow && <p className="mb-3 type-eyebrow text-primary">{eyebrow}</p>}
+          {heading && <h2 className="type-h2">{heading}</h2>}
+          {intro && <RichText className="mt-4" data={intro} enableGutter={false} />}
+        </div>
+      )}
 
-        {variant === 'single' ? (
-          <figure className="mx-auto max-w-3xl text-center">
-            <blockquote className="font-serif text-2xl font-medium leading-relaxed text-content md:text-3xl">
-              <RichText
-                className="prose-p:text-xl prose-p:font-medium prose-p:leading-relaxed md:prose-p:text-2xl"
-                data={docs[0].quote}
-                enableGutter={false}
-              />
-            </blockquote>
-            {hasNamedAuthor(docs[0]) && (
-              <figcaption className="mt-8 flex items-center justify-center gap-4">
-                <Avatar className="size-14" testimonial={docs[0]} />
-                <Identity testimonial={docs[0]} />
-              </figcaption>
-            )}
-          </figure>
-        ) : variant === 'slider' ? (
-          // One quote at a time, styled like the `single` variant (centered serif
-          // pull-quote, no card/border/background) but advanced as an autoplaying
-          // slider with prev/next controls.
-          <Carousel
-            ariaLabel={heading || 'Testimonials'}
-            autoPlay
-            interval={10000}
-            slideClassName="w-full"
-          >
-            {docs.map((t) => (
-              <figure
-                className="mx-auto flex h-full max-w-3xl flex-col justify-center px-4 text-center"
-                key={t.id}
-              >
-                <blockquote className="font-serif text-xl font-medium leading-relaxed text-content md:text-2xl">
-                  <RichText
-                    className="prose-p:text-xl prose-p:font-medium prose-p:leading-relaxed md:prose-p:text-2xl"
-                    data={t.quote}
-                    enableGutter={false}
-                  />
-                </blockquote>
-                {hasNamedAuthor(t) && (
-                  <figcaption className="mt-8 flex items-center justify-center gap-4">
-                    <Avatar className="size-14" testimonial={t} />
-                    <Identity testimonial={t} />
-                  </figcaption>
-                )}
-              </figure>
-            ))}
-          </Carousel>
-        ) : (
-          <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {docs.map((t) => (
-              <li
-                key={t.id}
-                className="flex flex-col rounded-lg border border-border bg-card p-6 shadow-sm"
-              >
-                <blockquote className="flex-1 text-content">
-                  <RichText
-                    className="prose-p:my-2 prose-p:text-[0.95rem] prose-p:leading-relaxed"
-                    data={t.quote}
-                    enableGutter={false}
-                    enableProse
-                  />
-                </blockquote>
-                {hasNamedAuthor(t) && (
-                  <figcaption className="mt-6 flex items-center gap-3">
-                    <Avatar className="size-12" testimonial={t} />
-                    <Identity testimonial={t} />
-                  </figcaption>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {variant === 'single' ? (
+        <Quote testimonial={docs[0]} />
+      ) : variant === 'slider' ? (
+        // One testimonial at a time: the same left-aligned pull-quote as `single`,
+        // advanced as an autoplaying slider with a left-aligned counter + controls.
+        <Carousel
+          ariaLabel={heading || 'Testimonials'}
+          autoPlay
+          controlsClassName="justify-start"
+          interval={10000}
+          showCounter
+          slideClassName="w-full"
+        >
+          {docs.map((t) => (
+            <Quote key={t.id} testimonial={t} />
+          ))}
+        </Carousel>
+      ) : (
+        <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {docs.map((t) => (
+            <li
+              key={t.id}
+              className="flex flex-col rounded-lg border border-border bg-card p-6 shadow-sm"
+            >
+              <blockquote className="flex-1 text-content">
+                <RichText
+                  className="prose-p:my-2 prose-p:text-[0.95rem] prose-p:leading-relaxed"
+                  data={t.quote}
+                  enableGutter={false}
+                  enableProse
+                />
+              </blockquote>
+              {hasNamedAuthor(t) && (
+                <figcaption className="mt-6 flex items-center gap-3">
+                  <Avatar className="size-12" testimonial={t} />
+                  <Identity testimonial={t} />
+                </figcaption>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   )
 }
