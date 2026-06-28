@@ -15,7 +15,7 @@
 import 'dotenv/config'
 
 import { existsSync } from 'node:fs'
-import { readFile } from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 
 import configPromise from '@payload-config'
@@ -407,7 +407,7 @@ const missionSlice: PageSlice = async (payload) => {
       const data = await readFile(source)
       const created = await payload.create({
         collection: 'media',
-        data: { alt },
+        data: { alt: alt || filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
         file: { name: filename, data, mimetype: 'image/webp', size: data.length },
       })
       payload.logger.info(`mission: created media "${filename}" from tracked source`)
@@ -4292,7 +4292,7 @@ const programsHubSlice: PageSlice = async (payload) => {
       const data = await readFile(source)
       const created = await payload.create({
         collection: 'media',
-        data: { alt },
+        data: { alt: alt || filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
         file: { name: filename, data, mimetype: 'image/webp', size: data.length },
       })
       payload.logger.info(`programs: created media "${filename}" from tracked source`)
@@ -4548,7 +4548,7 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
       const data = await readFile(source)
       const created = await payload.create({
         collection: 'media',
-        data: { alt },
+        data: { alt: alt || filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
         file: { name: filename, data, mimetype: 'image/webp', size: data.length },
       })
       payload.logger.info(`about-us: created media "${filename}" from tracked source`)
@@ -5079,11 +5079,60 @@ const applyRedirects = async (payload: Payload, context: Record<string, unknown>
 // ---------------------------------------------------------------------------
 // Runner
 
+// Fresh-DB / clean-checkout safety: every content image is committed under
+// public/import/prose, but most slices resolve media find-only (they assume a
+// prior `import:prose`). On an empty DB those lookups return null and whole
+// layouts collapse (minRows). Pre-import the tracked originals once so every
+// find-only resolver hits. Idempotent (deduped by filename); alt derived from
+// the filename when the originals carry none.
+const ensureTrackedMedia = async (
+  payload: Payload,
+  context: Record<string, unknown>,
+): Promise<void> => {
+  const dir = path.join(process.cwd(), 'public/import/prose')
+  if (!existsSync(dir)) return
+  const files = (await readdir(dir)).filter((f) => /\.(webp|png|jpe?g|gif|svg)$/i.test(f))
+  let created = 0
+  for (const filename of files) {
+    const existing = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+    })
+    if (existing.docs[0]) continue
+    const data = await readFile(path.join(dir, filename))
+    const ext = filename.split('.').pop()?.toLowerCase()
+    const mimetype =
+      ext === 'png'
+        ? 'image/png'
+        : ext === 'svg'
+          ? 'image/svg+xml'
+          : ext === 'gif'
+            ? 'image/gif'
+            : ext === 'jpg' || ext === 'jpeg'
+              ? 'image/jpeg'
+              : 'image/webp'
+    await payload.create({
+      collection: 'media',
+      data: { alt: filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
+      file: { name: filename, data, mimetype, size: data.length },
+      context,
+    })
+    created++
+  }
+  payload.logger.info(
+    `Tracked media ensured (${created} created, ${files.length - created} existing).`,
+  )
+}
+
 const run = async () => {
   const payload = await getPayload({ config: configPromise })
 
   // Running outside Next so revalidatePath would throw — skip it.
   const context = { disableRevalidate: true }
+
+  await ensureTrackedMedia(payload, context)
 
   for (const slice of PAGE_SLICES) {
     const pages = await slice(payload)
