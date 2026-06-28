@@ -11,13 +11,16 @@ import { cn } from '@/utilities/ui'
 // window.Outseta is typed centrally in src/types/outseta.d.ts.
 
 type NavLink = { label: string; href: string }
-type NavGroup = { label: string; items: NavLink[]; gated?: boolean }
+// `href` makes the group label itself a link to a hub/landing page (the single
+// front door for that section); the items remain the deeper destinations.
+type NavGroup = { label: string; href?: string; items: NavLink[]; gated?: boolean }
 
 // Site information architecture (G1). Hardcoded — this is the site's fixed
 // structure, not editorial content; the slugs match the seeded pages.
 const GROUPS: NavGroup[] = [
   {
     label: 'About Us',
+    href: '/about-us',
     items: [
       { label: 'Mission', href: '/about-us/mission' },
       { label: 'FAQ', href: '/about-us/faq' },
@@ -38,12 +41,13 @@ const GROUPS: NavGroup[] = [
   },
   {
     label: 'Programs',
+    href: '/programs',
     items: [
       { label: 'Career Support', href: '/programs/career-support' },
       { label: 'Community Building', href: '/programs/community-building' },
       { label: 'Legal Advocacy', href: '/programs/legal-advocacy' },
       { label: 'Policy Initiatives', href: '/programs/policy-initiatives' },
-      { label: 'Public Sector Engagement', href: '/programs/public-sector-engagement' },
+      { label: 'Private Sector Engagement', href: '/programs/public-sector-engagement' },
     ],
   },
   {
@@ -225,7 +229,13 @@ export const NavMenu: React.FC = () => {
             {GROUPS.map((group) => (
               <div key={group.label}>
                 <p className="mb-4 border-b border-border pb-2 font-serif text-lg font-semibold text-content">
-                  {group.label}
+                  {group.href ? (
+                    <Link className="transition-colors hover:text-primary" href={group.href} onClick={close}>
+                      {group.label}
+                    </Link>
+                  ) : (
+                    group.label
+                  )}
                 </p>
                 <ul className="space-y-2.5">
                   {group.items.map((item) => (

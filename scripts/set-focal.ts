@@ -28,7 +28,7 @@ try {
   })
   const imageIds = new Set<number>()
   for (const page of pages.docs) {
-    for (const block of (page.layout ?? []) as Array<Record<string, unknown>>) {
+    for (const block of (page.layout ?? []) as unknown as Array<Record<string, unknown>>) {
       if (block.blockType !== 'cardGrid' || block.mediaType !== 'image') continue
       for (const item of (block.items ?? []) as Array<{ image?: number | { id: number } }>) {
         const img = item.image

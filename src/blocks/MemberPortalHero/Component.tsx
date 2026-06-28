@@ -75,7 +75,7 @@ export const MemberPortalHeroBlock: React.FC<Props> = ({ eyebrow, welcomeText, s
               {eyebrow}
             </p>
           )}
-          <h1 className="font-serif text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
+          <h1 className="type-display text-foreground">
             {`Welcome${firstName ? `, ${firstName}` : ''}!`}
           </h1>
           {welcomeText && (

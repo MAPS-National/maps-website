@@ -70,10 +70,8 @@ export const ArchiveBlock: React.FC<
     <div className="my-16 scroll-mt-24" id={anchorId || `block-${id}`}>
       {introContent && (
         <div className="container mb-16">
-          {/* Heading matches the section-header treatment used by CardGrid/CTA
-              (text-3xl/4xl, semibold) instead of the smaller, heavier prose h2. */}
           <RichText
-            className="ms-0 max-w-[48rem] prose-h2:text-3xl prose-h2:font-semibold md:prose-h2:text-4xl"
+            className="ms-0 max-w-[48rem]"
             data={introContent}
             enableGutter={false}
           />

@@ -52,12 +52,12 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
       {showHeader && (
         <div className="mb-12 max-w-2xl">
           {header?.eyebrow && (
-            <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-primary">
+            <p className="mb-3 type-eyebrow text-primary">
               {header.eyebrow}
             </p>
           )}
           {header?.heading && (
-            <h2 className="text-3xl font-semibold md:text-4xl">{header.heading}</h2>
+            <h2 className="type-h2">{header.heading}</h2>
           )}
           {header?.body && (
             <RichText className="mt-4" data={header.body} enableGutter={false} />
@@ -110,7 +110,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
                   {badge}
                 </span>
               )}
-              {heading && <h3 className="text-xl font-semibold">{heading}</h3>}
+              {heading && <h3 className="type-h4">{heading}</h3>}
               {body && (
                 <RichText
                   className={cn('mt-3', featured ? 'text-primary-foreground/80' : 'text-muted-foreground')}

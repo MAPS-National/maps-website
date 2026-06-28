@@ -119,12 +119,12 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
         {showHeader && (header?.eyebrow || header?.heading || header?.body) && (
           <div className="mb-12 max-w-2xl">
             {header?.eyebrow && (
-              <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary">
+              <p className="mb-2 type-eyebrow text-primary">
                 {header.eyebrow}
               </p>
             )}
             {header?.heading && (
-              <h2 className="font-serif text-4xl font-semibold md:text-5xl">{header.heading}</h2>
+              <h2 className="type-h2">{header.heading}</h2>
             )}
             {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
           </div>

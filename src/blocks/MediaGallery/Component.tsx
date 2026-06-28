@@ -32,7 +32,7 @@ export const MediaGalleryBlock: React.FC<MediaGalleryBlockProps> = (props) => {
   return (
     <section className="container">
       {heading && (
-        <h2 className="mb-8 text-3xl font-semibold md:text-4xl">{heading}</h2>
+        <h2 className="mb-8 type-h2">{heading}</h2>
       )}
       <MediaGalleryClient
         columns={columns ?? '3'}

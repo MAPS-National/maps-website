@@ -6,39 +6,49 @@ import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 
+// Two-column split intro on a full-bleed lightest-neutral masthead band. The band
+// pulls up under the transparent header (which keeps its own light theme) so the
+// tint reads as an intentional hero zone running to the top of the viewport. Text
+// (heading, copy, CTAs) sits left of a contained aspect-video image; stacks on mobile.
 export const MediumImpactHero: React.FC<Page['hero']> = ({ links, media, richText }) => {
-  return (
-    <div className="">
-      <div className="container mb-8">
-        {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
+  const hasLinks = Array.isArray(links) && links.length > 0
 
-        {Array.isArray(links) && links.length > 0 && (
-          <ul className="flex gap-4">
-            {links.map(({ link }, i) => {
-              return (
+  return (
+    <div className="-mt-[calc(var(--header-height)+var(--page-top-pad))] bg-muted pb-16 pt-[calc(var(--header-height)+var(--page-top-pad))]">
+      <div className="container grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+        <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+          {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
+          {hasLinks && (
+            <ul className="flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">
+              {links!.map(({ link }, i) => (
                 <li key={i}>
-                  <CMSLink {...link} />
+                  {/* Outline buttons sit on the muted masthead band, whose color
+                      matches the default outline hover (bg-accent). Keep the white
+                      rest fill (distinct on the band) and darken the hover instead. */}
+                  <CMSLink
+                    {...link}
+                    className={
+                      link?.appearance === 'outline'
+                        ? 'hover:bg-[var(--neutral-light)]'
+                        : undefined
+                    }
+                  />
                 </li>
-              )
-            })}
-          </ul>
-        )}
-      </div>
-      <div className="container ">
+              ))}
+            </ul>
+          )}
+        </div>
         {media && typeof media === 'object' && (
-          <div>
-            <Media
-              className="-mx-4 md:-mx-8 2xl:-mx-16"
-              imgClassName=""
-              priority
-              resource={media}
-            />
+          <figure>
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border">
+              <Media fill imgClassName="object-cover" priority resource={media} />
+            </div>
             {media?.caption && (
-              <div className="mt-3">
+              <figcaption className="mt-3">
                 <RichText data={media.caption} enableGutter={false} />
-              </div>
+              </figcaption>
             )}
-          </div>
+          </figure>
         )}
       </div>
     </div>

@@ -38,6 +38,7 @@ export const Carousel: React.FC<{
   const count = slides.length
   const trackRef = useRef<HTMLUListElement>(null)
   const [index, setIndex] = useState(0)
+  const [playing, setPlaying] = useState(autoPlay)
   const paused = useRef(false)
 
   const goTo = useCallback((i: number, behavior: ScrollBehavior = 'smooth') => {
@@ -49,16 +50,27 @@ export const Carousel: React.FC<{
     setIndex(next)
   }, [count])
 
-  // Autoplay: advance on a timer, paused on hover/focus or reduced-motion.
+  // Reduced-motion users don't get an auto-start, but keep the play control so
+  // they can opt in.
   useEffect(() => {
-    if (!autoPlay || count <= 1) return
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-      return
+    if (
+      autoPlay &&
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPlaying(false)
+    }
+  }, [autoPlay])
+
+  // Autoplay: advance on a timer while playing, paused on hover/focus.
+  useEffect(() => {
+    if (!playing || count <= 1) return
     const id = window.setInterval(() => {
       if (!paused.current) goTo(index + 1)
     }, interval)
     return () => window.clearInterval(id)
-  }, [autoPlay, count, index, interval, goTo])
+  }, [playing, count, index, interval, goTo])
 
   if (count === 0) return null
 
@@ -82,7 +94,12 @@ export const Carousel: React.FC<{
     >
       <ul
         ref={trackRef}
+        // Keyboard-focusable scrollable region (axe scrollable-region-focusable):
+        // some slides (e.g. the testimonials pull-quotes) carry no focusable child,
+        // so the track itself must be tabbable to be reachable/scrollable by keyboard.
+        aria-label={ariaLabel}
         className="relative flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        tabIndex={0}
       >
         {slides.map((slide, i) => (
           <li key={i} className={cn('shrink-0 snap-start', slideClassName)}>
@@ -91,29 +108,57 @@ export const Carousel: React.FC<{
         ))}
       </ul>
 
-      {showArrows && count > 1 && (
+      {count > 1 && (showArrows || autoPlay) && (
         <div className="mt-4 flex justify-end gap-2">
-          <button
-            aria-label="Previous"
-            className="flex size-10 items-center justify-center rounded-full border border-border text-content transition-colors hover:bg-surface-secondary"
-            onClick={() => goTo(index - 1)}
-            type="button"
-          >
-            <Arrow dir="left" />
-          </button>
-          <button
-            aria-label="Next"
-            className="flex size-10 items-center justify-center rounded-full border border-border text-content transition-colors hover:bg-surface-secondary"
-            onClick={() => goTo(index + 1)}
-            type="button"
-          >
-            <Arrow dir="right" />
-          </button>
+          {autoPlay && (
+            <button
+              aria-label={playing ? 'Pause' : 'Play'}
+              aria-pressed={!playing}
+              className="flex size-10 items-center justify-center rounded-full border border-border text-content transition-colors hover:bg-surface-secondary"
+              onClick={() => setPlaying((p) => !p)}
+              type="button"
+            >
+              {playing ? <PauseIcon /> : <PlayIcon />}
+            </button>
+          )}
+          {showArrows && (
+            <>
+              <button
+                aria-label="Previous"
+                className="flex size-10 items-center justify-center rounded-full border border-border text-content transition-colors hover:bg-surface-secondary"
+                onClick={() => goTo(index - 1)}
+                type="button"
+              >
+                <Arrow dir="left" />
+              </button>
+              <button
+                aria-label="Next"
+                className="flex size-10 items-center justify-center rounded-full border border-border text-content transition-colors hover:bg-surface-secondary"
+                onClick={() => goTo(index + 1)}
+                type="button"
+              >
+                <Arrow dir="right" />
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
   )
 }
+
+const PauseIcon: React.FC = () => (
+  <svg aria-hidden="true" className="size-5" fill="currentColor" viewBox="0 0 24 24">
+    <rect height="14" rx="1" width="4" x="6" y="5" />
+    <rect height="14" rx="1" width="4" x="14" y="5" />
+  </svg>
+)
+
+const PlayIcon: React.FC = () => (
+  <svg aria-hidden="true" className="size-5" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M8 5.14v13.72a1 1 0 0 0 1.54.84l10.29-6.86a1 1 0 0 0 0-1.68L9.54 4.3A1 1 0 0 0 8 5.14Z" />
+  </svg>
+)
 
 const Arrow: React.FC<{ dir: 'left' | 'right' }> = ({ dir }) => (
   <svg

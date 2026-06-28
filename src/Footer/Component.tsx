@@ -11,24 +11,18 @@ import { Logo } from '@/components/Logo/Logo'
 
 type FooterLink = { label: string; href: string }
 
+// Lean wayfinding set: the two hubs (which now own the deep program/about
+// routing via their card directories) plus the live feeds and contact. Leaf
+// links were dropped when /programs and /about-us shipped — a footer listing
+// every leaf is the flat directory we set out to avoid.
 const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
-    title: 'Programs & Services',
+    title: 'Explore',
     links: [
+      { label: 'Programs', href: '/programs' },
+      { label: 'About Us', href: '/about-us' },
       { label: 'Events', href: '/events' },
       { label: 'Latest Updates', href: '/latest-updates' },
-      { label: 'Career Support', href: '/programs/career-support' },
-      { label: 'Community Building', href: '/programs/community-building' },
-      { label: 'Policy & Advocacy', href: '/programs/policy-initiatives' },
-    ],
-  },
-  {
-    title: 'About',
-    links: [
-      { label: 'Mission', href: '/about-us/mission' },
-      { label: 'Board & Leadership', href: '/about-us/board-leadership' },
-      { label: 'Advisory Council', href: '/about-us/advisory-council' },
-      { label: 'State Committees', href: '/about-us/state-committees' },
       { label: 'Contact', href: '/contact-us' },
     ],
   },
@@ -60,7 +54,10 @@ const SOCIAL: { label: string; href: string; Icon: React.FC<{ className?: string
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-[var(--neutral-darker)] text-[var(--neutral-lightest)]">
+    <footer
+      className="mt-auto border-t border-border bg-[var(--brand-primary-darker)] text-[var(--neutral-lightest)]"
+      data-theme="dark"
+    >
       <div className="container py-12">
         <div className="grid gap-10 lg:grid-cols-2">
           {/* Brand + newsletter */}
@@ -89,19 +86,19 @@ export function Footer() {
                 type="email"
               />
               <button
-                className="shrink-0 rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                className="shrink-0 rounded-md bg-[var(--neutral-lightest)] px-5 py-2 text-sm font-semibold text-[var(--brand-primary-base)] transition-colors hover:bg-white"
                 type="button"
               >
                 Subscribe
               </button>
             </div>
-            <p className="mt-2 text-xs text-[var(--neutral-base)]">
+            <p className="mt-2 text-xs text-[var(--neutral-light)]">
               By subscribing you agree to receive updates from us.
             </p>
           </div>
 
           {/* Link columns + social */}
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-8">
             {COLUMNS.map((col) => (
               <nav aria-label={col.title} key={col.title}>
                 <p className="mb-4 text-sm font-semibold">{col.title}</p>

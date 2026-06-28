@@ -19,7 +19,7 @@ export const TimelineBlock: React.FC<TimelineBlockProps> = (props) => {
       {showHeader && (
         <div className="mb-12 max-w-2xl">
           {header?.heading && (
-            <h2 className="text-3xl font-semibold md:text-4xl">{header.heading}</h2>
+            <h2 className="type-h2">{header.heading}</h2>
           )}
           {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
         </div>
@@ -32,10 +32,10 @@ export const TimelineBlock: React.FC<TimelineBlockProps> = (props) => {
               aria-hidden="true"
               className="absolute -left-[2.4rem] top-1 size-3.5 rounded-full border-2 border-background bg-primary"
             />
-            <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+            <p className="type-eyebrow text-primary">
               {item.date}
             </p>
-            {item.title && <h3 className="mt-1 text-xl font-semibold">{item.title}</h3>}
+            {item.title && <h3 className="mt-1 type-h4">{item.title}</h3>}
             {item.body && (
               <RichText className="mt-2 text-content-secondary" data={item.body} enableGutter={false} />
             )}

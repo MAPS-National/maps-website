@@ -226,6 +226,9 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Medium Impact needs a 4:3 landscape image (e.g. 1600×1200) so the split frame fills with no crop.
+     */
     media?: (number | null) | Media;
     /**
      * Navy scrim over the hero image for text legibility (brand-token gradient).

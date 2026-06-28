@@ -25,7 +25,7 @@ const all: Testimonial[] = [
     'Amina R.',
     'Program graduate',
     'programs',
-    'The MAPS Academy gave me a roadmap into public service I didn’t know existed — and the network to act on it.',
+    'The MAPS Academy gave me a roadmap into public service I didn’t know existed, and the network to act on it.',
   ),
   testimonial(
     'Yusuf K.',
@@ -43,7 +43,7 @@ const all: Testimonial[] = [
     'Omar S.',
     'Workshop attendee',
     'programs',
-    'Every session was practical. No filler — just the steps, the people, and the follow-through.',
+    'Every session was practical. No filler, just the steps, the people, and the follow-through.',
   ),
   testimonial(
     'Sara M.',
@@ -67,7 +67,7 @@ export const testimonialsGallery: GalleryBlock<TestimonialsBlockProps> = {
     'Quotes from the Testimonials collection, scopeable to a type (career / programs). A card grid, or one large featured pull-quote. On a real page it queries the collection; here it renders a fixed selection.',
   variants: [
     {
-      name: 'Card grid — all',
+      name: 'Card grid, all',
       description: 'Default. A responsive grid of quote cards across both types.',
       props: {
         blockType: 'testimonials',
@@ -81,7 +81,7 @@ export const testimonialsGallery: GalleryBlock<TestimonialsBlockProps> = {
       },
     },
     {
-      name: 'Card grid — career only',
+      name: 'Card grid, career only',
       description: 'Same grid scoped to a single type via the filter.',
       props: {
         blockType: 'testimonials',
@@ -94,7 +94,7 @@ export const testimonialsGallery: GalleryBlock<TestimonialsBlockProps> = {
     },
     {
       name: 'Single pull-quote',
-      description: 'One large featured quote — for a focused, high-impact placement.',
+      description: 'One large featured quote, for a focused, high-impact placement.',
       props: {
         blockType: 'testimonials',
         populateBy: 'selection',
