@@ -23,7 +23,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'About Us', href: '/about-us' },
       { label: 'Events', href: '/events' },
       { label: 'Latest Updates', href: '/latest-updates' },
-      { label: 'Contact', href: '/contact-us' },
+      { label: 'Contact', href: '/contact' },
     ],
   },
 ]
