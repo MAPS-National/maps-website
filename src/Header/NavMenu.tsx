@@ -77,7 +77,7 @@ const GROUPS: NavGroup[] = [
 const FLAT: NavLink[] = [
   { label: 'Press', href: '/press' },
   { label: 'Latest Updates', href: '/latest-updates' },
-  { label: 'Contact', href: '/contact-us' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 /**
@@ -212,79 +212,83 @@ export const NavMenu: React.FC = () => {
             ref={dialogRef}
             role="dialog"
           >
-          <div className="container flex items-center justify-between py-8">
-            <span className="font-serif text-lg font-semibold">Menu</span>
-            <button
-              aria-label="Close menu"
-              className="rounded-md p-2 text-content hover:text-primary"
-              onClick={close}
-              ref={closeRef}
-              type="button"
-            >
-              <CloseIcon />
-            </button>
-          </div>
+            <div className="container flex items-center justify-between py-8">
+              <span className="font-serif text-lg font-semibold">Menu</span>
+              <button
+                aria-label="Close menu"
+                className="rounded-md p-2 text-content hover:text-primary"
+                onClick={close}
+                ref={closeRef}
+                type="button"
+              >
+                <CloseIcon />
+              </button>
+            </div>
 
-          <nav className="container grid gap-x-10 gap-y-10 pb-20 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {GROUPS.map((group) => (
-              <div key={group.label}>
-                <p className="mb-4 border-b border-border pb-2 font-serif text-lg font-semibold text-content">
-                  {group.href ? (
-                    <Link className="transition-colors hover:text-primary" href={group.href} onClick={close}>
-                      {group.label}
-                    </Link>
-                  ) : (
-                    group.label
-                  )}
-                </p>
-                <ul className="space-y-2.5">
-                  {group.items.map((item) => (
-                    <li key={item.href}>
-                      <MenuLink
-                        active={pathname === item.href}
-                        gated={group.gated}
-                        href={item.href}
+            <nav className="container grid gap-x-10 gap-y-10 pb-20 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              {GROUPS.map((group) => (
+                <div key={group.label}>
+                  <p className="mb-4 border-b border-border pb-2 font-serif text-lg font-semibold text-content">
+                    {group.href ? (
+                      <Link
+                        className="transition-colors hover:text-primary"
+                        href={group.href}
                         onClick={close}
                       >
-                        {item.label}
-                      </MenuLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
-
-          <div className="container flex flex-col gap-8 border-t border-border py-10 lg:flex-row lg:items-center lg:justify-between">
-            <ul className="flex flex-wrap gap-x-8 gap-y-3">
-              {FLAT.map((item) => (
-                <li key={item.href}>
-                  <MenuLink active={pathname === item.href} href={item.href} onClick={close}>
-                    {item.label}
-                  </MenuLink>
-                </li>
+                        {group.label}
+                      </Link>
+                    ) : (
+                      group.label
+                    )}
+                  </p>
+                  <ul className="space-y-2.5">
+                    {group.items.map((item) => (
+                      <li key={item.href}>
+                        <MenuLink
+                          active={pathname === item.href}
+                          gated={group.gated}
+                          href={item.href}
+                          onClick={close}
+                        >
+                          {item.label}
+                        </MenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
+            </nav>
 
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Member login/logout live in the always-visible header top bar
+            <div className="container flex flex-col gap-8 border-t border-border py-10 lg:flex-row lg:items-center lg:justify-between">
+              <ul className="flex flex-wrap gap-x-8 gap-y-3">
+                {FLAT.map((item) => (
+                  <li key={item.href}>
+                    <MenuLink active={pathname === item.href} href={item.href} onClick={close}>
+                      {item.label}
+                    </MenuLink>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Member login/logout live in the always-visible header top bar
                   (see the NavMenu top row), wired to the Outseta SDK. */}
-              <Link
-                className="rounded-md border border-primary px-5 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-                href="/donate"
-                onClick={close}
-              >
-                Donate
-              </Link>
-              <Link
-                className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-                href="/join"
-                onClick={close}
-              >
-                Join MAPS
-              </Link>
+                <Link
+                  className="rounded-md border border-primary px-5 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                  href="/donate"
+                  onClick={close}
+                >
+                  Donate
+                </Link>
+                <Link
+                  className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                  href="/join"
+                  onClick={close}
+                >
+                  Join MAPS
+                </Link>
+              </div>
             </div>
-          </div>
           </div>,
           document.body,
         )}
@@ -307,16 +311,19 @@ const MenuLink: React.FC<{
     href={href}
     onClick={onClick}
   >
-    {gated && (
-      <Lock aria-hidden="true" className="mr-1.5 inline-block size-3.5 align-[-0.15em]" />
-    )}
+    {gated && <Lock aria-hidden="true" className="mr-1.5 inline-block size-3.5 align-[-0.15em]" />}
     {children}
   </Link>
 )
 
 const MenuIcon: React.FC = () => (
   <svg aria-hidden="true" className="size-6" fill="none" viewBox="0 0 24 24">
-    <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeLinecap="round" strokeWidth="1.75" />
+    <path
+      d="M4 7h16M4 12h16M4 17h16"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.75"
+    />
   </svg>
 )
 

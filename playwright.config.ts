@@ -42,7 +42,9 @@ export default defineConfig({
   ],
   webServer: {
     // Repo is npm-installed (see CLAUDE.md) — the dev script is `npm run dev`.
-    command: 'npm run dev',
+    // CI runs on Linux where `predev` (a Windows-only PowerShell Docker check)
+    // can't run, so use `dev:ci` there: same `next dev`, no predev hook.
+    command: process.env.CI ? 'npm run dev:ci' : 'npm run dev',
     reuseExistingServer: true,
     url: 'http://localhost:3000',
     timeout: 180_000,

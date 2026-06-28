@@ -27,6 +27,7 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { OutsetaScript } from '@/components/OutsetaScript'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { SITE_DESCRIPTION, SITE_NAME } from '@/utilities/brand'
 import { draftMode } from 'next/headers'
 
 import './globals.css'
@@ -66,9 +67,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
 export const metadata: Metadata = {
   metadataBase: new URL(getServerSideURL()),
+  // Plain default, not a template: generateMeta + the search page already append
+  // "| SITE_NAME" themselves, so a template here would double the suffix.
+  title: SITE_NAME,
+  description: SITE_DESCRIPTION,
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',
-    creator: '@payloadcms',
+    title: SITE_NAME,
   },
 }

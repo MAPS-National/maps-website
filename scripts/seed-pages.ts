@@ -15,7 +15,7 @@
 import 'dotenv/config'
 
 import { existsSync } from 'node:fs'
-import { readFile } from 'node:fs/promises'
+import { readFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 
 import configPromise from '@payload-config'
@@ -211,7 +211,9 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     author: 'Layla H.',
     role: 'Policy analyst',
     type: 'career',
-    quote: quote('I came in unsure how to translate my background into a government role. I left with a plan and three referrals.'),
+    quote: quote(
+      'I came in unsure how to translate my background into a government role. I left with a plan and three referrals.',
+    ),
   })
 
   // Academy videos under two categories.
@@ -226,7 +228,8 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
   await upsertBySlug(payload, 'academy-videos', 'cfr-fellowship-info-session', {
     title: 'Pipelines into Foreign Policy: CFR Fellowship & Term Member Programs',
     videoUrl: 'https://www.youtube.com/watch?v=9brMSH0HuBc',
-    description: 'An info session on the Council on Foreign Relations fellowship and term-member tracks.',
+    description:
+      'An info session on the Council on Foreign Relations fellowship and term-member tracks.',
     categories: [pathways],
     order: 0,
   })
@@ -237,6 +240,72 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     categories: [fundamentals],
     order: 1,
   })
+
+  // Sample posts ("Latest Updates"). The collection is empty until the Phase 5
+  // CSV import, which reads the gitignored migration export, so a clean checkout
+  // or CI has zero posts and the latest-updates archive renders empty. Seed a
+  // couple of published fixtures (idempotent by slug) so the archive lists posts
+  // and a post detail resolves. The first slug/title is the one the e2e posts
+  // specs assert against.
+  // Resolve a pre-imported Media id by filename (ensureTrackedMedia ran first).
+  const postMedia = async (filename: string): Promise<number | null> => {
+    const r = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+    })
+    const id = r.docs[0]?.id
+    return typeof id === 'number' ? id : null
+  }
+  const upsertPost = async (
+    slug: string,
+    title: string,
+    body: string,
+    imageFile: string,
+  ): Promise<void> => {
+    const existing = await payload.find({
+      collection: 'posts',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 0,
+    })
+    // An image keeps post cards off the "No image" placeholder, whose
+    // muted-foreground-on-muted (#83807f on #f2f2f2 = 3.5:1) fails AA contrast
+    // and trips the a11y e2e on any page that lists these posts (home strip).
+    // The Card reads meta.image; PostHero/detail uses heroImage — set both.
+    const img = await postMedia(imageFile)
+    const data = {
+      slug,
+      title,
+      _status: 'published',
+      publishedAt: '2025-01-01T00:00:00.000Z',
+      content: richText(paragraph(body)),
+      ...(img ? { heroImage: img, meta: { image: img } } : {}),
+    } as never
+    if (existing.docs[0]) {
+      await payload.update({
+        collection: 'posts',
+        id: existing.docs[0].id,
+        data,
+        context: { disableRevalidate: true },
+      })
+    } else {
+      await payload.create({ collection: 'posts', data, context: { disableRevalidate: true } })
+    }
+  }
+  await upsertPost(
+    'maps-academy-climbing-the-federal-ladder',
+    'MAPS Academy: Climbing the Federal Ladder',
+    'A MAPS Academy session on advancing within federal service, covering promotion timelines, the senior pathways, and how members have moved from entry roles into leadership.',
+    '4_1.webp',
+  )
+  await upsertPost(
+    'breaking-into-public-service',
+    'Breaking into Public Service: Where to Start',
+    'The entry points, timelines, and first moves for a public-service career, drawn from the MAPS Academy onboarding session.',
+    '5_1.webp',
+  )
 
   // The /phase-4-blocks showcase page was migration scaffolding to satisfy the
   // "block placed on at least one Page" acceptance; the blocks now live on real
@@ -265,7 +334,7 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
       'MAPS’ membership can only be accessed through the form on our website. Our membership policy is 100% opt-in to ensure consent is affirmatively established and that member information and preferences are self-selected and identified.',
     ),
     qa(
-      'Membership is free? What\'s the catch?',
+      "Membership is free? What's the catch?",
       'There is no catch. MAPS is a grassroots effort to build and support the national community of Muslim Americans in public service/ government. We do this because we are Muslim American public servants, ourselves. We represent a range of backgrounds, career tracks, levels and branches of government, and we have found the individual and institutional support along our careers minimal or inaccessible. We feel not only that we can do better, but that supporting pipelines into service for underserved and underrepresented groups is key to improving outcomes for all, and ensuring that American government looks like America.',
     ),
     qa(
@@ -273,7 +342,7 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
       'MAPS does not define or characterize Muslim American communities or individuals along theological or sectarian lines. Anyone who self-identifies as Muslim is accepted as such. While MAPS aims to support professional needs of our broader community, we defer to our member’s own respective clergy or faith traditions to serve their spiritual needs.',
     ),
     qa(
-      'Am I welcome if I\'m not Muslim?',
+      "Am I welcome if I'm not Muslim?",
       'MAPS and its members regularly engage with non-Muslim colleagues, counterparts, allies, partner networks, and coalitions. They also constitute a highly supportive cadre that MAPS engages as Affiliates.',
     ),
     qa(
@@ -367,7 +436,7 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
               {
                 link: {
                   type: 'custom',
-                  url: '/contact-us',
+                  url: '/contact',
                   label: 'Contact',
                   appearance: 'outline',
                   newTab: false,
@@ -404,7 +473,7 @@ const missionSlice: PageSlice = async (payload) => {
       const data = await readFile(source)
       const created = await payload.create({
         collection: 'media',
-        data: { alt },
+        data: { alt: alt || filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
         file: { name: filename, data, mimetype: 'image/webp', size: data.length },
       })
       payload.logger.info(`mission: created media "${filename}" from tracked source`)
@@ -540,9 +609,7 @@ const missionSlice: PageSlice = async (payload) => {
     header: {
       enableHeader: true,
       heading: 'Timeline',
-      body: richText(
-        paragraph('Key milestones in the founding and growth of MAPS National.'),
-      ),
+      body: richText(paragraph('Key milestones in the founding and growth of MAPS National.')),
       anchorId: 'timeline',
     },
     items: [
@@ -613,7 +680,7 @@ const missionSlice: PageSlice = async (payload) => {
         ),
         links: [
           { link: { type: 'custom', url: '/join', label: 'Join MAPS', appearance: 'default' } },
-          { link: { type: 'custom', url: '/contact-us', label: 'Contact us', appearance: 'outline' } },
+          { link: { type: 'custom', url: '/contact', label: 'Contact us', appearance: 'outline' } },
         ],
       },
       layout,
@@ -676,8 +743,7 @@ const partnersSlice: PageSlice = async (payload) => {
       .map((d) => [d.filename, d.id]),
   )
 
-  const logoItems = LOGO_FILENAMES
-    .map((filename) => idByFilename.get(filename))
+  const logoItems = LOGO_FILENAMES.map((filename) => idByFilename.get(filename))
     .filter((id): id is number => typeof id === 'number')
     .map((id) => ({ logo: id, enableLink: false }))
 
@@ -779,7 +845,7 @@ const partnersSlice: PageSlice = async (payload) => {
           {
             link: {
               type: 'custom',
-              url: '/contact-us',
+              url: '/contact',
               label: 'Contact Us',
               appearance: 'default',
             },
@@ -876,9 +942,7 @@ const donateSlice: PageSlice = async (payload) => {
           header: {
             enableHeader: true,
             heading: 'Your support is our life blood.',
-            body: richText(
-              paragraph('Choose one of the following convenient payment methods.'),
-            ),
+            body: richText(paragraph('Choose one of the following convenient payment methods.')),
             anchorId: 'payments',
           },
           columns: [
@@ -1283,17 +1347,16 @@ const joinSlice: PageSlice = async (_payload) => {
   // loaded (monitorDom), a same-tab click opens the plan-signup modal in place.
   // Must NOT be newTab — `target="_blank"` makes the browser navigate to the
   // hosted auth page instead of letting nocode intercept and pop the modal (JN1).
-  const apply = (url: string) =>
-    [
-      {
-        link: {
-          type: 'custom' as const,
-          appearance: 'outline' as const,
-          label: 'Apply',
-          url,
-        },
+  const apply = (url: string) => [
+    {
+      link: {
+        type: 'custom' as const,
+        appearance: 'outline' as const,
+        label: 'Apply',
+        url,
       },
-    ]
+    },
+  ]
 
   return [
     {
@@ -1305,9 +1368,7 @@ const joinSlice: PageSlice = async (_payload) => {
         eyebrow: 'Belong',
         richText: richText(
           heading('Join the MAPS network', 'h1'),
-          paragraph(
-            'Build your career, community, and workplace while serving your country.',
-          ),
+          paragraph('Build your career, community, and workplace while serving your country.'),
           paragraph(
             'MAPS is a grassroots effort to build and support the national community of Muslim Americans in government. We do this because we are Muslim American public servants, ourselves. We represent a range of backgrounds, career tracks, levels and branches of government, and we have found the individual and institutional support along our careers to be minimal or inaccessible.',
           ),
@@ -1628,7 +1689,11 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
                   'Our main national chat for MAPS Members and Associates: a supportive, professional space for success stories, career postings, networking, and public policy relevant to our mission.',
                 ),
               ),
-              links: [joinBtn('https://signal.group/#CjQKIJt0L3TEvNSeAM8cOxDYeQ4Rr-LkC3uMkSX1tWpTEwh7EhAhpJH42AqPlDsoaEt3xD4I')],
+              links: [
+                joinBtn(
+                  'https://signal.group/#CjQKIJt0L3TEvNSeAM8cOxDYeQ4Rr-LkC3uMkSX1tWpTEwh7EhAhpJH42AqPlDsoaEt3xD4I',
+                ),
+              ],
             },
             {
               heading: 'MAPS Social Chat',
@@ -1637,7 +1702,11 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
                   'An informal space for MAPS Members and Associates to discuss current affairs, politics, and issues affecting the Muslim American community. Personal attacks and inflammatory language are not allowed.',
                 ),
               ),
-              links: [joinBtn('https://signal.group/#CjQKILO1Hppy2YF-fTgSZmAn26yVv0Ts_PyfVvGz53xK7UZQEhDs8WSDdFlluODjtVLv9ccE')],
+              links: [
+                joinBtn(
+                  'https://signal.group/#CjQKILO1Hppy2YF-fTgSZmAn26yVv0Ts_PyfVvGz53xK7UZQEhDs8WSDdFlluODjtVLv9ccE',
+                ),
+              ],
             },
             {
               heading: 'MAPS Affiliate Chat',
@@ -1646,7 +1715,11 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
                   'Our national chat for MAPS Affiliates: a professional space for development, networking, and career postings that guide Muslim Americans into public service pathways.',
                 ),
               ),
-              links: [joinBtn('https://signal.group/#CjQKINQPIyQoCZ-9PSel4CSYWjZ0fgAnhBuAGvd3Q4-BJBtoEhD3AGqTfUn1fMFIgP_vSQAY')],
+              links: [
+                joinBtn(
+                  'https://signal.group/#CjQKINQPIyQoCZ-9PSel4CSYWjZ0fgAnhBuAGvd3Q4-BJBtoEhD3AGqTfUn1fMFIgP_vSQAY',
+                ),
+              ],
             },
           ],
         },
@@ -1674,12 +1747,16 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
             },
             {
               heading: 'California',
-              body: richText(paragraph('President: Mahnaz Ebadi · Vice President: Zeeshan Chaudhry')),
+              body: richText(
+                paragraph('President: Mahnaz Ebadi · Vice President: Zeeshan Chaudhry'),
+              ),
               links: [joinBtn('https://bit.ly/4dZZhZM')],
             },
             {
               heading: 'New York',
-              body: richText(paragraph('President: Basem Hassan · Vice President: Hesham El Meligy')),
+              body: richText(
+                paragraph('President: Basem Hassan · Vice President: Hesham El Meligy'),
+              ),
               links: [joinBtn('https://bit.ly/3R81xV7')],
             },
             {
@@ -1689,7 +1766,9 @@ const membersCommunityBuildingSlice: PageSlice = async (_payload) => {
             },
             {
               heading: 'New Jersey',
-              body: richText(paragraph('President: Fatima Abdelsalam · Vice President: Tajnia Hussein')),
+              body: richText(
+                paragraph('President: Fatima Abdelsalam · Vice President: Tajnia Hussein'),
+              ),
               links: [
                 joinBtn(
                   'https://signal.group/#CjQKILEvbZc2lLr9OtcyeAYuXUb6SoFNDV1kqefSQR6AySYREhCSUI9dTbZVpIFMYRgUzq1N',
@@ -1805,7 +1884,11 @@ const newYorkStateSlice: PageSlice = async (payload) => {
     return typeof id === 'number' ? id : null
   }
 
-  const customLink = (label: string, url: string, appearance: 'default' | 'outline' = 'default') => ({
+  const customLink = (
+    label: string,
+    url: string,
+    appearance: 'default' | 'outline' = 'default',
+  ) => ({
     link: { type: 'custom', url, label, newTab: true, appearance },
   })
 
@@ -1835,7 +1918,10 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       body: [
         'MAPS invites its members to apply for consideration for direct endorsement to the Mamdani Administration against open city government roles below. Please read the instructions in the following application form carefully and submit all requested information.',
       ],
-      link: { label: 'Apply for MAPS Referrals to NYC Jobs', url: 'https://forms.gle/wpRvWiekcq4xTZRx6' },
+      link: {
+        label: 'Apply for MAPS Referrals to NYC Jobs',
+        url: 'https://forms.gle/wpRvWiekcq4xTZRx6',
+      },
       imageSide: 'left',
     },
     {
@@ -1844,7 +1930,10 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       body: [
         'MAPS invites its members to apply for consideration for direct endorsement to the Mamdani Administration against roles on NYC Boards and Commissions below. Please read the instructions in the following application form carefully and submit all requested information.',
       ],
-      link: { label: 'Apply for MAPS Referrals to NYC Boards', url: 'https://forms.gle/QJNsEXRkk1CkVHTcA' },
+      link: {
+        label: 'Apply for MAPS Referrals to NYC Boards',
+        url: 'https://forms.gle/QJNsEXRkk1CkVHTcA',
+      },
       imageSide: 'right',
     },
     {
@@ -2099,7 +2188,13 @@ const memberPortalSlice: PageSlice = async (payload) => {
     heading,
     links: [
       {
-        link: { type: 'custom', url: formUrl, label: 'Get started', newTab: true, appearance: 'outline' },
+        link: {
+          type: 'custom',
+          url: formUrl,
+          label: 'Get started',
+          newTab: true,
+          appearance: 'outline',
+        },
       },
     ],
     enableCardLink: false,
@@ -2197,7 +2292,11 @@ const memberPortalSlice: PageSlice = async (payload) => {
                 ),
               ),
               enableCardLink: true,
-              cardLink: { type: 'custom', url: '/members/resources-points-of-contact', newTab: false },
+              cardLink: {
+                type: 'custom',
+                url: '/members/resources-points-of-contact',
+                newTab: false,
+              },
             },
           ],
         },
@@ -2300,8 +2399,24 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
           ),
         ),
         links: [
-          { link: { type: 'custom', url: '#programs-services', label: 'Programs & Services', newTab: false, appearance: 'default' } },
-          { link: { type: 'custom', url: '/members/maps-academy-vids', label: 'Recorded MAPS Academy Webinars', newTab: false, appearance: 'outline' } },
+          {
+            link: {
+              type: 'custom',
+              url: '#programs-services',
+              label: 'Programs & Services',
+              newTab: false,
+              appearance: 'default',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              url: '/members/maps-academy-vids',
+              label: 'Recorded MAPS Academy Webinars',
+              newTab: false,
+              appearance: 'outline',
+            },
+          },
         ],
       },
       layout: [
@@ -2323,7 +2438,13 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
                   'Get your resume reviewed by our in-house experts and senior public servants for free. Just email it to resumereview@mapsnational.org and follow the instructions in the response email. (Due to volume, no responses can be sent to applicants; all must book review slots directly.)',
                 ),
               ),
-              links: [btn('Email Your Resume', 'mailto:resumereview@mapsnational.org?subject=Resume%20Review%20from%20Portal', false)],
+              links: [
+                btn(
+                  'Email Your Resume',
+                  'mailto:resumereview@mapsnational.org?subject=Resume%20Review%20from%20Portal',
+                  false,
+                ),
+              ],
               enableCardLink: false,
             },
             {
@@ -2337,7 +2458,12 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
                   'Register as a Mentee, or volunteer to give back by registering as a Mentor.',
                 ),
               ),
-              links: [btn('Register as a Mentee', 'https://docs.google.com/forms/d/e/1FAIpQLScOJT0nq7sJzP0OUzGcQBzP0Q6Ptu3VdF0G2x5wS8AQWAf4bw/viewform?usp=header')],
+              links: [
+                btn(
+                  'Register as a Mentee',
+                  'https://docs.google.com/forms/d/e/1FAIpQLScOJT0nq7sJzP0OUzGcQBzP0Q6Ptu3VdF0G2x5wS8AQWAf4bw/viewform?usp=header',
+                ),
+              ],
               enableCardLink: false,
             },
             {
@@ -2348,7 +2474,12 @@ const professionalDevelopmentSlice: PageSlice = async (_payload) => {
                   'Check out our depository of shared member and government career resources, including our custom resume templates and guides, and primers on everything from how to craft a resume, to interview tips and how to apply to the Federal Senior Executive Service (SES).',
                 ),
               ),
-              links: [btn('Open Shared Folder', 'https://drive.google.com/drive/folders/1blgzeucqN6_U96ka6uELlQCBBG9TWosL?usp=drive_link')],
+              links: [
+                btn(
+                  'Open Shared Folder',
+                  'https://drive.google.com/drive/folders/1blgzeucqN6_U96ka6uELlQCBBG9TWosL?usp=drive_link',
+                ),
+              ],
               enableCardLink: false,
             },
             {
@@ -2645,7 +2776,7 @@ const pressSlice: PageSlice = async (payload) => {
           {
             link: {
               type: 'custom',
-              url: '/contact-us',
+              url: '/contact',
               label: 'Contact',
               appearance: 'outline',
             },
@@ -2799,7 +2930,9 @@ const careerSupportSlice: PageSlice = async (payload) => {
           },
         ],
       },
-      layout: [...layout, {
+      layout: [
+        ...layout,
+        {
           blockType: 'testimonials',
           variant: 'slider',
           type: 'career',
@@ -2807,7 +2940,8 @@ const careerSupportSlice: PageSlice = async (payload) => {
           limit: 0,
           eyebrow: 'Career support',
           heading: 'What our career-support members say',
-        }],
+        },
+      ],
     },
   ] as unknown as PageData[]
 }
@@ -2920,7 +3054,8 @@ const communityBuildingSlice: PageSlice = async (_payload) => {
               ),
             },
           ],
-        },      ],
+        },
+      ],
     },
   ] as unknown as PageData[]
 }
@@ -2996,9 +3131,7 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
                   'MAPS National supports its members across federal, state and local government who are facing or undergoing workplace adversity, discrimination, retaliation, bias, or hostile work environments based on religion, race, sex, or national origin. The Legal Advocacy Committee shares valuable insights, explains the processes for redress, and shares resources and pro bono, paid legal, and partner organization services.',
                 ),
               ),
-              links: [
-                cta('Request support', '/join', true),
-              ],
+              links: [cta('Request support', '/join', true)],
             },
             {
               ...(mediaId('24_1.webp') ? { image: mediaId('24_1.webp') } : {}),
@@ -3047,7 +3180,8 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
           ],
           ...(featureImage ? { image: featureImage } : {}),
           anchorId: 'recordings',
-        },      ],
+        },
+      ],
     },
   ] as unknown as PageData[]
 }
@@ -3077,7 +3211,7 @@ const policyInitiativesSlice: PageSlice = async (payload) => {
           {
             link: {
               type: 'custom',
-              url: '/contact-us',
+              url: '/contact',
               label: 'Contact',
               appearance: 'outline',
               newTab: false,
@@ -3202,7 +3336,8 @@ const policyInitiativesSlice: PageSlice = async (payload) => {
               ),
             },
           ],
-        },      ],
+        },
+      ],
     },
   ] as unknown as PageData[]
 }
@@ -3338,7 +3473,8 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
               },
             },
           ],
-        },      ],
+        },
+      ],
     },
   ] as unknown as PageData[]
 }
@@ -3380,7 +3516,7 @@ const federalEmploymentSlice: PageSlice = async (_payload) => {
               {
                 link: {
                   type: 'custom',
-                  url: '/contact-us',
+                  url: '/contact',
                   label: 'Contact',
                   appearance: 'outline',
                   newTab: false,
@@ -3543,8 +3679,7 @@ const jumuahServicesSlice: PageSlice = async (_payload) => {
               name: 'George Washington University (1:15pm)',
               lat: 38.8997,
               lng: -77.0476,
-              address:
-                'GWU Student Center, Room 406\n800 21st Street NW, Washington, DC 20037',
+              address: 'GWU Student Center, Room 406\n800 21st Street NW, Washington, DC 20037',
               email: 'education@gwmsa.com',
             },
             {
@@ -3655,7 +3790,7 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
               {
                 link: {
                   type: 'custom',
-                  url: '/contact-us',
+                  url: '/contact',
                   label: 'Contact',
                   appearance: 'outline',
                   newTab: false,
@@ -3809,7 +3944,7 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
               {
                 link: {
                   type: 'custom',
-                  url: '/contact-us',
+                  url: '/contact',
                   label: 'Contact',
                   appearance: 'outline',
                 },
@@ -3955,7 +4090,9 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
                   'Launched in 2017, the DOE NNSA Laboratory Residency Graduate Fellowship (DOE NNSA LRGF) provides excellent financial benefits and professional development opportunities to students pursuing a Ph.D. in fields of study that address complex science and engineering problems critical to stewardship science.',
                 ),
                 // FDA Scientific Internships and Fellowships — https://www.fda.gov/about-fda/jobs-and-training-fda/scientific-internships-fellowships-trainees-and-non-us-citizens
-                paragraph('U.S. Food and Drug Administration (FDA) Scientific Internships and Fellowships'),
+                paragraph(
+                  'U.S. Food and Drug Administration (FDA) Scientific Internships and Fellowships',
+                ),
                 paragraph(
                   'Whether you’re an undergraduate looking to pursue a career in science, a graduate science student seeking experience in regulatory science, a postgraduate looking for fellowship opportunities, or a senior scientist pursuing research experience in your field of expertise, FDA offers many paths to learning about the field of regulatory science.',
                 ),
@@ -3975,12 +4112,16 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
                   'The NASA Postdoctoral Program (NPP) provides early-career and more senior scientists the opportunity to share in NASA’s mission. NASA Postdoctoral Fellows work on 1 to 3 year assignments with NASA scientists and engineers at NASA centers and institutes to advance NASA’s missions in earth science, heliophysics, planetary science, astrophysics, space bioscience, aeronautics, engineering, human exploration and space operations, astrobiology, and science management.',
                 ),
                 // ORISE Department of Defense Fellowship Program — https://orise.orau.gov/dodprograms/
-                paragraph('Oak Ridge Institute of Science and Education Department of Defense Fellowship Program'),
+                paragraph(
+                  'Oak Ridge Institute of Science and Education Department of Defense Fellowship Program',
+                ),
                 paragraph(
                   'To ensure the robust supply of scientists and engineers to meet the U.S. Department of Defense’s future science and technology needs, the ORISE program places individuals from the academic community (students, recent graduates, and faculty) in DoD research projects.',
                 ),
                 // SMART Scholarship for Service — https://www.smartscholarship.org/smart
-                paragraph('Science, Mathematics and Research for Transformation (SMART) Scholarship for Service Program'),
+                paragraph(
+                  'Science, Mathematics and Research for Transformation (SMART) Scholarship for Service Program',
+                ),
                 paragraph(
                   'The SMART Scholarship for Service Program is an opportunity for students pursuing an undergraduate, graduate or doctoral degree in STEM disciplines to receive a full scholarship and be gainfully employed upon degree completion in the U.S. Department of Defense.',
                 ),
@@ -4005,7 +4146,9 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
                   'Through fellowships, internships, and strategic partnerships, STAR supports building the capacity of diverse global health professionals and organizations at all levels to make inclusive, collaborative, and innovative contributions to global health.',
                 ),
                 // Post Baccalaureate Intramural Research Training Award (Postbac IRTA/CRTA) — https://www.training.nih.gov/programs/postbac_irta
-                paragraph('Post Baccalaureate Intramural Research Training Award (Postbac IRTA/CRTA)'),
+                paragraph(
+                  'Post Baccalaureate Intramural Research Training Award (Postbac IRTA/CRTA)',
+                ),
                 paragraph(
                   'The NIH Postbac IRTA program provides recent college graduates who are planning to apply to graduate or professional (medical/dental/pharmacy) school an opportunity to spend one or two years performing full-time research at the NIH. Postbac IRTAs/CRTAs work side-by-side with some of the leading scientists in the world, in an environment devoted exclusively to biomedical research.',
                 ),
@@ -4030,10 +4173,38 @@ const contactUsSlice: PageSlice = async (payload) => {
       paragraph("We'll be in touch with you shortly."),
     ),
     fields: [
-      { blockType: 'text', name: 'full-name', blockName: 'full-name', label: 'Full name', required: true, width: 100 },
-      { blockType: 'email', name: 'email', blockName: 'email', label: 'Email', required: true, width: 100 },
-      { blockType: 'text', name: 'subject', blockName: 'subject', label: 'Subject', required: false, width: 100 },
-      { blockType: 'textarea', name: 'message', blockName: 'message', label: 'Message', required: true, width: 100 },
+      {
+        blockType: 'text',
+        name: 'full-name',
+        blockName: 'full-name',
+        label: 'Full name',
+        required: true,
+        width: 100,
+      },
+      {
+        blockType: 'email',
+        name: 'email',
+        blockName: 'email',
+        label: 'Email',
+        required: true,
+        width: 100,
+      },
+      {
+        blockType: 'text',
+        name: 'subject',
+        blockName: 'subject',
+        label: 'Subject',
+        required: false,
+        width: 100,
+      },
+      {
+        blockType: 'textarea',
+        name: 'message',
+        blockName: 'message',
+        label: 'Message',
+        required: true,
+        width: 100,
+      },
     ],
     emails: [
       {
@@ -4058,12 +4229,18 @@ const contactUsSlice: PageSlice = async (payload) => {
     depth: 0,
   })
   const formId = existingForm.docs[0]
-    ? (await payload.update({ collection: 'forms', id: existingForm.docs[0].id, data: formData as never })).id
+    ? (
+        await payload.update({
+          collection: 'forms',
+          id: existingForm.docs[0].id,
+          data: formData as never,
+        })
+      ).id
     : (await payload.create({ collection: 'forms', data: formData as never })).id
 
   return [
     {
-      slug: 'contact-us',
+      slug: 'contact',
       title: 'Contact Us',
       _status: 'published',
       hero: {
@@ -4181,7 +4358,7 @@ const programsHubSlice: PageSlice = async (payload) => {
       const data = await readFile(source)
       const created = await payload.create({
         collection: 'media',
-        data: { alt },
+        data: { alt: alt || filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
         file: { name: filename, data, mimetype: 'image/webp', size: data.length },
       })
       payload.logger.info(`programs: created media "${filename}" from tracked source`)
@@ -4208,7 +4385,14 @@ const programsHubSlice: PageSlice = async (payload) => {
     .filter((v): v is number => typeof v === 'number')
 
   const heroLinks = [
-    { link: { type: 'custom', appearance: 'default', label: 'Explore the programs', url: '#the-programs' } },
+    {
+      link: {
+        type: 'custom',
+        appearance: 'default',
+        label: 'Explore the programs',
+        url: '#the-programs',
+      },
+    },
     { link: { type: 'custom', appearance: 'outline', label: 'Become a member', url: '/join' } },
   ]
   const heroCopy = richText(
@@ -4274,11 +4458,37 @@ const programsHubSlice: PageSlice = async (payload) => {
         anchorId: 'the-programs',
       },
       items: [
-        dirCard('briefcase', 'Career Support', 'Academy webinars, 1:1 resume and interview help, and fellowship placement.', '/programs/career-support'),
-        dirCard('users', 'Community Building', 'Communities of Practice and Muslim staff associations across government.', '/programs/community-building'),
-        dirCard('scale', 'Legal Advocacy', 'Religious accommodation and legal support in the workplace.', '/programs/legal-advocacy'),
-        dirCard('landmark', 'Policy Initiatives', 'Nonpartisan policy and advocacy on issues affecting Muslim public servants.', '/programs/policy-initiatives', true),
-        dirCard('network', 'Private Sector Engagement', 'Government contracting support for Muslim-owned firms and contractors.', '/programs/public-sector-engagement'),
+        dirCard(
+          'briefcase',
+          'Career Support',
+          'Academy webinars, 1:1 resume and interview help, and fellowship placement.',
+          '/programs/career-support',
+        ),
+        dirCard(
+          'users',
+          'Community Building',
+          'Communities of Practice and Muslim staff associations across government.',
+          '/programs/community-building',
+        ),
+        dirCard(
+          'scale',
+          'Legal Advocacy',
+          'Religious accommodation and legal support in the workplace.',
+          '/programs/legal-advocacy',
+        ),
+        dirCard(
+          'landmark',
+          'Policy Initiatives',
+          'Nonpartisan policy and advocacy on issues affecting Muslim public servants.',
+          '/programs/policy-initiatives',
+          true,
+        ),
+        dirCard(
+          'network',
+          'Private Sector Engagement',
+          'Government contracting support for Muslim-owned firms and contractors.',
+          '/programs/public-sector-engagement',
+        ),
       ],
     },
   ] as unknown as PageData['layout']
@@ -4296,7 +4506,16 @@ const programsHubSlice: PageSlice = async (payload) => {
           'MAPS Academy webinars and workshops, 1:1 resume and interview services, and fellowship referrals and placement to White House, Statehouse, and local roles.',
         ),
       ),
-      links: [{ link: { type: 'custom', appearance: 'default', label: 'Explore Career Support', url: '/programs/career-support' } }],
+      links: [
+        {
+          link: {
+            type: 'custom',
+            appearance: 'default',
+            label: 'Explore Career Support',
+            url: '/programs/career-support',
+          },
+        },
+      ],
       image: careerImg,
     } as unknown as PageData['layout'][number])
   }
@@ -4311,7 +4530,16 @@ const programsHubSlice: PageSlice = async (payload) => {
           'Connect nationally and at the state level, join Communities of Practice by field, and get support forming Muslim employee staff associations across government.',
         ),
       ),
-      links: [{ link: { type: 'custom', appearance: 'outline', label: 'Explore Community Building', url: '/programs/community-building' } }],
+      links: [
+        {
+          link: {
+            type: 'custom',
+            appearance: 'outline',
+            label: 'Explore Community Building',
+            url: '/programs/community-building',
+          },
+        },
+      ],
       image: communityImg,
     } as unknown as PageData['layout'][number])
   }
@@ -4344,11 +4572,17 @@ const programsHubSlice: PageSlice = async (payload) => {
   // Close — quiet join CTA (CallToAction renders neutral bg-card, by design).
   layout.push({
     blockType: 'cta',
-    richText: richText(paragraph('Public service is better together. Membership is free and member-led.')),
-    links: [{ link: { type: 'custom', appearance: 'default', label: 'Become a member', url: '/join' } }],
+    richText: richText(
+      paragraph('Public service is better together. Membership is free and member-led.'),
+    ),
+    links: [
+      { link: { type: 'custom', appearance: 'default', label: 'Become a member', url: '/join' } },
+    ],
   } as unknown as PageData['layout'][number])
 
-  return [{ slug: 'programs', title: 'Programs', _status: 'published', hero, layout }] as unknown as PageData[]
+  return [
+    { slug: 'programs', title: 'Programs', _status: 'published', hero, layout },
+  ] as unknown as PageData[]
 }
 
 // ---------------------------------------------------------------------------
@@ -4380,7 +4614,7 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
       const data = await readFile(source)
       const created = await payload.create({
         collection: 'media',
-        data: { alt },
+        data: { alt: alt || filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
         file: { name: filename, data, mimetype: 'image/webp', size: data.length },
       })
       payload.logger.info(`about-us: created media "${filename}" from tracked source`)
@@ -4395,8 +4629,22 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
   ])
 
   const heroLinks = [
-    { link: { type: 'custom', appearance: 'default', label: 'Get to know MAPS', url: '#inside-maps' } },
-    { link: { type: 'custom', appearance: 'outline', label: 'Meet the team', url: '/about-us/board-leadership' } },
+    {
+      link: {
+        type: 'custom',
+        appearance: 'default',
+        label: 'Get to know MAPS',
+        url: '#inside-maps',
+      },
+    },
+    {
+      link: {
+        type: 'custom',
+        appearance: 'outline',
+        label: 'Meet the team',
+        url: '/about-us/board-leadership',
+      },
+    },
   ]
   const heroCopy = richText(
     heading('Muslim Americans, in public service.', 'h1'),
@@ -4462,12 +4710,43 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
         anchorId: 'inside-maps',
       },
       items: [
-        dirCard('landmark', 'Mission, Values & History', 'Our mission, seven values, and the founding story.', '/about-us/mission', true),
-        dirCard('file-text', 'FAQ', 'Membership, funding, and advocacy, answered.', '/about-us/faq'),
-        dirCard('network', 'Partners', 'The organizations standing with MAPS.', '/about-us/partners'),
-        dirCard('users', 'Board & Leadership', 'The board and deputies who steer the work.', '/about-us/board-leadership'),
-        dirCard('mic', 'Advisory Council', 'The advisors who guide our direction.', '/about-us/advisory-council'),
-        dirCard('folder-open', 'State Committees', 'Member leaders organizing in your state.', '/about-us/state-committees'),
+        dirCard(
+          'landmark',
+          'Mission, Values & History',
+          'Our mission, seven values, and the founding story.',
+          '/about-us/mission',
+          true,
+        ),
+        dirCard(
+          'file-text',
+          'FAQ',
+          'Membership, funding, and advocacy, answered.',
+          '/about-us/faq',
+        ),
+        dirCard(
+          'network',
+          'Partners',
+          'The organizations standing with MAPS.',
+          '/about-us/partners',
+        ),
+        dirCard(
+          'users',
+          'Board & Leadership',
+          'The board and deputies who steer the work.',
+          '/about-us/board-leadership',
+        ),
+        dirCard(
+          'mic',
+          'Advisory Council',
+          'The advisors who guide our direction.',
+          '/about-us/advisory-council',
+        ),
+        dirCard(
+          'folder-open',
+          'State Committees',
+          'Member leaders organizing in your state.',
+          '/about-us/state-committees',
+        ),
       ],
     },
   ] as unknown as PageData['layout']
@@ -4485,7 +4764,16 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
           'Our mission is to support the career, community, and workplace development of Muslim American public servants. Seven values guide the work, from public service and religious freedom to community building and broad-based inclusion.',
         ),
       ),
-      links: [{ link: { type: 'custom', appearance: 'default', label: 'Read our mission and values', url: '/about-us/mission' } }],
+      links: [
+        {
+          link: {
+            type: 'custom',
+            appearance: 'default',
+            label: 'Read our mission and values',
+            url: '/about-us/mission',
+          },
+        },
+      ],
       image: missionImg,
     } as unknown as PageData['layout'][number])
   }
@@ -4500,10 +4788,42 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
       anchorId: 'history',
     },
     items: [
-      { date: '2019', title: "DOT's first Muslim ERG", body: richText(paragraph("Muslim Federal employees at the US Department of Transportation create MAPS, the agency's first Employee Resource Group to support Muslim staff.")) },
-      { date: '2021', title: 'MAPS officially launches', body: richText(paragraph('Muslim Americans in Public Service incorporates as a 501(c)(3) and launches as the first national organization to support and represent Muslims across American government.')) },
-      { date: '2022', title: 'First National Iftar and first State Committee', body: richText(paragraph('MAPS holds its first National Iftar in DC and launches its first State Committee, MAPS New York.')) },
-      { date: '2023', title: 'The network grows', body: richText(paragraph('State committees, Communities of Practice, and the partner network expand across the country.')) },
+      {
+        date: '2019',
+        title: "DOT's first Muslim ERG",
+        body: richText(
+          paragraph(
+            "Muslim Federal employees at the US Department of Transportation create MAPS, the agency's first Employee Resource Group to support Muslim staff.",
+          ),
+        ),
+      },
+      {
+        date: '2021',
+        title: 'MAPS officially launches',
+        body: richText(
+          paragraph(
+            'Muslim Americans in Public Service incorporates as a 501(c)(3) and launches as the first national organization to support and represent Muslims across American government.',
+          ),
+        ),
+      },
+      {
+        date: '2022',
+        title: 'First National Iftar and first State Committee',
+        body: richText(
+          paragraph(
+            'MAPS holds its first National Iftar in DC and launches its first State Committee, MAPS New York.',
+          ),
+        ),
+      },
+      {
+        date: '2023',
+        title: 'The network grows',
+        body: richText(
+          paragraph(
+            'State committees, Communities of Practice, and the partner network expand across the country.',
+          ),
+        ),
+      },
     ],
   } as unknown as PageData['layout'][number])
 
@@ -4517,7 +4837,16 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
       heading('The people behind MAPS', 'h2'),
       paragraph('A volunteer board and deputies steer the work across every level of government.'),
     ),
-    links: [{ link: { type: 'custom', appearance: 'default', label: 'Meet the board and leadership', url: '/about-us/board-leadership' } }],
+    links: [
+      {
+        link: {
+          type: 'custom',
+          appearance: 'default',
+          label: 'Meet the board and leadership',
+          url: '/about-us/board-leadership',
+        },
+      },
+    ],
   } as unknown as PageData['layout'][number])
 
   // FAQ teaser — the make-or-break questions answered inline, then route to the
@@ -4529,23 +4858,49 @@ const aboutUsHubSlice: PageSlice = async (payload) => {
       enableHeader: true,
       eyebrow: 'Good to know',
       heading: 'The questions everyone asks',
-      links: [{ link: { type: 'custom', url: '/about-us/faq', label: 'See all questions', appearance: 'outline', newTab: false } }],
+      links: [
+        {
+          link: {
+            type: 'custom',
+            url: '/about-us/faq',
+            label: 'See all questions',
+            appearance: 'outline',
+            newTab: false,
+          },
+        },
+      ],
     },
     items: [
-      faqItem('Is membership free?', 'Yes. MAPS membership is 100 percent opt-in and free. Unsubscribing from the MAPS email list ends your membership.'),
-      faqItem('How is MAPS funded?', 'By Muslim American and public-service foundations, state commissions, and tax-deductible donations from members and supporters. MAPS does not charge member dues and does not accept foreign-government funding.'),
-      faqItem('Is MAPS partisan?', 'No. MAPS is a nonpartisan 501(c)(3) and limits its policy work to issues affecting Muslim American public servants.'),
-      faqItem('Who can join?', 'US citizens, legal permanent residents, or those within six months of either. All others are welcome to follow MAPS via the general mailing list.'),
+      faqItem(
+        'Is membership free?',
+        'Yes. MAPS membership is 100 percent opt-in and free. Unsubscribing from the MAPS email list ends your membership.',
+      ),
+      faqItem(
+        'How is MAPS funded?',
+        'By Muslim American and public-service foundations, state commissions, and tax-deductible donations from members and supporters. MAPS does not charge member dues and does not accept foreign-government funding.',
+      ),
+      faqItem(
+        'Is MAPS partisan?',
+        'No. MAPS is a nonpartisan 501(c)(3) and limits its policy work to issues affecting Muslim American public servants.',
+      ),
+      faqItem(
+        'Who can join?',
+        'US citizens, legal permanent residents, or those within six months of either. All others are welcome to follow MAPS via the general mailing list.',
+      ),
     ],
   } as unknown as PageData['layout'][number])
 
   layout.push({
     blockType: 'cta',
     richText: richText(paragraph('Membership is free, and so is belonging.')),
-    links: [{ link: { type: 'custom', appearance: 'default', label: 'Become a member', url: '/join' } }],
+    links: [
+      { link: { type: 'custom', appearance: 'default', label: 'Become a member', url: '/join' } },
+    ],
   } as unknown as PageData['layout'][number])
 
-  return [{ slug: 'about-us', title: 'About Us', _status: 'published', hero, layout }] as unknown as PageData[]
+  return [
+    { slug: 'about-us', title: 'About Us', _status: 'published', hero, layout },
+  ] as unknown as PageData[]
 }
 
 const PAGE_SLICES: PageSlice[] = [
@@ -4600,17 +4955,78 @@ const normName = (s: string) => s.split(String.fromCharCode(160)).join(' ').trim
 
 const TEAM_ORDER: string[][] = [
   // Board of Directors
-  ['Ahmad Maaty', 'Ameer Abdulrahman', 'Katie Qutub', 'Aamer Uddin', 'Assma Daifallah', 'Idil Ahmed', 'Farrah Pappa', 'Mahnoor Jaura', 'Jaheda Guliwala', 'Tamim Chowdhury', 'Hassan Sheikh', 'Mohammed Sohail Chaudhry'],
+  [
+    'Ahmad Maaty',
+    'Ameer Abdulrahman',
+    'Katie Qutub',
+    'Aamer Uddin',
+    'Assma Daifallah',
+    'Idil Ahmed',
+    'Farrah Pappa',
+    'Mahnoor Jaura',
+    'Jaheda Guliwala',
+    'Tamim Chowdhury',
+    'Hassan Sheikh',
+    'Mohammed Sohail Chaudhry',
+  ],
   // Board Specialists, Committee Chairs & Deputy Directors
-  ['Syed "Waqar" Azeem', 'Ismail Mohammed', 'Ejaz Baluch', 'Fatima Abdelsalam', 'Omar Aswad', 'Maisa Munawara', 'Zaineb Sharif', 'Muna Sultana', 'Ayah Elwannas', 'Badr Alsaidi'],
+  [
+    'Syed "Waqar" Azeem',
+    'Ismail Mohammed',
+    'Ejaz Baluch',
+    'Fatima Abdelsalam',
+    'Omar Aswad',
+    'Maisa Munawara',
+    'Zaineb Sharif',
+    'Muna Sultana',
+    'Ayah Elwannas',
+    'Badr Alsaidi',
+  ],
   // Committee and Task Force Members
   ['Mariya Ilyas', 'Sarah Ahmad', 'Ameena Razzaque', 'Saeb Ahsan', 'Suha Ansari', 'Madiha Zuberi'],
   // Advisory Council (its own page — keep exact, so it precedes the presidents)
-  ['Adil Ahmed', 'Ahsia Badi', 'Laila ElGohary', 'Dr. Hashima Hasan', 'Hon. Rashad Hauter', 'Madiha Latif', 'Syra Madad', 'Saeed Mody', 'Ahmed Mousa', 'Hon. Samia Naseem', 'Hon. Asim Rehman', 'Fatema Z. Sumar', 'Yusufi Vali', 'Hon. Asad Ba-Yunus'],
+  [
+    'Adil Ahmed',
+    'Ahsia Badi',
+    'Laila ElGohary',
+    'Dr. Hashima Hasan',
+    'Hon. Rashad Hauter',
+    'Madiha Latif',
+    'Syra Madad',
+    'Saeed Mody',
+    'Ahmed Mousa',
+    'Hon. Samia Naseem',
+    'Hon. Asim Rehman',
+    'Fatema Z. Sumar',
+    'Yusufi Vali',
+    'Hon. Asad Ba-Yunus',
+  ],
   // State Committee Presidents
-  ['Basem Hassan', 'Sofia Abdi', 'Machhadie Assi', 'Fatima Abdelsalam', 'Mahanaz Ebadi', 'Hon. Samia Naseem', 'Fatima Shaikh', 'Dr. Samia Hussein', 'John Patrick Abellera'],
+  [
+    'Basem Hassan',
+    'Sofia Abdi',
+    'Machhadie Assi',
+    'Fatima Abdelsalam',
+    'Mahanaz Ebadi',
+    'Hon. Samia Naseem',
+    'Fatima Shaikh',
+    'Dr. Samia Hussein',
+    'John Patrick Abellera',
+  ],
   // State committees — president first, then live order
-  ['Basem Hassan', 'Hesham El Meligy', 'Sadiyah Kazi', 'Sarah Khan', 'Rumana Haque', 'Syed Adnan Bukhari', 'Ayyad Algabyali', 'Zunera Ahmed', 'Saira Amar', 'Ayyan S. Zubair', 'Duriba Khan'], // New York
+  [
+    'Basem Hassan',
+    'Hesham El Meligy',
+    'Sadiyah Kazi',
+    'Sarah Khan',
+    'Rumana Haque',
+    'Syed Adnan Bukhari',
+    'Ayyad Algabyali',
+    'Zunera Ahmed',
+    'Saira Amar',
+    'Ayyan S. Zubair',
+    'Duriba Khan',
+  ], // New York
   ['Sofia Abdi', 'Hodan Hashi', 'Faarooq Sahabdeen', 'Armaya Doremi'], // Massachusetts
   ['Machhadie Assi', 'Omar Shajrah', 'Aiyah Kassem', 'Ola Albayati', 'Saja Badawi'], // Michigan
   ['Fatima Abdelsalam', 'Tajnia Hussain'], // New Jersey
@@ -4667,11 +5083,18 @@ const applyTeamActive = async (payload: Payload, context: Record<string, unknown
     if (shouldHide) matched.add(name)
     // Also backfills existing NULL rows to an explicit false.
     if (Boolean(doc.inactive) !== shouldHide) {
-      await payload.update({ collection: 'team', id: doc.id, data: { inactive: shouldHide }, context })
+      await payload.update({
+        collection: 'team',
+        id: doc.id,
+        data: { inactive: shouldHide },
+        context,
+      })
       updated++
     }
   }
-  payload.logger.info(`Team active: ${updated} member(s) toggled; ${matched.size}/${inactiveSet.size} hidden.`)
+  payload.logger.info(
+    `Team active: ${updated} member(s) toggled; ${matched.size}/${inactiveSet.size} hidden.`,
+  )
   const unmatched = [...inactiveSet].filter((n) => !matched.has(n))
   if (unmatched.length) payload.logger.warn(`Team active: no DB match for: ${unmatched.join(', ')}`)
 }
@@ -4681,6 +5104,9 @@ const applyTeamActive = async (payload: Payload, context: Record<string, unknown
 // requested "/path" and follows `to.url`.
 const SLUG_REDIRECTS: { from: string; to: string }[] = [
   { from: '/resources/jumuah-prayer-services-washington-dc', to: '/resources/jumuah-services' },
+  // Legacy Webflow paths → new canonical paths.
+  { from: '/contact-us', to: '/contact' },
+  { from: '/latest-updates-archive', to: '/latest-updates' },
 ]
 
 const applyRedirects = async (payload: Payload, context: Record<string, unknown>) => {
@@ -4719,11 +5145,60 @@ const applyRedirects = async (payload: Payload, context: Record<string, unknown>
 // ---------------------------------------------------------------------------
 // Runner
 
+// Fresh-DB / clean-checkout safety: every content image is committed under
+// public/import/prose, but most slices resolve media find-only (they assume a
+// prior `import:prose`). On an empty DB those lookups return null and whole
+// layouts collapse (minRows). Pre-import the tracked originals once so every
+// find-only resolver hits. Idempotent (deduped by filename); alt derived from
+// the filename when the originals carry none.
+const ensureTrackedMedia = async (
+  payload: Payload,
+  context: Record<string, unknown>,
+): Promise<void> => {
+  const dir = path.join(process.cwd(), 'public/import/prose')
+  if (!existsSync(dir)) return
+  const files = (await readdir(dir)).filter((f) => /\.(webp|png|jpe?g|gif|svg)$/i.test(f))
+  let created = 0
+  for (const filename of files) {
+    const existing = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+    })
+    if (existing.docs[0]) continue
+    const data = await readFile(path.join(dir, filename))
+    const ext = filename.split('.').pop()?.toLowerCase()
+    const mimetype =
+      ext === 'png'
+        ? 'image/png'
+        : ext === 'svg'
+          ? 'image/svg+xml'
+          : ext === 'gif'
+            ? 'image/gif'
+            : ext === 'jpg' || ext === 'jpeg'
+              ? 'image/jpeg'
+              : 'image/webp'
+    await payload.create({
+      collection: 'media',
+      data: { alt: filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
+      file: { name: filename, data, mimetype, size: data.length },
+      context,
+    })
+    created++
+  }
+  payload.logger.info(
+    `Tracked media ensured (${created} created, ${files.length - created} existing).`,
+  )
+}
+
 const run = async () => {
   const payload = await getPayload({ config: configPromise })
 
   // Running outside Next so revalidatePath would throw — skip it.
   const context = { disableRevalidate: true }
+
+  await ensureTrackedMedia(payload, context)
 
   for (const slice of PAGE_SLICES) {
     const pages = await slice(payload)
