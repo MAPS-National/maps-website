@@ -247,19 +247,41 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
   // couple of published fixtures (idempotent by slug) so the archive lists posts
   // and a post detail resolves. The first slug/title is the one the e2e posts
   // specs assert against.
-  const upsertPost = async (slug: string, title: string, body: string): Promise<void> => {
+  // Resolve a pre-imported Media id by filename (ensureTrackedMedia ran first).
+  const postMedia = async (filename: string): Promise<number | null> => {
+    const r = await payload.find({
+      collection: 'media',
+      where: { filename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+    })
+    const id = r.docs[0]?.id
+    return typeof id === 'number' ? id : null
+  }
+  const upsertPost = async (
+    slug: string,
+    title: string,
+    body: string,
+    imageFile: string,
+  ): Promise<void> => {
     const existing = await payload.find({
       collection: 'posts',
       where: { slug: { equals: slug } },
       limit: 1,
       depth: 0,
     })
+    // An image keeps post cards off the "No image" placeholder, whose
+    // muted-foreground-on-muted (#83807f on #f2f2f2 = 3.5:1) fails AA contrast
+    // and trips the a11y e2e on any page that lists these posts (home strip).
+    // The Card reads meta.image; PostHero/detail uses heroImage — set both.
+    const img = await postMedia(imageFile)
     const data = {
       slug,
       title,
       _status: 'published',
       publishedAt: '2025-01-01T00:00:00.000Z',
       content: richText(paragraph(body)),
+      ...(img ? { heroImage: img, meta: { image: img } } : {}),
     } as never
     if (existing.docs[0]) {
       await payload.update({
@@ -276,11 +298,13 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     'maps-academy-climbing-the-federal-ladder',
     'MAPS Academy: Climbing the Federal Ladder',
     'A MAPS Academy session on advancing within federal service, covering promotion timelines, the senior pathways, and how members have moved from entry roles into leadership.',
+    '4_1.webp',
   )
   await upsertPost(
     'breaking-into-public-service',
     'Breaking into Public Service: Where to Start',
     'The entry points, timelines, and first moves for a public-service career, drawn from the MAPS Academy onboarding session.',
+    '5_1.webp',
   )
 
   // The /phase-4-blocks showcase page was migration scaffolding to satisfy the
