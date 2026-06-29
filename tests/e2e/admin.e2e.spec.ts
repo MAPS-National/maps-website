@@ -1,4 +1,6 @@
 import { test, expect, Page } from '@playwright/test'
+import { getPayload } from 'payload'
+import config from '../../src/payload.config.js'
 import { login } from '../helpers/login'
 import { seedTestUser, cleanupTestUser, testUser } from '../helpers/seedUser'
 
@@ -16,6 +18,21 @@ test.describe('Admin Panel', () => {
 
   test.afterAll(async () => {
     await cleanupTestUser()
+
+    // Drop the junk this suite leaves in the shared dev DB: the CRUD test's
+    // `E2E CRUD*` pages, plus the empty autosave-orphan draft the "edit view"
+    // test creates by visiting /create (drafts autosave after 100ms).
+    const payload = await getPayload({ config })
+    await payload.delete({
+      collection: 'pages',
+      where: {
+        or: [
+          { title: { like: 'E2E CRUD' } },
+          { title: { exists: false } },
+          { title: { equals: '' } },
+        ],
+      },
+    })
   })
 
   test('can navigate to dashboard', async () => {
