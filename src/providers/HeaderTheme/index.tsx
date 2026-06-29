@@ -4,8 +4,6 @@ import type { Theme } from '@/providers/Theme/types'
 
 import React, { createContext, useCallback, use, useState } from 'react'
 
-import canUseDOM from '@/utilities/canUseDOM'
-
 export interface ContextType {
   headerTheme?: Theme | null
   setHeaderTheme: (theme: Theme | null) => void
@@ -18,10 +16,16 @@ const initialContext: ContextType = {
 
 const HeaderThemeContext = createContext(initialContext)
 
-export const HeaderThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [headerTheme, setThemeState] = useState<Theme | undefined | null>(
-    canUseDOM ? (document.documentElement.getAttribute('data-theme') as Theme) : undefined,
-  )
+export const HeaderThemeProvider = ({
+  children,
+  initialTheme = null,
+}: {
+  children: React.ReactNode
+  initialTheme?: Theme | null
+}) => {
+  // Seeded from the server-resolved per-page theme so SSR and the first client
+  // render agree (no flash, no hydration mismatch). null = inherit global theme.
+  const [headerTheme, setThemeState] = useState<Theme | undefined | null>(initialTheme)
 
   const setHeaderTheme = useCallback((themeToSet: Theme | null) => {
     setThemeState(themeToSet)

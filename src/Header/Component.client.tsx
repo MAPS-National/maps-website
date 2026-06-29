@@ -2,18 +2,26 @@
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { Logo } from '@/components/Logo/Logo'
 import { NavMenu } from './NavMenu'
 
 export const HeaderClient: React.FC = () => {
-  /* Storing the value in a useState to avoid hydration errors */
-  const [theme, setTheme] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
+  /* Seed from the server-resolved per-page theme (HeaderThemeProvider) so the
+     first paint matches SSR — no flash of the wrong header theme. */
+  const [theme, setTheme] = useState<string | null>(headerTheme ?? null)
   const pathname = usePathname()
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
+    // Don't clear the server-seeded theme on initial mount; only reset when the
+    // user navigates to a new route (the destination page re-asserts its own).
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
     setHeaderTheme(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])

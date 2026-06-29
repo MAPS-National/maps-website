@@ -28,13 +28,19 @@ import { InitTheme } from '@/providers/Theme/InitTheme'
 import { OutsetaScript } from '@/components/OutsetaScript'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { SITE_DESCRIPTION, SITE_NAME } from '@/utilities/brand'
-import { draftMode } from 'next/headers'
+import { resolveHeaderTheme } from '@/utilities/resolveHeaderTheme'
+import { draftMode, headers } from 'next/headers'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+
+  // Resolve the per-page header theme server-side (from the path middleware
+  // forwards) so the overlay header paints in the right theme immediately,
+  // instead of flipping in a post-mount effect. (#134)
+  const initialHeaderTheme = await resolveHeaderTheme((await headers()).get('x-pathname'))
 
   return (
     <html
@@ -49,7 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
       <body>
-        <Providers>
+        <Providers initialHeaderTheme={initialHeaderTheme}>
           <AdminBar
             adminBarProps={{
               preview: isEnabled,
