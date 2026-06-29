@@ -54,8 +54,20 @@ async function hasValidToken(req: NextRequest): Promise<boolean> {
 }
 
 export async function middleware(req: NextRequest) {
-  if (PUBLIC_MEMBER_PATHS.has(req.nextUrl.pathname)) return NextResponse.next()
-  if (await hasValidToken(req)) return NextResponse.next()
+  const { pathname } = req.nextUrl
+
+  // Expose the current path to server components (the root layout reads it to
+  // resolve the per-page header theme before first paint — #134). Forwarded on
+  // the request headers so `headers()` can read it downstream.
+  const requestHeaders = new Headers(req.headers)
+  requestHeaders.set('x-pathname', pathname)
+  const pass = () => NextResponse.next({ request: { headers: requestHeaders } })
+
+  // The auth gate only guards the members area; every other route just passes
+  // through (now that the matcher is site-wide for the x-pathname header).
+  if (!pathname.startsWith('/members')) return pass()
+  if (PUBLIC_MEMBER_PATHS.has(pathname)) return pass()
+  if (await hasValidToken(req)) return pass()
 
   // On localhost the hosted Outseta login can't redirect back (its post-login URL
   // is the prod domain), so sending devs there sets the cookie on the wrong origin
@@ -69,5 +81,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/members/:path*'],
+  // Run on all page routes (so x-pathname is set for the header theme), but skip
+  // Next internals, the API, and static files.
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\.[^/]+$).*)'],
 }

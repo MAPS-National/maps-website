@@ -1,14 +1,17 @@
 import React from 'react'
 
+import type { Theme } from './Theme/types'
+
 import { HeaderThemeProvider } from './HeaderTheme'
 import { ThemeProvider } from './Theme'
 
 export const Providers: React.FC<{
   children: React.ReactNode
-}> = ({ children }) => {
+  initialHeaderTheme?: Theme | null
+}> = ({ children, initialHeaderTheme = null }) => {
   return (
     <ThemeProvider>
-      <HeaderThemeProvider>{children}</HeaderThemeProvider>
+      <HeaderThemeProvider initialTheme={initialHeaderTheme}>{children}</HeaderThemeProvider>
     </ThemeProvider>
   )
 }

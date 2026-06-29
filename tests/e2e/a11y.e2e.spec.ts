@@ -14,12 +14,11 @@ type Violation = {
   nodes: { target: unknown[] }[]
 }
 
-// Scan the settled state: pages set their header theme in a client effect after
-// mount (a dark-hero page flips the header to light text), so scanning at
-// `domcontentloaded` would catch a transient pre-effect frame, not what users see.
+// The per-page header theme is now resolved server-side (#134), so it's correct
+// in the first paint — there's no post-mount flip to wait out. Scanning at `load`
+// is enough; no artificial settle delay needed.
 async function gotoSettled(page: import('@playwright/test').Page, path: string): Promise<void> {
   await page.goto(path, { waitUntil: 'load' })
-  await page.waitForTimeout(600)
 }
 
 function summarize(violations: Violation[]): string {
