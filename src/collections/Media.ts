@@ -66,6 +66,15 @@ export const Media: CollectionConfig = {
         height: 500,
       },
       {
+        // Enforced 4:3 crop for CardGrid card images — Payload crops to this
+        // ratio server-side around the focal point, so any upload (not just 4:3
+        // sources) renders consistently and the card never ships an oversized base.
+        name: 'card',
+        width: 800,
+        height: 600,
+        crop: 'center',
+      },
+      {
         name: 'small',
         width: 600,
       },

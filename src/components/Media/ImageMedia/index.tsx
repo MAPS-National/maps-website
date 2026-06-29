@@ -53,6 +53,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     imgClassName,
     priority,
     resource,
+    imageSize,
     size: sizeFromProps,
     src: srcFromProps,
     loading: loadingFromProps,
@@ -72,15 +73,29 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       : null
 
   if (!src && resource && typeof resource === 'object') {
-    const { alt: altFromResource, height: fullHeight, url, width: fullWidth } = resource
-
-    width = fullWidth!
-    height = fullHeight!
-    alt = altFromResource || ''
-
+    alt = resource.alt || ''
     const cacheTag = resource.updatedAt
 
-    src = getMediaUrl(url, cacheTag)
+    // Prefer a named imageSize variant (e.g. the 4:3 `card` crop) when requested
+    // and present; fall back to the base file so media imported before the size
+    // existed still render (cropped by the container's object-cover instead).
+    const variant = imageSize
+      ? (
+          resource.sizes as
+            | Record<string, { url?: string; width?: number; height?: number }>
+            | undefined
+        )?.[imageSize]
+      : undefined
+
+    if (variant?.url) {
+      width = variant.width ?? undefined
+      height = variant.height ?? undefined
+      src = getMediaUrl(variant.url, cacheTag)
+    } else {
+      width = resource.width!
+      height = resource.height!
+      src = getMediaUrl(resource.url, cacheTag)
+    }
   }
 
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
