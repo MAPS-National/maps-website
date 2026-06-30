@@ -1896,7 +1896,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       body: [
         'MAPS invites members to review the City of New York Government Jobs Portal to identify open positions that align with your skills and interests. Some positions require taking and passing a City of New York Civil Service Exam before applying for that position, while most positions require residency in the five boroughs within 90 days.',
       ],
-      link: { label: 'Explore Current NYC Job Vacancies', url: 'https://cityjobs.nyc.gov/' },
+      link: { label: 'NYC Jobs', url: 'https://cityjobs.nyc.gov/' },
       imageSide: 'right',
     },
     {
@@ -1906,7 +1906,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
         'MAPS invites its members to apply for consideration for direct endorsement to the Mamdani Administration against open city government roles below. Please read the instructions in the following application form carefully and submit all requested information.',
       ],
       link: {
-        label: 'Apply for MAPS Referrals to NYC Jobs',
+        label: 'Apply',
         url: 'https://forms.gle/wpRvWiekcq4xTZRx6',
       },
       imageSide: 'left',
@@ -1918,7 +1918,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
         'MAPS invites its members to apply for consideration for direct endorsement to the Mamdani Administration against roles on NYC Boards and Commissions below. Please read the instructions in the following application form carefully and submit all requested information.',
       ],
       link: {
-        label: 'Apply for MAPS Referrals to NYC Boards',
+        label: 'Apply',
         url: 'https://forms.gle/QJNsEXRkk1CkVHTcA',
       },
       imageSide: 'right',
@@ -1930,26 +1930,53 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       body: [
         'Connect with a powerful network of Muslim American professionals across federal, state and city government that call New York home. Our social and community building events provide connections and introductions to fellow members within specific fields or agencies and allow for communal networking and knowledge sharing.',
       ],
-      link: { label: 'Join the MAPS-NY Chat on Signal Here', url: 'https://bit.ly/3R81xV7' },
+      link: { label: 'MAPS-NY Signal Chat', url: 'https://bit.ly/3R81xV7' },
       imageSide: 'left',
       anchorId: 'networking',
     },
   ]
 
-  const featureBlocks = []
-  for (const def of featureDefs) {
+  // The 3 NYC-action items render as one 3-up Card Grid; the Connect section
+  // stays a FeatureSplit (distinct intent, keeps its #networking anchor).
+  const connectDef = featureDefs.find((d) => d.anchorId === 'networking')
+  const actionDefs = featureDefs.filter((d) => d !== connectDef)
+
+  const cardItems = []
+  for (const def of actionDefs) {
     const imageId = await mediaIdByFile(def.file)
-    if (imageId == null) continue // Media doc not yet re-hosted — skip (see gaps[])
-    featureBlocks.push({
-      blockType: 'featureSplit',
-      eyebrow: def.eyebrow,
-      imageSide: def.imageSide,
+    if (imageId == null) continue // skip (Media doc not yet re-hosted; see gaps[])
+    cardItems.push({
+      image: imageId,
       heading: def.heading,
       body: richText(...def.body.map((p) => paragraph(p))),
-      image: imageId,
-      anchorId: def.anchorId,
       links: [customLink(def.link.label, def.link.url, 'default')],
     })
+  }
+
+  const featureBlocks = []
+  if (cardItems.length > 0) {
+    featureBlocks.push({
+      blockType: 'cardGrid',
+      header: { enableHeader: false },
+      columns: '3',
+      mediaType: 'image',
+      items: cardItems,
+    })
+  }
+  if (connectDef) {
+    const imageId = await mediaIdByFile(connectDef.file)
+    if (imageId != null) {
+      featureBlocks.push({
+        blockType: 'featureSplit',
+        eyebrow: connectDef.eyebrow,
+        imageSide: connectDef.imageSide,
+        heading: connectDef.heading,
+        body: richText(...connectDef.body.map((p) => paragraph(p))),
+        image: imageId,
+        anchorId: connectDef.anchorId,
+        links: [customLink(connectDef.link.label, connectDef.link.url, 'default')],
+      })
+    }
   }
 
   // Lightbox gallery — resolve every image; only keep the ones with a Media doc.
