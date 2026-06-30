@@ -4,6 +4,7 @@ import { Facebook, Instagram, Linkedin, Youtube } from 'lucide-react'
 
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { Logo } from '@/components/Logo/Logo'
+import { PortalLogin } from './PortalLogin'
 
 // Site footer — ported from the live MAPS site (migration/_extracted/index.html).
 // The structure is fixed brand IA, hardcoded like the header nav (NavMenu), so the
@@ -11,18 +12,17 @@ import { Logo } from '@/components/Logo/Logo'
 
 type FooterLink = { label: string; href: string }
 
-// Lean wayfinding set: the two hubs (which now own the deep program/about
-// routing via their card directories) plus the live feeds and contact. Leaf
-// links were dropped when /programs and /about-us shipped — a footer listing
-// every leaf is the flat directory we set out to avoid.
+// Curated key-link set, not a nav replica: a short hand-picked list of the
+// destinations worth a footer slot. All routes mirror the header NavMenu.
 const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Explore',
     links: [
-      { label: 'Programs', href: '/programs' },
-      { label: 'About Us', href: '/about-us' },
+      { label: 'About', href: '/about-us' },
       { label: 'Events', href: '/events' },
-      { label: 'Latest Updates', href: '/latest-updates' },
+      { label: 'Updates', href: '/latest-updates' },
+      { label: 'Programs', href: '/programs' },
+      { label: 'Press', href: '/press' },
       { label: 'Contact', href: '/contact' },
     ],
   },
@@ -76,6 +76,9 @@ export function Footer() {
             >
               Become a member
             </Link>
+
+            {/* Separate from the wayfinding column: the member-portal login. */}
+            <PortalLogin />
           </div>
 
           {/* Link columns + social */}
