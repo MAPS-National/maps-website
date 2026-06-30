@@ -1608,10 +1608,6 @@ export interface TestimonialsBlock {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Grid: cards. Single: one large featured pull-quote. Slider: autoplaying carousel.
-   */
-  variant: 'grid' | 'single' | 'slider';
   type: 'all' | 'career' | 'programs';
   populateBy?: ('collection' | 'selection') | null;
   /**
@@ -2620,7 +2616,6 @@ export interface TestimonialsBlockSelect<T extends boolean = true> {
   eyebrow?: T;
   heading?: T;
   intro?: T;
-  variant?: T;
   type?: T;
   populateBy?: T;
   limit?: T;

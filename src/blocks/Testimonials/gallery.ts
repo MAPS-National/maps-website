@@ -64,15 +64,14 @@ export const testimonialsGallery: GalleryBlock<TestimonialsBlockProps> = {
   title: 'Testimonials',
   category: 'content',
   description:
-    'Quotes from the Testimonials collection, scopeable to a type (career / programs). A card grid, or one large featured pull-quote. On a real page it queries the collection; here it renders a fixed selection.',
+    'Quotes from the Testimonials collection, rendered as an autoplaying pull-quote slider and scopeable to a type (career / programs). On a real page it queries the collection; here it renders a fixed selection.',
   variants: [
     {
-      name: 'Card grid, all',
-      description: 'Default. A responsive grid of quote cards across both types.',
+      name: 'All types',
+      description: 'Default. The slider across both career and programs quotes.',
       props: {
         blockType: 'testimonials',
         populateBy: 'selection',
-        variant: 'grid',
         type: 'all',
         eyebrow: 'In their words',
         heading: 'What our community says',
@@ -81,25 +80,13 @@ export const testimonialsGallery: GalleryBlock<TestimonialsBlockProps> = {
       },
     },
     {
-      name: 'Card grid, career only',
-      description: 'Same grid scoped to a single type via the filter.',
+      name: 'Career only',
+      description: 'Same slider scoped to a single type via the filter.',
       props: {
         blockType: 'testimonials',
         populateBy: 'selection',
-        variant: 'grid',
         type: 'career',
         heading: 'Career outcomes',
-        selectedTestimonials: all,
-      },
-    },
-    {
-      name: 'Single pull-quote',
-      description: 'One large featured quote, for a focused, high-impact placement.',
-      props: {
-        blockType: 'testimonials',
-        populateBy: 'selection',
-        variant: 'single',
-        type: 'programs',
         selectedTestimonials: all,
       },
     },

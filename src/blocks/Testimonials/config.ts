@@ -1,6 +1,10 @@
 import type { Block } from 'payload'
 
-import { FixedToolbarFeature, InlineToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  FixedToolbarFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 
 const introEditor = lexicalEditor({
   features: ({ rootFeatures }) => [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()],
@@ -8,9 +12,8 @@ const introEditor = lexicalEditor({
 
 /**
  * Testimonials — quotes from the Testimonials collection, scopeable to a `type`
- * (career / programs). Two layouts: a card grid, or one large featured
- * pull-quote. Sourced from the collection on a real page; the gallery feeds it a
- * fixed selection.
+ * (career / programs). Rendered as an autoplaying pull-quote slider. Sourced
+ * from the collection on a real page; the gallery feeds it a fixed selection.
  */
 export const Testimonials: Block = {
   slug: 'testimonials',
@@ -39,37 +42,16 @@ export const Testimonials: Block = {
       label: 'Intro text',
     },
     {
-      type: 'row',
-      fields: [
-        {
-          name: 'variant',
-          type: 'select',
-          required: true,
-          defaultValue: 'grid',
-          admin: {
-            width: '50%',
-            description:
-              'Grid: cards. Single: one large featured pull-quote. Slider: autoplaying carousel.',
-          },
-          options: [
-            { label: 'Card grid', value: 'grid' },
-            { label: 'Single pull-quote', value: 'single' },
-            { label: 'Autoplay slider', value: 'slider' },
-          ],
-        },
-        {
-          name: 'type',
-          type: 'select',
-          required: true,
-          defaultValue: 'all',
-          label: 'Filter by type',
-          admin: { width: '50%' },
-          options: [
-            { label: 'All', value: 'all' },
-            { label: 'Career', value: 'career' },
-            { label: 'Programs', value: 'programs' },
-          ],
-        },
+      name: 'type',
+      type: 'select',
+      required: true,
+      defaultValue: 'all',
+      label: 'Filter by type',
+      admin: { width: '50%' },
+      options: [
+        { label: 'All', value: 'all' },
+        { label: 'Career', value: 'career' },
+        { label: 'Programs', value: 'programs' },
       ],
     },
     {

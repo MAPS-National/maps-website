@@ -1274,15 +1274,6 @@ const homeSlice: PageSlice = async (payload) => {
             },
           ],
         },
-        // Member Testimonials on MAPS Programs.
-        {
-          blockType: 'testimonials',
-          variant: 'slider',
-          type: 'programs',
-          populateBy: 'collection',
-          limit: 0,
-          heading: 'Member Testimonials',
-        },
         // MAPS Membership — three membership cards. Images flagged.
         {
           blockType: 'cardGrid',
@@ -1329,7 +1320,6 @@ const homeSlice: PageSlice = async (payload) => {
         // type, so scoped to 'all' (flagged).
         {
           blockType: 'testimonials',
-          variant: 'slider',
           type: 'all',
           populateBy: 'collection',
           limit: 0,
@@ -2934,7 +2924,6 @@ const careerSupportSlice: PageSlice = async (payload) => {
         ...layout,
         {
           blockType: 'testimonials',
-          variant: 'slider',
           type: 'career',
           populateBy: 'collection',
           limit: 0,
@@ -4544,12 +4533,11 @@ const programsHubSlice: PageSlice = async (payload) => {
     } as unknown as PageData['layout'][number])
   }
 
-  // Proof — one large career pull-quote (collection-backed; career testimonials
-  // are seeded by phase4ShowcaseSlice).
+  // Proof — programs testimonials slider (collection-backed; programs
+  // testimonials are seeded by phase4ShowcaseSlice).
   layout.push({
     blockType: 'testimonials',
-    variant: 'single',
-    type: 'career',
+    type: 'programs',
     populateBy: 'collection',
     limit: 0,
     eyebrow: 'In their words',
