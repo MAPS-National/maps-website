@@ -3341,7 +3341,7 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
     const id = found.docs[0]?.id
     if (typeof id !== 'number') {
       throw new Error(
-        `public-sector-engagement: Media doc "${filename}" not found — run "npm run import:prose" first (it re-hosts public/import/prose/${filename}).`,
+        `private-sector-engagement: Media doc "${filename}" not found. Run "npm run import:prose" first (it re-hosts public/import/prose/${filename}).`,
       )
     }
     return id
@@ -3356,7 +3356,7 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
 
   return [
     {
-      slug: 'programs/public-sector-engagement',
+      slug: 'programs/private-sector-engagement',
       title: 'Private Sector Engagement',
       _status: 'published',
       hero: {
@@ -4471,7 +4471,7 @@ const programsHubSlice: PageSlice = async (payload) => {
           'network',
           'Private Sector Engagement',
           'Government contracting support for Muslim-owned firms and contractors.',
-          '/programs/public-sector-engagement',
+          '/programs/private-sector-engagement',
         ),
       ],
     },
@@ -5090,6 +5090,7 @@ const SLUG_REDIRECTS: { from: string; to: string }[] = [
   // Legacy Webflow paths → new canonical paths.
   { from: '/contact-us', to: '/contact' },
   { from: '/latest-updates-archive', to: '/latest-updates' },
+  { from: '/programs/public-sector-engagement', to: '/programs/private-sector-engagement' },
 ]
 
 const applyRedirects = async (payload: Payload, context: Record<string, unknown>) => {

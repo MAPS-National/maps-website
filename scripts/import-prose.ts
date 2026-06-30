@@ -64,23 +64,101 @@ const PAGES: ProsePage[] = [
     exclude: ['.content_metatag-list', '.timeline_list', '#timeline'],
   },
   // Programs — header + card-grid pages: keep the section intros, drop the grids.
-  { slug: 'programs/career-support', title: 'Career Support', file: 'programs/career-support.html', root: 'main', exclude: ['.layout_list'] },
-  { slug: 'programs/legal-advocacy', title: 'Legal Advocacy', file: 'programs/legal-advocacy.html', root: 'main', exclude: ['.layout_list'] },
-  { slug: 'programs/public-sector-engagement', title: 'Private Sector Engagement', file: 'programs/public-sector-engagement.html', root: 'main', exclude: ['.layout_list'] },
+  {
+    slug: 'programs/career-support',
+    title: 'Career Support',
+    file: 'programs/career-support.html',
+    root: 'main',
+    exclude: ['.layout_list'],
+  },
+  {
+    slug: 'programs/legal-advocacy',
+    title: 'Legal Advocacy',
+    file: 'programs/legal-advocacy.html',
+    root: 'main',
+    exclude: ['.layout_list'],
+  },
+  {
+    slug: 'programs/private-sector-engagement',
+    title: 'Private Sector Engagement',
+    file: 'programs/public-sector-engagement.html',
+    root: 'main',
+    exclude: ['.layout_list'],
+  },
   // Programs/resources — accordion guides: keep the intro, drop the accordions.
-  { slug: 'programs/community-building', title: 'Community Building', file: 'programs/community-building.html', root: 'main', exclude: ['.faq_accordion'] },
-  { slug: 'programs/policy-initiatives', title: 'Policy & Advocacy Initiatives', file: 'programs/policy-initiatives.html', root: 'main', exclude: ['.faq_accordion'] },
-  { slug: 'resources/federal-employment', title: 'Federal & State Government Employment Resources', file: 'resources/federal-employment.html', root: 'main', exclude: ['.faq_accordion'] },
-  { slug: 'resources/public-service-fellowships-young-professionals', title: 'Public Service Fellowships — Young Professionals', file: 'resources/public-service-fellowships-young-professionals.html', root: 'main', exclude: ['.faq_accordion'] },
-  { slug: 'resources/public-service-fellowships-mid-career-to-senior-professionals', title: 'Public Service Fellowships — Mid-Career to Senior Professionals', file: 'resources/public-service-fellowships-mid-career-to-senior-professionals.html', root: 'main', exclude: ['.faq_accordion'] },
+  {
+    slug: 'programs/community-building',
+    title: 'Community Building',
+    file: 'programs/community-building.html',
+    root: 'main',
+    exclude: ['.faq_accordion'],
+  },
+  {
+    slug: 'programs/policy-initiatives',
+    title: 'Policy & Advocacy Initiatives',
+    file: 'programs/policy-initiatives.html',
+    root: 'main',
+    exclude: ['.faq_accordion'],
+  },
+  {
+    slug: 'resources/federal-employment',
+    title: 'Federal & State Government Employment Resources',
+    file: 'resources/federal-employment.html',
+    root: 'main',
+    exclude: ['.faq_accordion'],
+  },
+  {
+    slug: 'resources/public-service-fellowships-young-professionals',
+    title: 'Public Service Fellowships — Young Professionals',
+    file: 'resources/public-service-fellowships-young-professionals.html',
+    root: 'main',
+    exclude: ['.faq_accordion'],
+  },
+  {
+    slug: 'resources/public-service-fellowships-mid-career-to-senior-professionals',
+    title: 'Public Service Fellowships — Mid-Career to Senior Professionals',
+    file: 'resources/public-service-fellowships-mid-career-to-senior-professionals.html',
+    root: 'main',
+    exclude: ['.faq_accordion'],
+  },
   // Contact/location pages: keep the intro, drop the location grid + form.
-  { slug: 'resources/jumuah-prayer-services-washington-dc', title: 'Jumuah Services in Washington DC Metro Area', file: 'resources/jumuah-prayer-services-washington-dc.html', root: 'main', exclude: ['.contact_location'] },
-  { slug: 'contact-us', title: 'Contact Us', file: 'contact-us.html', root: 'main', exclude: ['.contact_location'] },
+  {
+    slug: 'resources/jumuah-prayer-services-washington-dc',
+    title: 'Jumuah Services in Washington DC Metro Area',
+    file: 'resources/jumuah-prayer-services-washington-dc.html',
+    root: 'main',
+    exclude: ['.contact_location'],
+  },
+  {
+    slug: 'contact-us',
+    title: 'Contact Us',
+    file: 'contact-us.html',
+    root: 'main',
+    exclude: ['.contact_location'],
+  },
   // Special layouts.
   // Keep the section intro heading/paragraph; drop only the structured table / tier grid below it.
-  { slug: 'donate', title: 'Donate', file: 'donate.html', root: 'main', exclude: ['.comparison_content'] },
-  { slug: 'join', title: 'Join the MAPS Network', file: 'join.html', root: 'main', exclude: ['.pricing_grid-list', '.faq_accordion'] },
-  { slug: 'about-us/faq', title: 'Frequently Asked Questions', file: 'about-us/faq.html', root: 'main', exclude: ['.faq_accordion'] },
+  {
+    slug: 'donate',
+    title: 'Donate',
+    file: 'donate.html',
+    root: 'main',
+    exclude: ['.comparison_content'],
+  },
+  {
+    slug: 'join',
+    title: 'Join the MAPS Network',
+    file: 'join.html',
+    root: 'main',
+    exclude: ['.pricing_grid-list', '.faq_accordion'],
+  },
+  {
+    slug: 'about-us/faq',
+    title: 'Frequently Asked Questions',
+    file: 'about-us/faq.html',
+    root: 'main',
+    exclude: ['.faq_accordion'],
+  },
   { slug: 'press', title: 'Press Releases', file: 'press.html', root: 'main', exclude: [] },
 ]
 
@@ -185,7 +263,9 @@ const extractTimeline = async (
     const date = item.querySelector('h2, h3, h4, h5, h6')?.textContent?.trim()
     if (!date) continue
     const bodyHtml = cleanHtml([...item.querySelectorAll('p')].map((p) => p.outerHTML).join('\n'))
-    const body = bodyHtml ? await convertHTMLToLexical({ editorConfig, html: bodyHtml, JSDOM }) : undefined
+    const body = bodyHtml
+      ? await convertHTMLToLexical({ editorConfig, html: bodyHtml, JSDOM })
+      : undefined
     items.push({ date, ...(body ? { body } : {}) })
   }
   if (!items.length) return null

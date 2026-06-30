@@ -47,7 +47,7 @@ const GROUPS: NavGroup[] = [
       { label: 'Community Building', href: '/programs/community-building' },
       { label: 'Legal Advocacy', href: '/programs/legal-advocacy' },
       { label: 'Policy Initiatives', href: '/programs/policy-initiatives' },
-      { label: 'Private Sector Engagement', href: '/programs/public-sector-engagement' },
+      { label: 'Private Sector Engagement', href: '/programs/private-sector-engagement' },
     ],
   },
   {
