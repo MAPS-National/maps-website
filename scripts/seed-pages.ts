@@ -513,12 +513,11 @@ const missionSlice: PageSlice = async (payload) => {
 
   const layout: PageData['layout'] = []
 
-  // Gallery (catalog: Gallery → mediaGallery). Omit entirely if no images resolved.
+  // Gallery (catalog: Gallery → mediaGrid). Omit entirely if no images resolved.
   if (galleryImages.length > 0) {
     layout.push({
-      blockType: 'mediaGallery',
+      blockType: 'mediaGrid',
       heading: 'MAPS in the community',
-      layout: 'grid',
       columns: '3',
       density: 'compact',
       enableLightbox: true,
@@ -1124,10 +1123,8 @@ const homeSlice: PageSlice = async (payload) => {
   const communitySlider = sliderImages.length
     ? [
         {
-          blockType: 'mediaGallery',
+          blockType: 'mediaSlider',
           heading: 'MAPS National in the community',
-          layout: 'slider',
-          columns: '3',
           enableLightbox: true,
           images: sliderImages,
         },
@@ -1967,10 +1964,8 @@ const newYorkStateSlice: PageSlice = async (payload) => {
   const layout: PageData['layout'] = [...featureBlocks] as unknown as PageData['layout']
   if (galleryImages.length > 0) {
     layout.push({
-      blockType: 'mediaGallery',
+      blockType: 'mediaSlider',
       heading: 'MAPS New York in the community',
-      layout: 'slider',
-      columns: '3',
       enableLightbox: true,
       images: galleryImages,
     } as unknown as PageData['layout'][number])

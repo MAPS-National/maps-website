@@ -1,19 +1,18 @@
 import React from 'react'
 
-import type { MediaGalleryBlock as MediaGalleryBlockProps } from '@/payload-types'
+import type { MediaGridBlock as MediaGridBlockProps } from '@/payload-types'
 
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
-import { MediaGalleryClient, type GalleryImage } from './MediaGalleryClient'
+import { MediaGalleryClient, type GalleryImage } from '../MediaGallery/MediaGalleryClient'
 
 /**
- * Image gallery — grid or horizontal slider, with an optional click-to-zoom
- * lightbox. The block resolves each Media upload to a plain, serializable
- * descriptor here (server side) and hands the list to a client component that
- * owns the interactive grid/slider and the lightbox dialog.
+ * Image grid: a tiled set with an optional click-to-zoom lightbox. Resolves
+ * each Media upload to a plain, serializable descriptor here (server side) and
+ * hands the list to the shared client surface fixed to the grid layout.
  */
-export const MediaGalleryBlock: React.FC<MediaGalleryBlockProps> = (props) => {
-  const { columns, density, enableLightbox, heading, images, layout } = props
+export const MediaGridBlock: React.FC<MediaGridBlockProps> = (props) => {
+  const { columns, density, enableLightbox, heading, images } = props
 
   const resolved: GalleryImage[] = []
   for (const { caption, image } of images || []) {
@@ -31,14 +30,12 @@ export const MediaGalleryBlock: React.FC<MediaGalleryBlockProps> = (props) => {
 
   return (
     <section className="container">
-      {heading && (
-        <h2 className="mb-8 type-h2">{heading}</h2>
-      )}
+      {heading && <h2 className="mb-8 type-h2">{heading}</h2>}
       <MediaGalleryClient
         columns={columns ?? '3'}
         density={density ?? 'comfortable'}
         images={resolved}
-        layout={layout ?? 'grid'}
+        layout="grid"
         lightbox={enableLightbox ?? true}
       />
     </section>

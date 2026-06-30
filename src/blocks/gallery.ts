@@ -13,7 +13,8 @@ import { formGallery } from './Form/gallery'
 import { logoStripGallery } from './LogoStrip/gallery'
 import { mapLocationCardsGallery } from './MapLocationCards/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
-import { mediaGalleryGallery } from './MediaGallery/gallery'
+import { mediaGridGallery } from './MediaGrid/gallery'
+import { mediaSliderGallery } from './MediaSlider/gallery'
 import { memberPortalHeroGallery } from './MemberPortalHero/gallery'
 import { pricingTiersGallery } from './PricingTiers/gallery'
 import { teamGallery } from './Team/gallery'
@@ -46,7 +47,8 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   faqGallery,
   featureSplitGallery,
   logoStripGallery,
-  mediaGalleryGallery,
+  mediaGridGallery,
+  mediaSliderGallery,
   pricingTiersGallery,
   timelineGallery,
   comparisonTableGallery,
