@@ -66,35 +66,16 @@ export function Footer() {
               <Logo variant="secondary" theme="dark" />
             </Link>
             <p className="mt-6 text-sm text-[var(--neutral-light)]">
-              Stay informed on the latest MAPS updates as a non-member. For member exclusive
-              benefits, learn more about MAPS membership.
+              Join MAPS to unlock member-exclusive benefits: career support, community, and a voice
+              for Muslim Americans in public service.
             </p>
 
-            {/* Newsletter signup — visual placeholder only.
-                ponytail: not wired to any provider (Mailchimp dropped); add a submit
-                handler + endpoint when a provider is chosen. Inert by design: no
-                <form>, button is type="button", so nothing posts. */}
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-              <label className="sr-only" htmlFor="footer-email">
-                Email address
-              </label>
-              <input
-                className="w-full rounded-md border border-[var(--neutral-dark)] bg-[var(--neutral-darkest)] px-4 py-2 text-sm text-[var(--neutral-lightest)] placeholder:text-[var(--neutral-base)]"
-                id="footer-email"
-                name="email"
-                placeholder="Enter your email"
-                type="email"
-              />
-              <button
-                className="shrink-0 rounded-md bg-[var(--neutral-lightest)] px-5 py-2 text-sm font-semibold text-[var(--brand-primary-base)] transition-colors hover:bg-white"
-                type="button"
-              >
-                Subscribe
-              </button>
-            </div>
-            <p className="mt-2 text-xs text-[var(--neutral-light)]">
-              By subscribing you agree to receive updates from us.
-            </p>
+            <Link
+              className="mt-4 inline-flex shrink-0 rounded-md bg-[var(--neutral-lightest)] px-5 py-2 text-sm font-semibold text-[var(--brand-primary-base)] transition-colors hover:bg-white"
+              href="/join"
+            >
+              Become a member
+            </Link>
           </div>
 
           {/* Link columns + social */}
