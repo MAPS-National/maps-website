@@ -7,6 +7,8 @@ import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
+import { MediaGalleryClient, type GalleryImage } from '@/blocks/MediaGallery/MediaGalleryClient'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 import type { Post } from '@/payload-types'
 
@@ -51,6 +53,21 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
+  // Render the imported "Photos" gallery (posts.gallery, a hasMany media field)
+  // as a slider through the shared gallery client. No captions on this field.
+  const galleryImages: GalleryImage[] = (post.gallery || [])
+    .map((image) =>
+      image && typeof image === 'object' && image.url
+        ? {
+            src: getMediaUrl(image.url, image.updatedAt),
+            alt: image.alt || '',
+            width: image.width || 1200,
+            height: image.height || 800,
+          }
+        : null,
+    )
+    .filter((img): img is GalleryImage => img !== null)
+
   return (
     <article className="pt-[var(--page-top-pad)] pb-16">
       <PageClient />
@@ -65,6 +82,11 @@ export default async function Post({ params: paramsPromise }: Args) {
       <div className="flex flex-col items-center gap-4 pt-8">
         <div className="container">
           <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
+          {galleryImages.length > 0 && (
+            <div className="mt-12 max-w-[52rem] mx-auto">
+              <MediaGalleryClient images={galleryImages} layout="slider" lightbox />
+            </div>
+          )}
           {post.relatedPosts && post.relatedPosts.length > 0 && (
             <RelatedPosts
               className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
