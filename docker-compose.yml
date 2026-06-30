@@ -37,4 +37,7 @@ services:
       "
 
 volumes:
+  # Explicit fixed name (not the Compose project prefix) so renaming the repo
+  # dir doesn't orphan the media volume. See payload-poc -> maps-website rename.
   minio-data:
+    name: maps-website-media
