@@ -1382,7 +1382,7 @@ const joinSlice: PageSlice = async (_payload) => {
             link: {
               type: 'custom',
               appearance: 'outline',
-              label: 'Learn more about our Membership tiers',
+              label: 'Choose a membership tier',
               url: '#membership-faqs',
             },
           },
@@ -3154,7 +3154,7 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
               ),
               links: [
                 cta(
-                  'Offer Legal Services in Support of MAPS Legal Advocacy Here',
+                  'Offer Legal Support',
                   'https://docs.google.com/forms/d/e/1FAIpQLSc6V0WoqSW5wQ_rFsmVh4YpmJVtBnT-oZOTPcBdEPOj1jJ-nA/viewform',
                   true,
                 ),
@@ -3184,7 +3184,7 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
           ),
           links: [
             cta(
-              'MAPS Policy, Advocacy & Rights on YouTube',
+              'Policy & Rights on YouTube',
               'https://www.youtube.com/playlist?list=PL3vpn_hDyfXggwXmNbEyUy5Izt1lBbDdg',
               true,
             ),
@@ -3400,7 +3400,7 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
             link: {
               type: 'custom',
               url: 'mailto:private.sector@mapsnational.org?subject=Email%20from%20Website',
-              label: 'Email our Private Sector Engagement Team',
+              label: 'Email the PSE Team',
               newTab: false,
               appearance: 'default',
             },
