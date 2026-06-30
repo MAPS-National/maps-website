@@ -14,7 +14,8 @@ import { LogoStrip } from './LogoStrip/config'
 import { MapLocationCards } from './MapLocationCards/config'
 import { MediaBlock } from './MediaBlock/config'
 import { MemberPortalHero } from './MemberPortalHero/config'
-import { MediaGallery } from './MediaGallery/config'
+import { MediaGrid } from './MediaGrid/config'
+import { MediaSlider } from './MediaSlider/config'
 import { PricingTiers } from './PricingTiers/config'
 import { Team } from './Team/config'
 import { Testimonials } from './Testimonials/config'
@@ -40,7 +41,8 @@ export const layoutBlocks: Block[] = [
   FAQ,
   FeatureSplit,
   LogoStrip,
-  MediaGallery,
+  MediaGrid,
+  MediaSlider,
   PricingTiers,
   Timeline,
   ComparisonTable,

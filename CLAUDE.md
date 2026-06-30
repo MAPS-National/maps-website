@@ -31,6 +31,18 @@ Requires a local PostgreSQL instance; connection via `DATABASE_URL` in `.env`. T
 
 **Cross-branch schema drift (dev gotcha).** With `push: true` and one shared dev DB, switching between feature branches that each add fields/blocks accumulates columns/tables in the DB that the current branch's config doesn't define. When a new block introduces a table while an old branch's table is now orphaned, drizzle-kit can't tell create from rename and **prompts interactively** ("Is X created or renamed from another table?", or a data-loss y/N). The headless dev server (Claude Preview) has no TTY to answer, so it **hangs holding the DB** — every DB-backed route (`/`, `/api/*`) stalls for tens of seconds while DB-free routes (the `/design-system/blocks` showroom) stay fast. That symptom = schema-push prompt, not slow rendering. Keep `master` ⊇ the dev DB schema: **merge block PRs promptly** (or build one block per branch and merge before the next) so the schema never diverges. The preview window auto-loads `/`, so a stalled `/` freezes it (and screenshots time out).
 
+## Media storage (local S3 via MinIO)
+
+Media uses `@payloadcms/storage-s3`, exercising the **same S3 code path locally as in prod** (R2/AWS). Local S3 is a MinIO container defined in `docker-compose.yml` (S3 API `:9000`, console `:9001`, creds `minioadmin`/`minioadmin`, bucket `payload-media` made public-read by a one-shot bootstrap container). Activated by the `S3_*` vars in `.env`; without them Payload falls back to local-disk storage and the container is optional.
+
+**`predev` auto-starts it.** `npm run dev` runs `scripts/ensure-docker.ps1` first (best-effort, always exits 0): boots Docker Desktop if down, then `docker compose up -d`. So the stack normally comes up on its own — but if images 404 / blink, check `docker ps` for the MinIO container before debugging anything in app code.
+
+**Volume name is pinned on purpose.** The media volume is declared with an explicit `name: maps-website-media` (not the Compose project-prefix default). Compose derives the project name from the directory name, so **renaming the repo dir would otherwise orphan the volume** — Compose spins up a fresh empty one and the old data (hundreds of MB) is stranded under the old prefix. Symptom: bucket empty / every `/api/media/file/*` 404s. Recover by `docker run --rm -v old_prefix_minio-data:/from -v maps-website-media:/to alpine cp -a /from/. /to/`.
+
+**Dangling Media docs (DB row, no objects).** A Media doc can reference storage objects that don't exist (e.g. a re-upload collision left a `<name>-1.webp` duplicate holding the real files while the original doc's objects were removed). `npm run rehost:images` matches by **filename** and skips any existing doc, so it won't repair this. Fix by re-uploading the tracked source into the **existing doc by id** (`payload.update({ collection:'media', id, file:{...} })`) — this regenerates all size variants into storage and keeps the id, so seeded page references (which point at the media **id**, not filename) stay valid. No reseed needed.
+
+`npm run rehost:images` re-hosts a fixed list of export/CDN images as Media docs (idempotent by stored `.webp` filename); see the script header for the two source lists.
+
 ## Architecture
 
 This is the Payload Website Template: **one Next.js app serves both the public site and the Payload admin + API**, split by route groups under `src/app/`:
@@ -43,6 +55,7 @@ This is the Payload Website Template: **one Next.js app serves both the public s
 **Layout builder.** Pages and Posts are composed of **blocks** (`src/blocks/`) and **heros** (`src/heros/`), rendered by `RenderBlocks` / `RenderHero`. Each block colocates its Payload field schema (`config.ts`) with its React component (`Component.tsx`).
 
 Blocks use a **two-registry split**, and both must be updated to add a block:
+
 - `src/blocks/index.ts` exports `layoutBlocks` (field configs only) — collections consume this for their `layout` field.
 - `src/blocks/blockComponents.ts` maps each config's `slug` → React component — `RenderBlocks` reads this map (there is no hand-edited switch).
 
@@ -51,6 +64,7 @@ They are kept separate **on purpose**: `index.ts` must never import React compon
 **Blocks gallery (showroom).** `/design-system/blocks` is an internal, noindexed catalog that renders every block and hero with sample data in both themes, derived from the render registry. Each block colocates a `gallery.ts` (title, category, ordered `variants` of sample props) registered in `src/blocks/gallery.ts`; heros do the same in `src/heros/gallery.ts`. Detail routes (`[slug]/`) toggle variants client-side. Add a `gallery.ts` when you add a block — a registered block with none still appears as a "no example yet" stub.
 
 **Generated files — do not hand-edit:**
+
 - `src/payload-types.ts` — regenerate with `generate:types` after config changes.
 - `src/app/(payload)/admin/importMap.js` — auto-regenerates on dev; reformats noisily, so revert spurious diffs.
 
@@ -63,11 +77,12 @@ Phase 3 of the OSS migration runbook: the repeatable contract for turning the ol
 **Input → output contract.** One catalog block → one native Payload block: a colocated `config.ts` (field schema) + `Component.tsx` (React) matching the existing `src/blocks/*` shape, plus a `gallery.ts` for the showroom. Register it in both `src/blocks/index.ts` and `src/blocks/blockComponents.ts` (see Layout builder), then run `npm run generate:types`. `generate:importmap` only changes when a block adds a custom **admin** component — for plain field/render blocks it reports "No new imports"; revert its spurious CRLF-only diff if it churns. Use real brand assets copied into tracked `public/` (e.g. `public/gallery/`) — `migration/` is gitignored, so anything referenced from it won't survive a clean checkout.
 
 **Classify every needed block (the catalog does this up front):**
+
 1. **Port** — a Relume source section exists → translate its markup/styles into a block, mapping styles to brand tokens.
 2. **Existing / variant** — no source, but an existing block or hero variant fits. Heros already cover most page intros (`HighImpact`, `MediumImpact`, `LowImpact`, `PostHero`); an interior-page header / "mini-hero" is almost always a `LowImpact` variant — add a `variant`, don't build new.
-3. **Net-new** — no source *and* nothing existing fits → compose from design-system primitives (`src/components/ui` atoms + tokens). The one place `frontend-design` may help — but guard-rail it to the brand tokens (fixed navy/maroon, `tokens.css`); never its generative font/colour choices. Rare; the true gaps.
+3. **Net-new** — no source _and_ nothing existing fits → compose from design-system primitives (`src/components/ui` atoms + tokens). The one place `frontend-design` may help — but guard-rail it to the brand tokens (fixed navy/maroon, `tokens.css`); never its generative font/colour choices. Rare; the true gaps.
 
-**Variant vs. new block.** Cluster sections by *intent*, not markup. The same intent (FAQ, CTA, testimonial) rendered differently across pages is **one block** with the differences as fields or a `variant` select — not several near-identical blocks. Fork a new block only when structure/behavior genuinely differs; spacing/colour differences are tokens/props, not new blocks.
+**Variant vs. new block.** Cluster sections by _intent_, not markup. The same intent (FAQ, CTA, testimonial) rendered differently across pages is **one block** with the differences as fields or a `variant` select — not several near-identical blocks. Fork a new block only when structure/behavior genuinely differs; spacing/colour differences are tokens/props, not new blocks.
 
 **Tokens, never hardcoded values.** All colour/spacing/type comes from `tokens.css` via the shadcn/Tailwind theme (see Theming & design system). Never inline a Webflow hex/px — map it to the nearest token. Base brand navy `#0d1e6c` / maroon `#8b0a03` are fixed.
 
@@ -83,7 +98,7 @@ Custom work layered on the template's shadcn/Tailwind-v4 setup.
 - **Typography scale — one ramp, two mirrors.** A canonical type scale lives in `globals.css` `@layer components` as `.type-*` classes (`type-display`, `type-h2`/`h3`/`h4`, `type-lead`, `type-eyebrow`, `type-quote`, `type-small`) and is **mirrored** by the `typography` (prose) config in `tailwind.config.mjs`. Hardcoded JSX headings use the `.type-*` classes; RichText/prose headings (hero headlines, post bodies) get the matching sizes from the prose config — **change both together or they drift.** Headings are Lora (serif) at a uniform **600** weight, so hierarchy is carried by **size alone** and weight never inverts: a section `.type-h2` (36px) can't out-weigh the `.type-display` hero (56px). Never hand-tune a one-off heading size in a block — apply a `.type-*` for font/size/weight and keep colour/margin as utilities. The live spec is the Typography section of `/design-system`.
 - **Theme switching is driven by `data-theme` on `<html>`, not Tailwind's default `dark:` class.** `globals.css` defines a custom `dark` variant keyed on `[data-theme='dark']`. `InitTheme` sets the attribute pre-paint (no flash); `ThemeProvider` persists it.
 - **Per-page header theme.** The header overlays page content, so each page declares its header theme on mount via `useHeaderTheme().setHeaderTheme('light'|'dark')` in a `page.client.tsx` (heroes like `HighImpact` set `'dark'`). Pages that set none inherit the global theme. This determines which logo variant the header shows. The brand `Logo` (`src/components/Logo/Logo.tsx`) switches variants via the `dark:` variant; the footer is a fixed dark surface and forces the light (white) logo.
-- **Header / hero overlay geometry — single source of truth.** A full-bleed hero (e.g. `HighImpact`) slides up *under* the overlay header to reach the top of the viewport. Both the header's height and that pull-up derive from two vars in `globals.css` `:root`: `--header-height` (the header is pinned to it via `h-[var(--header-height)]`) and `--page-top-pad` (the slug/post `<article>`'s top padding). The hero's offset is exactly `-mt-[calc(var(--header-height)+var(--page-top-pad))]`. **Never hand-tune a hero's top margin to a fixed `rem`** — change the vars; a hardcoded offset that had to equal header + article-pad is what caused a top-gap to recur twice.
+- **Header / hero overlay geometry — single source of truth.** A full-bleed hero (e.g. `HighImpact`) slides up _under_ the overlay header to reach the top of the viewport. Both the header's height and that pull-up derive from two vars in `globals.css` `:root`: `--header-height` (the header is pinned to it via `h-[var(--header-height)]`) and `--page-top-pad` (the slug/post `<article>`'s top padding). The hero's offset is exactly `-mt-[calc(var(--header-height)+var(--page-top-pad))]`. **Never hand-tune a hero's top margin to a fixed `rem`** — change the vars; a hardcoded offset that had to equal header + article-pad is what caused a top-gap to recur twice.
 - shadcn config is in `components.json`; UI atoms live in `src/components/ui/`.
 - `/design-system` is an internal, noindexed token/theme reference page used to verify the system in both themes.
 

@@ -47,7 +47,7 @@ const GROUPS: NavGroup[] = [
       { label: 'Community Building', href: '/programs/community-building' },
       { label: 'Legal Advocacy', href: '/programs/legal-advocacy' },
       { label: 'Policy Initiatives', href: '/programs/policy-initiatives' },
-      { label: 'Private Sector Engagement', href: '/programs/public-sector-engagement' },
+      { label: 'Private Sector Engagement', href: '/programs/private-sector-engagement' },
     ],
   },
   {
@@ -159,8 +159,9 @@ export const NavMenu: React.FC = () => {
           by auth state). The click is the SDK directly — auth.open() pops the login
           modal in-page (no hosted-page redirect, so the cookie is written
           same-origin and it works on localhost); logout() clears the session. Top
-          bar, before search, so login is prominent. text-foreground tracks the
-          header's per-page data-theme. */}
+          bar, before search, so login is prominent. Account (profile modal) lives
+          in the Members menu group instead. text-foreground tracks the header's
+          per-page data-theme. */}
       <a
         className="text-sm font-medium uppercase tracking-wide text-foreground hover:text-primary"
         data-o-anonymous="true"
@@ -254,6 +255,27 @@ export const NavMenu: React.FC = () => {
                         </MenuLink>
                       </li>
                     ))}
+                    {/* Account opens the Outseta profile modal; only the nocode
+                        module reveals it once authenticated. Lock matches the
+                        gated Members items. */}
+                    {group.label === 'Members' && (
+                      <li data-o-authenticated="true">
+                        <button
+                          className="text-base text-content-secondary transition-colors hover:text-primary"
+                          onClick={() => {
+                            window.Outseta?.profile?.open()
+                            close()
+                          }}
+                          type="button"
+                        >
+                          <Lock
+                            aria-hidden="true"
+                            className="mr-1.5 inline-block size-3.5 align-[-0.15em]"
+                          />
+                          Account
+                        </button>
+                      </li>
+                    )}
                   </ul>
                 </div>
               ))}

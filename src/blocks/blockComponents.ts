@@ -28,8 +28,10 @@ import { MediaBlock as MediaConfig } from './MediaBlock/config'
 import { MediaBlock } from './MediaBlock/Component'
 import { MemberPortalHero as MemberPortalHeroConfig } from './MemberPortalHero/config'
 import { MemberPortalHeroBlock } from './MemberPortalHero/Component'
-import { MediaGallery as MediaGalleryConfig } from './MediaGallery/config'
-import { MediaGalleryBlock } from './MediaGallery/Component'
+import { MediaGrid as MediaGridConfig } from './MediaGrid/config'
+import { MediaGridBlock } from './MediaGrid/Component'
+import { MediaSlider as MediaSliderConfig } from './MediaSlider/config'
+import { MediaSliderBlock } from './MediaSlider/Component'
 import { PricingTiers } from './PricingTiers/config'
 import { PricingTiersBlock } from './PricingTiers/Component'
 import { Team } from './Team/config'
@@ -62,7 +64,8 @@ export const blockComponents: Record<string, BlockComponent> = {
   [FAQ.slug]: FAQBlock,
   [FeatureSplit.slug]: FeatureSplitBlock,
   [LogoStrip.slug]: LogoStripBlock,
-  [MediaGalleryConfig.slug]: MediaGalleryBlock,
+  [MediaGridConfig.slug]: MediaGridBlock,
+  [MediaSliderConfig.slug]: MediaSliderBlock,
   [PricingTiers.slug]: PricingTiersBlock,
   [Timeline.slug]: TimelineBlock,
   [ComparisonTable.slug]: ComparisonTableBlock,

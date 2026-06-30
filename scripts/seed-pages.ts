@@ -513,12 +513,11 @@ const missionSlice: PageSlice = async (payload) => {
 
   const layout: PageData['layout'] = []
 
-  // Gallery (catalog: Gallery → mediaGallery). Omit entirely if no images resolved.
+  // Gallery (catalog: Gallery → mediaGrid). Omit entirely if no images resolved.
   if (galleryImages.length > 0) {
     layout.push({
-      blockType: 'mediaGallery',
+      blockType: 'mediaGrid',
       heading: 'MAPS in the community',
-      layout: 'grid',
       columns: '3',
       density: 'compact',
       enableLightbox: true,
@@ -1124,10 +1123,8 @@ const homeSlice: PageSlice = async (payload) => {
   const communitySlider = sliderImages.length
     ? [
         {
-          blockType: 'mediaGallery',
+          blockType: 'mediaSlider',
           heading: 'MAPS National in the community',
-          layout: 'slider',
-          columns: '3',
           enableLightbox: true,
           images: sliderImages,
         },
@@ -1274,15 +1271,6 @@ const homeSlice: PageSlice = async (payload) => {
             },
           ],
         },
-        // Member Testimonials on MAPS Programs.
-        {
-          blockType: 'testimonials',
-          variant: 'slider',
-          type: 'programs',
-          populateBy: 'collection',
-          limit: 0,
-          heading: 'Member Testimonials',
-        },
         // MAPS Membership — three membership cards. Images flagged.
         {
           blockType: 'cardGrid',
@@ -1329,7 +1317,6 @@ const homeSlice: PageSlice = async (payload) => {
         // type, so scoped to 'all' (flagged).
         {
           blockType: 'testimonials',
-          variant: 'slider',
           type: 'all',
           populateBy: 'collection',
           limit: 0,
@@ -1395,7 +1382,7 @@ const joinSlice: PageSlice = async (_payload) => {
             link: {
               type: 'custom',
               appearance: 'outline',
-              label: 'Learn more about our Membership tiers',
+              label: 'Choose a membership tier',
               url: '#membership-faqs',
             },
           },
@@ -1909,7 +1896,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       body: [
         'MAPS invites members to review the City of New York Government Jobs Portal to identify open positions that align with your skills and interests. Some positions require taking and passing a City of New York Civil Service Exam before applying for that position, while most positions require residency in the five boroughs within 90 days.',
       ],
-      link: { label: 'Explore Current NYC Job Vacancies', url: 'https://cityjobs.nyc.gov/' },
+      link: { label: 'NYC Jobs', url: 'https://cityjobs.nyc.gov/' },
       imageSide: 'right',
     },
     {
@@ -1919,7 +1906,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
         'MAPS invites its members to apply for consideration for direct endorsement to the Mamdani Administration against open city government roles below. Please read the instructions in the following application form carefully and submit all requested information.',
       ],
       link: {
-        label: 'Apply for MAPS Referrals to NYC Jobs',
+        label: 'Apply',
         url: 'https://forms.gle/wpRvWiekcq4xTZRx6',
       },
       imageSide: 'left',
@@ -1931,7 +1918,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
         'MAPS invites its members to apply for consideration for direct endorsement to the Mamdani Administration against roles on NYC Boards and Commissions below. Please read the instructions in the following application form carefully and submit all requested information.',
       ],
       link: {
-        label: 'Apply for MAPS Referrals to NYC Boards',
+        label: 'Apply',
         url: 'https://forms.gle/QJNsEXRkk1CkVHTcA',
       },
       imageSide: 'right',
@@ -1943,26 +1930,53 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       body: [
         'Connect with a powerful network of Muslim American professionals across federal, state and city government that call New York home. Our social and community building events provide connections and introductions to fellow members within specific fields or agencies and allow for communal networking and knowledge sharing.',
       ],
-      link: { label: 'Join the MAPS-NY Chat on Signal Here', url: 'https://bit.ly/3R81xV7' },
+      link: { label: 'MAPS-NY Signal Chat', url: 'https://bit.ly/3R81xV7' },
       imageSide: 'left',
       anchorId: 'networking',
     },
   ]
 
-  const featureBlocks = []
-  for (const def of featureDefs) {
+  // The 3 NYC-action items render as one 3-up Card Grid; the Connect section
+  // stays a FeatureSplit (distinct intent, keeps its #networking anchor).
+  const connectDef = featureDefs.find((d) => d.anchorId === 'networking')
+  const actionDefs = featureDefs.filter((d) => d !== connectDef)
+
+  const cardItems = []
+  for (const def of actionDefs) {
     const imageId = await mediaIdByFile(def.file)
-    if (imageId == null) continue // Media doc not yet re-hosted — skip (see gaps[])
-    featureBlocks.push({
-      blockType: 'featureSplit',
-      eyebrow: def.eyebrow,
-      imageSide: def.imageSide,
+    if (imageId == null) continue // skip (Media doc not yet re-hosted; see gaps[])
+    cardItems.push({
+      image: imageId,
       heading: def.heading,
       body: richText(...def.body.map((p) => paragraph(p))),
-      image: imageId,
-      anchorId: def.anchorId,
       links: [customLink(def.link.label, def.link.url, 'default')],
     })
+  }
+
+  const featureBlocks = []
+  if (cardItems.length > 0) {
+    featureBlocks.push({
+      blockType: 'cardGrid',
+      header: { enableHeader: false },
+      columns: '3',
+      mediaType: 'image',
+      items: cardItems,
+    })
+  }
+  if (connectDef) {
+    const imageId = await mediaIdByFile(connectDef.file)
+    if (imageId != null) {
+      featureBlocks.push({
+        blockType: 'featureSplit',
+        eyebrow: connectDef.eyebrow,
+        imageSide: connectDef.imageSide,
+        heading: connectDef.heading,
+        body: richText(...connectDef.body.map((p) => paragraph(p))),
+        image: imageId,
+        anchorId: connectDef.anchorId,
+        links: [customLink(connectDef.link.label, connectDef.link.url, 'default')],
+      })
+    }
   }
 
   // Lightbox gallery — resolve every image; only keep the ones with a Media doc.
@@ -1977,10 +1991,8 @@ const newYorkStateSlice: PageSlice = async (payload) => {
   const layout: PageData['layout'] = [...featureBlocks] as unknown as PageData['layout']
   if (galleryImages.length > 0) {
     layout.push({
-      blockType: 'mediaGallery',
+      blockType: 'mediaSlider',
       heading: 'MAPS New York in the community',
-      layout: 'slider',
-      columns: '3',
       enableLightbox: true,
       images: galleryImages,
     } as unknown as PageData['layout'][number])
@@ -2934,7 +2946,6 @@ const careerSupportSlice: PageSlice = async (payload) => {
         ...layout,
         {
           blockType: 'testimonials',
-          variant: 'slider',
           type: 'career',
           populateBy: 'collection',
           limit: 0,
@@ -3143,7 +3154,7 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
               ),
               links: [
                 cta(
-                  'Offer Legal Services in Support of MAPS Legal Advocacy Here',
+                  'Offer Legal Support',
                   'https://docs.google.com/forms/d/e/1FAIpQLSc6V0WoqSW5wQ_rFsmVh4YpmJVtBnT-oZOTPcBdEPOj1jJ-nA/viewform',
                   true,
                 ),
@@ -3173,7 +3184,7 @@ const legalAdvocacySlice: PageSlice = async (payload) => {
           ),
           links: [
             cta(
-              'MAPS Policy, Advocacy & Rights on YouTube',
+              'Policy & Rights on YouTube',
               'https://www.youtube.com/playlist?list=PL3vpn_hDyfXggwXmNbEyUy5Izt1lBbDdg',
               true,
             ),
@@ -3357,7 +3368,7 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
     const id = found.docs[0]?.id
     if (typeof id !== 'number') {
       throw new Error(
-        `public-sector-engagement: Media doc "${filename}" not found — run "npm run import:prose" first (it re-hosts public/import/prose/${filename}).`,
+        `private-sector-engagement: Media doc "${filename}" not found. Run "npm run import:prose" first (it re-hosts public/import/prose/${filename}).`,
       )
     }
     return id
@@ -3372,7 +3383,7 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
 
   return [
     {
-      slug: 'programs/public-sector-engagement',
+      slug: 'programs/private-sector-engagement',
       title: 'Private Sector Engagement',
       _status: 'published',
       hero: {
@@ -3389,7 +3400,7 @@ const publicSectorEngagementSlice: PageSlice = async (payload) => {
             link: {
               type: 'custom',
               url: 'mailto:private.sector@mapsnational.org?subject=Email%20from%20Website',
-              label: 'Email our Private Sector Engagement Team',
+              label: 'Email the PSE Team',
               newTab: false,
               appearance: 'default',
             },
@@ -4487,7 +4498,7 @@ const programsHubSlice: PageSlice = async (payload) => {
           'network',
           'Private Sector Engagement',
           'Government contracting support for Muslim-owned firms and contractors.',
-          '/programs/public-sector-engagement',
+          '/programs/private-sector-engagement',
         ),
       ],
     },
@@ -4544,12 +4555,11 @@ const programsHubSlice: PageSlice = async (payload) => {
     } as unknown as PageData['layout'][number])
   }
 
-  // Proof — one large career pull-quote (collection-backed; career testimonials
-  // are seeded by phase4ShowcaseSlice).
+  // Proof — programs testimonials slider (collection-backed; programs
+  // testimonials are seeded by phase4ShowcaseSlice).
   layout.push({
     blockType: 'testimonials',
-    variant: 'single',
-    type: 'career',
+    type: 'programs',
     populateBy: 'collection',
     limit: 0,
     eyebrow: 'In their words',
@@ -5107,6 +5117,7 @@ const SLUG_REDIRECTS: { from: string; to: string }[] = [
   // Legacy Webflow paths → new canonical paths.
   { from: '/contact-us', to: '/contact' },
   { from: '/latest-updates-archive', to: '/latest-updates' },
+  { from: '/programs/public-sector-engagement', to: '/programs/private-sector-engagement' },
 ]
 
 const applyRedirects = async (payload: Payload, context: Record<string, unknown>) => {

@@ -21,14 +21,17 @@ export const OutsetaScript: React.FC = () => {
       strategy="afterInteractive"
       dangerouslySetInnerHTML={{
         __html: `
-  var isProd = window.location.origin === "https://mapsnational.org";
   window.o_options = {
     domain: 'mapsnational.outseta.com',
     load: 'auth,customForm,emailList,leadCapture,nocode,profile,support',
     monitorDom: true,
     tokenStorage: 'cookie',
     auth: {
-      authenticationCallbackUrl: isProd ? null : window.location.origin + "/members/portal"
+      // Always land on the ungated /members/portal after hosted login (#115). Leaving
+      // this null on prod fell back to the Outseta dashboard default, which could send
+      // members to a gated page and redirect-loop against the /members middleware gate
+      // (the cookie is written client-side only after the redirect-back).
+      authenticationCallbackUrl: window.location.origin + "/members/portal"
     }
   };
   (function () {

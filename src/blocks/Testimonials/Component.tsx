@@ -101,13 +101,13 @@ const Quote: React.FC<{ testimonial: Testimonial; className?: string }> = ({
 /**
  * Testimonials — quotes from the Testimonials collection. The server resolves
  * the docs (collection query or an editor-picked selection), filters by `type`,
- * then renders a card grid or a single featured pull-quote. Server-only — no
- * interactivity, so no client child.
+ * then renders them as an autoplaying pull-quote slider. The slider itself is a
+ * client component (`Carousel`); this wrapper stays server-only.
  */
 export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string }> = async (
   props,
 ) => {
-  const { eyebrow, heading, intro, limit, populateBy, selectedTestimonials, type, variant } = props
+  const { eyebrow, heading, intro, limit, populateBy, selectedTestimonials, type } = props
 
   let docs: Testimonial[] = []
   if (populateBy === 'selection') {
@@ -141,48 +141,20 @@ export const TestimonialsBlock: React.FC<TestimonialsBlockProps & { id?: string 
         </div>
       )}
 
-      {variant === 'single' ? (
-        <Quote testimonial={docs[0]} />
-      ) : variant === 'slider' ? (
-        // One testimonial at a time: the same left-aligned pull-quote as `single`,
-        // advanced as an autoplaying slider with a left-aligned counter + controls.
-        <Carousel
-          ariaLabel={heading || 'Testimonials'}
-          autoPlay
-          controlsClassName="justify-start"
-          interval={10000}
-          showCounter
-          slideClassName="w-full"
-        >
-          {docs.map((t) => (
-            <Quote key={t.id} testimonial={t} />
-          ))}
-        </Carousel>
-      ) : (
-        <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {docs.map((t) => (
-            <li
-              key={t.id}
-              className="flex flex-col rounded-lg border border-border bg-card p-6 shadow-sm"
-            >
-              <blockquote className="flex-1 text-content">
-                <RichText
-                  className="prose-p:my-2 prose-p:text-[0.95rem] prose-p:leading-relaxed"
-                  data={t.quote}
-                  enableGutter={false}
-                  enableProse
-                />
-              </blockquote>
-              {hasNamedAuthor(t) && (
-                <figcaption className="mt-6 flex items-center gap-3">
-                  <Avatar className="size-12" testimonial={t} />
-                  <Identity testimonial={t} />
-                </figcaption>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* One testimonial at a time: a left-aligned pull-quote advanced as an
+          autoplaying slider with a left-aligned counter + controls. */}
+      <Carousel
+        ariaLabel={heading || 'Testimonials'}
+        autoPlay
+        controlsClassName="justify-start"
+        interval={10000}
+        showCounter
+        slideClassName="w-full"
+      >
+        {docs.map((t) => (
+          <Quote key={t.id} testimonial={t} />
+        ))}
+      </Carousel>
     </section>
   )
 }

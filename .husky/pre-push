@@ -1,6 +1,8 @@
-# Heavy gate before pushing: the full Playwright e2e + a11y suite.
-# Playwright starts the dev server itself (needs local Postgres up).
-# Ensure the browser is present first (fast no-op once installed) so the push
-# doesn't fail with an opaque "browser not installed" error.
-npx playwright install chromium
-npm run test:e2e
+# Fast gate before pushing: lint + typecheck + integration tests. All quick,
+# deterministic, and need no browser or running dev server. The heavy Playwright
+# e2e + a11y suite is intentionally NOT here — CI runs it on every PR
+# (.github/workflows/ci.yml), so duplicating it locally only adds minutes and
+# flakiness. Run it on demand with `npm run test:e2e` when you touch those flows.
+npm run lint
+npm run typecheck
+npm run test:int

@@ -20,7 +20,7 @@ const gridCols: Record<string, string> = {
   '4': 'grid-cols-2 lg:grid-cols-4',
 }
 
-// Compact: a dense photo wall — tight gaps, 4:3 tiles. Honors `columns` as the
+// Compact: a dense photo wall, tight gaps, 4:3 tiles. Honors `columns` as the
 // max column count (2/3/4); defaults to a four-up wall.
 const compactCols: Record<string, string> = {
   '2': 'grid-cols-2',
@@ -29,18 +29,20 @@ const compactCols: Record<string, string> = {
 }
 
 /**
- * Interactive surface for the Media Gallery block: a tiled grid or a swipeable
- * horizontal slider, plus an optional click-to-zoom lightbox. The lightbox is a
- * modal overlay with keyboard support (Esc to close, arrows to navigate), focus
- * sent to the close button on open and restored to the trigger on close.
+ * Shared interactive surface for the MediaGrid and MediaSlider blocks: a tiled
+ * grid or a swipeable horizontal slider, plus an optional click-to-zoom
+ * lightbox. The lightbox is a modal overlay with keyboard support (Esc to
+ * close, arrows to navigate), focus sent to the close button on open and
+ * restored to the trigger on close. `columns`/`density` apply to the grid only;
+ * the slider ignores them.
  */
 export const MediaGalleryClient: React.FC<{
-  columns: string
+  columns?: string
   density?: string
   images: GalleryImage[]
   layout: string
   lightbox: boolean
-}> = ({ columns, density = 'comfortable', images, layout, lightbox }) => {
+}> = ({ columns = '3', density = 'comfortable', images, layout, lightbox }) => {
   const compact = density === 'compact'
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
@@ -61,12 +63,13 @@ export const MediaGalleryClient: React.FC<{
   const close = useCallback(() => setOpenIndex(null), [])
 
   const step = useCallback(
-    (delta: number) => setOpenIndex((i) => (i === null ? i : (i + delta + images.length) % images.length)),
+    (delta: number) =>
+      setOpenIndex((i) => (i === null ? i : (i + delta + images.length) % images.length)),
     [images.length],
   )
 
   // Manage focus across open/close transitions. Restoring focus to the trigger
-  // must happen in an effect (after the dialog has unmounted) — doing it in the
+  // must happen in an effect (after the dialog has unmounted): doing it in the
   // close handler runs before React removes the dialog, so the browser resets
   // focus to <body> instead.
   useEffect(() => {
@@ -88,11 +91,7 @@ export const MediaGalleryClient: React.FC<{
   return (
     <>
       {isSlider ? (
-        <Carousel
-          ariaLabel="Image gallery"
-          autoPlay
-          slideClassName="w-[78%] sm:w-[46%] lg:w-[31%]"
-        >
+        <Carousel ariaLabel="Image gallery" autoPlay slideClassName="w-[78%] sm:w-[46%] lg:w-[31%]">
           {images.map((image, i) => (
             <Thumb image={image} index={i} key={i} lightbox={lightbox} onOpen={open} />
           ))}
@@ -182,7 +181,7 @@ export const MediaGalleryClient: React.FC<{
 
 /**
  * A single gallery tile. Hoisted to module scope (not nested in the parent) so
- * its component identity is stable across the parent's re-renders — otherwise
+ * its component identity is stable across the parent's re-renders, otherwise
  * every lightbox open/close would remount all tiles, detaching the button the
  * lightbox captured for focus restoration.
  */
@@ -206,7 +205,7 @@ const Thumb: React.FC<{
       src={image.src}
     />
   )
-  // 4:3 tiles for both densities — a uniform grid that crops far less than a
+  // 4:3 tiles for both densities, a uniform grid that crops far less than a
   // square would, so landscape (and portrait) photos keep their subject.
   const wrapperCls = cn(
     'group relative block w-full overflow-hidden bg-surface-secondary aspect-[4/3]',

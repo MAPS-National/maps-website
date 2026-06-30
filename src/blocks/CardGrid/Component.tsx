@@ -44,24 +44,15 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
   const { header, columns, mediaType, items } = props
 
   const cols = colsClasses[columns ?? '3'] ?? colsClasses['3']
-  const showHeader =
-    header?.enableHeader && (header.eyebrow || header.heading || header.body)
+  const showHeader = header?.enableHeader && (header.eyebrow || header.heading || header.body)
 
   return (
     <section className="container scroll-mt-24" id={header?.anchorId || undefined}>
       {showHeader && (
         <div className="mb-12 max-w-2xl">
-          {header?.eyebrow && (
-            <p className="mb-3 type-eyebrow text-primary">
-              {header.eyebrow}
-            </p>
-          )}
-          {header?.heading && (
-            <h2 className="type-h2">{header.heading}</h2>
-          )}
-          {header?.body && (
-            <RichText className="mt-4" data={header.body} enableGutter={false} />
-          )}
+          {header?.eyebrow && <p className="mb-3 type-eyebrow text-primary">{header.eyebrow}</p>}
+          {header?.heading && <h2 className="type-h2">{header.heading}</h2>}
+          {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
         </div>
       )}
 
@@ -99,7 +90,9 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
                   aria-hidden="true"
                   className={cn(
                     'mb-4 inline-flex size-12 items-center justify-center rounded-xl',
-                    featured ? 'bg-primary-foreground text-primary' : 'bg-primary text-primary-foreground',
+                    featured
+                      ? 'bg-primary-foreground text-primary'
+                      : 'bg-primary text-primary-foreground',
                   )}
                 >
                   <DecoIcon className="size-6" />
@@ -113,7 +106,10 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
               {heading && <h3 className="type-h4">{heading}</h3>}
               {body && (
                 <RichText
-                  className={cn('mt-3', featured ? 'text-primary-foreground/80' : 'text-muted-foreground')}
+                  className={cn(
+                    'mt-3',
+                    featured ? 'text-primary-foreground/80' : 'text-muted-foreground',
+                  )}
                   data={body}
                   enableGutter={false}
                 />
@@ -134,7 +130,10 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
                   arrow advertises the card as navigable on touch and at a glance.
                   Decorative — the overlay link already carries the heading as its name. */}
               {isCardLink && !featured && !hasImage && (
-                <span aria-hidden="true" className="mt-auto inline-flex items-center pt-6 text-primary">
+                <span
+                  aria-hidden="true"
+                  className="mt-auto inline-flex items-center pt-6 text-primary"
+                >
                   <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
                 </span>
               )}
@@ -165,11 +164,13 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
               )}
 
               {hasImage && (
-                <div className="relative aspect-video w-full overflow-hidden">
+                <div className="relative aspect-[4/3] w-full overflow-hidden">
                   <Media
                     fill
+                    imageSize="card"
                     imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
                     resource={media}
+                    size="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 </div>
               )}

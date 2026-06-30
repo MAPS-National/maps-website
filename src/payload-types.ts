@@ -245,7 +245,8 @@ export interface Page {
     | FAQBlock
     | FeatureSplitBlock
     | LogoStripBlock
-    | MediaGalleryBlock
+    | MediaGridBlock
+    | MediaSliderBlock
     | PricingTiersBlock
     | TimelineBlock
     | ComparisonTableBlock
@@ -391,6 +392,14 @@ export interface Media {
       filename?: string | null;
     };
     square?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -1169,23 +1178,19 @@ export interface LogoStripBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaGalleryBlock".
+ * via the `definition` "MediaGridBlock".
  */
-export interface MediaGalleryBlock {
+export interface MediaGridBlock {
   /**
-   * Optional label above the gallery.
+   * Optional label above the grid.
    */
   heading?: string | null;
   /**
-   * Grid: a tiled set. Slider: a horizontal, swipeable track.
-   */
-  layout: 'grid' | 'slider';
-  /**
-   * Number of columns in grid layout (ignored when density is Compact or for the slider).
+   * Number of columns. In Compact, this caps the photo-wall column count.
    */
   columns: '2' | '3' | '4';
   /**
-   * Comfortable: 4:3 tiles at the chosen column count. Compact: small square tiles, four-up, tighter gaps — best for a dense photo wall. Ignored for the slider.
+   * Comfortable: 4:3 tiles at the chosen column count. Compact: small 4:3 tiles, tighter gaps, best for a dense photo wall.
    */
   density: 'comfortable' | 'compact';
   /**
@@ -1204,7 +1209,34 @@ export interface MediaGalleryBlock {
     | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'mediaGallery';
+  blockType: 'mediaGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaSliderBlock".
+ */
+export interface MediaSliderBlock {
+  /**
+   * Optional label above the slider.
+   */
+  heading?: string | null;
+  /**
+   * Let visitors click an image to view it full-size in an overlay, with next/previous.
+   */
+  enableLightbox?: boolean | null;
+  images?:
+    | {
+        image: number | Media;
+        /**
+         * Shown in the lightbox and used as the alt text fallback.
+         */
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaSlider';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1600,10 +1632,6 @@ export interface TestimonialsBlock {
     };
     [k: string]: unknown;
   } | null;
-  /**
-   * Grid: cards. Single: one large featured pull-quote. Slider: autoplaying carousel.
-   */
-  variant: 'grid' | 'single' | 'slider';
   type: 'all' | 'career' | 'programs';
   populateBy?: ('collection' | 'selection') | null;
   /**
@@ -2171,7 +2199,8 @@ export interface PagesSelect<T extends boolean = true> {
         faq?: T | FAQBlockSelect<T>;
         featureSplit?: T | FeatureSplitBlockSelect<T>;
         logoStrip?: T | LogoStripBlockSelect<T>;
-        mediaGallery?: T | MediaGalleryBlockSelect<T>;
+        mediaGrid?: T | MediaGridBlockSelect<T>;
+        mediaSlider?: T | MediaSliderBlockSelect<T>;
         pricingTiers?: T | PricingTiersBlockSelect<T>;
         timeline?: T | TimelineBlockSelect<T>;
         comparisonTable?: T | ComparisonTableBlockSelect<T>;
@@ -2436,13 +2465,29 @@ export interface LogoStripBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaGalleryBlock_select".
+ * via the `definition` "MediaGridBlock_select".
  */
-export interface MediaGalleryBlockSelect<T extends boolean = true> {
+export interface MediaGridBlockSelect<T extends boolean = true> {
   heading?: T;
-  layout?: T;
   columns?: T;
   density?: T;
+  enableLightbox?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaSliderBlock_select".
+ */
+export interface MediaSliderBlockSelect<T extends boolean = true> {
+  heading?: T;
   enableLightbox?: T;
   images?:
     | T
@@ -2612,7 +2657,6 @@ export interface TestimonialsBlockSelect<T extends boolean = true> {
   eyebrow?: T;
   heading?: T;
   intro?: T;
-  variant?: T;
   type?: T;
   populateBy?: T;
   limit?: T;
@@ -2741,6 +2785,16 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
         square?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
           | T
           | {
               url?: T;

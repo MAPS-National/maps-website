@@ -1,4 +1,4 @@
-import type { MediaGalleryBlock as MediaGalleryBlockProps } from '@/payload-types'
+import type { MediaGridBlock as MediaGridBlockProps } from '@/payload-types'
 import type { GalleryBlock } from '@/blocks/gallery-types'
 
 import {
@@ -10,7 +10,7 @@ import {
   sampleReception,
 } from '@/blocks/gallery-helpers'
 
-type GalleryItem = NonNullable<MediaGalleryBlockProps['images']>[number]
+type GalleryItem = NonNullable<MediaGridBlockProps['images']>[number]
 
 const shots: { image: GalleryItem['image']; caption: string }[] = [
   { image: sampleCapitol, caption: 'On the steps of the U.S. Capitol' },
@@ -23,19 +23,18 @@ const shots: { image: GalleryItem['image']; caption: string }[] = [
 
 const images: GalleryItem[] = shots.map(({ caption, image }) => ({ image, caption }))
 
-export const mediaGalleryGallery: GalleryBlock<MediaGalleryBlockProps> = {
-  slug: 'mediaGallery',
-  title: 'Media Gallery',
+export const mediaGridGallery: GalleryBlock<MediaGridBlockProps> = {
+  slug: 'mediaGrid',
+  title: 'Image Grid',
   category: 'media',
   description:
-    'A gallery of images as a tiled grid or a swipeable horizontal slider, with an optional click-to-zoom lightbox (keyboard-navigable, focus-managed).',
+    'A gallery of images as a tiled grid, with an optional click-to-zoom lightbox (keyboard-navigable, focus-managed).',
   variants: [
     {
       name: 'Grid with lightbox',
       description: 'Tiled grid; click any image to open the full-size lightbox.',
       props: {
-        blockType: 'mediaGallery',
-        layout: 'grid',
+        blockType: 'mediaGrid',
         columns: '3',
         density: 'comfortable',
         enableLightbox: true,
@@ -45,10 +44,9 @@ export const mediaGalleryGallery: GalleryBlock<MediaGalleryBlockProps> = {
     },
     {
       name: 'Compact photo wall',
-      description: 'Dense, four-up 4:3 tiles with tight gaps — a photo wall.',
+      description: 'Dense, four-up 4:3 tiles with tight gaps, a photo wall.',
       props: {
-        blockType: 'mediaGallery',
-        layout: 'grid',
+        blockType: 'mediaGrid',
         columns: '4',
         density: 'compact',
         enableLightbox: true,
@@ -57,23 +55,10 @@ export const mediaGalleryGallery: GalleryBlock<MediaGalleryBlockProps> = {
       },
     },
     {
-      name: 'Slider',
-      description: 'Horizontal, swipeable track with previous / next controls.',
-      props: {
-        blockType: 'mediaGallery',
-        layout: 'slider',
-        columns: '3',
-        density: 'comfortable',
-        enableLightbox: true,
-        images,
-      },
-    },
-    {
       name: 'Grid, no lightbox',
       description: 'Plain image grid with the lightbox disabled.',
       props: {
-        blockType: 'mediaGallery',
-        layout: 'grid',
+        blockType: 'mediaGrid',
         columns: '4',
         density: 'comfortable',
         enableLightbox: false,
