@@ -468,6 +468,34 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
           },
           items,
         },
+        {
+          blockType: 'cta',
+          richText: richText(
+            heading('Still have questions?', 'h4'),
+            node('paragraph', {}, [
+              text('Learn more about our '),
+              linkNode('Programs', '/programs'),
+              text(', benefit from our shared Resources, meet our '),
+              linkNode('Leadership Team', '/about-us/board-leadership'),
+              text(', support our work with a tax-deductible '),
+              linkNode('Donation', '/donate'),
+              text(', explore organizational '),
+              linkNode('Partnerships', '/about-us/partners'),
+              text(', and Sign Up as a Member/Associate Member, or join our Mailing List today.'),
+            ]),
+          ),
+          links: [
+            {
+              link: {
+                type: 'custom',
+                url: '/contact',
+                label: 'Contact',
+                appearance: 'outline',
+                newTab: false,
+              },
+            },
+          ],
+        },
       ],
     },
   ] as unknown as PageData[]
