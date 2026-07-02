@@ -55,6 +55,9 @@ const paragraph = (value: string) => node('paragraph', {}, [text(value)])
 // Inline rich-text link node (Lexical custom link) for cross-page references.
 const linkNode = (label: string, url: string, newTab = false) =>
   node('link', { version: 3, fields: { linkType: 'custom', url, newTab } }, [text(label)])
+// Blockquote (Lexical 'quote' node) — scriptural/attributed citations.
+const italic = (value: string) => ({ ...text(value), format: 2 })
+const blockquote = (...children: unknown[]) => node('quote', {}, children)
 
 // ---------------------------------------------------------------------------
 // Slice: about-us roster pages (migrated from scripts/seed-about-pages.ts)
@@ -551,19 +554,48 @@ const missionSlice: PageSlice = async (payload) => {
         ),
         heading('1. Public Service', 'h4'),
         paragraph(
-          'MAPS Members have made service to others a core part of their careers, their lives, and in many cases, their identity. They volunteer for their communities, offer support to those in need of it, and devote years to crafting, building, or improving national, state, or local programs, policies, and services. Supporting their work, and ushering others toward it, is a prime function of MAPS, and is rooted in faith traditions and examples. As the Prophet Muhammad taught, "The best of people are those who are most beneficial to people."',
+          'MAPS Members have made service to others a core part of their careers, their lives, and in many cases, their identity. They volunteer for their communities, offer support to those in need of it, and devote years to crafting, building, or improving national, state, or local programs, policies, and services. Supporting their work, and ushering others toward it, is a prime function of MAPS, and is rooted in faith traditions and examples.',
+        ),
+        blockquote(
+          text('“The best of people are those who are most beneficial to people” ('),
+          italic('Hadith'),
+          text(' of the Prophet Muhammad, Al-Tabarani, Al-Mu’jam Al-Awsaṭ, 5937)'),
         ),
         heading('2. Religious Freedom', 'h4'),
         paragraph(
           'As faith is a large part of the lives of countless Americans, the freedom to believe and practice authentically and without hindrance, discrimination, or persecution is a cornerstone of American democracy. Religious freedom, accommodation, tolerance and understanding are also key values of MAPS, its Members, and partner organizations. Members of MAPS are committed to public institutions that allow employees to observe their religious beliefs. Together, we can build stronger, more conducive, and just workplaces where the important functions of public service can be more effectively and productively undertaken for a broader segment of Americans.',
         ),
+        blockquote(text('“There shall be no coercion in matters of faith.” (Quran 2:256);')),
+        blockquote(text('“For you is your faith, and for me, my faith.” (Quran 109:6)')),
         heading('3. Community Building', 'h4'),
         paragraph(
           'Community building — the open and inclusive agglomeration of qualified professionals, channeling of resources toward their individual careers and interpersonal bonds, and facilitating and supporting formalized and communal action — is a daily function and priority of MAPS. It is how all of its goals and outcomes are made possible.',
         ),
+        blockquote(
+          text(
+            '“Never will God change the condition of a people until they change it themselves,” (Quran 13:11);',
+          ),
+        ),
+        blockquote(
+          text(
+            '“Help ye one another unto righteousness and piety. But help not one another unto sin and transgression,” (Quran 5:2);',
+          ),
+        ),
+        blockquote(
+          text(
+            '“Whoever fulfills the needs of his brother, God will fulfill his needs; whoever removes the troubles of his brother, God will remove one of his troubles” (',
+          ),
+          italic('Hadith'),
+          text(' of the Prophet Muhammad, Al-Bukhari, Chapter 47, Al-Mazalim, 2442).'),
+        ),
         heading('4. Partnership & Solidarity', 'h4'),
         paragraph(
           'MAPS builds its community while actively supporting, engaging, and collaborating with its partners to advance shared goals while reducing redundant efforts or potential conflict. These include formal organizations, informal communities, national and local non-profits, Federal, State and local governments, and feeder networks with overlapping constituencies or objectives to mint the newest public service leaders of tomorrow.',
+        ),
+        blockquote(
+          text(
+            '“We have made you into nations and tribes, so that you may come to know one another.” (Quran 49:13)',
+          ),
         ),
         heading('5. Broad-Based Inclusion', 'h4'),
         paragraph(
