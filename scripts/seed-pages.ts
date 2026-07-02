@@ -2041,7 +2041,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       header: {
         enableHeader: true,
         eyebrow: 'Grow',
-        heading: 'Supporting MAPS in New York',
+        heading: 'Supporting Members in New York',
         anchorId: 'main-section',
         body: richText(
           paragraph(
@@ -2112,7 +2112,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
   if (galleryImages.length > 0) {
     layout.push({
       blockType: 'mediaSlider',
-      heading: 'MAPS New York in the community',
+      heading: 'Leaders in the Community',
       enableLightbox: true,
       images: galleryImages,
     } as unknown as PageData['layout'][number])
