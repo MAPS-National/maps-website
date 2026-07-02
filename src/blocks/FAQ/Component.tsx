@@ -43,14 +43,7 @@ export const FAQBlock: React.FC<FAQBlockProps> = (props) => {
         return (
           <React.Fragment key={i}>
             {showGroupHeading && (
-              <h3
-                className={cn(
-                  'type-h4',
-                  i === 0 ? 'mb-3' : 'mb-3 mt-10 border-t border-border pt-10',
-                )}
-              >
-                {item.group}
-              </h3>
+              <h3 className={cn('type-h4', i === 0 ? 'mb-3' : 'mb-3 mt-10')}>{item.group}</h3>
             )}
             {i === 0 && !showGroupHeading && <div className="border-t border-border" />}
             <details className="group border-b border-border" open={item.defaultOpen ?? undefined}>
