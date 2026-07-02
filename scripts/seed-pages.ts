@@ -2072,8 +2072,8 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       blockType: 'team',
       header: {
         enableHeader: true,
-        eyebrow: 'Leadership',
-        heading: 'MAPS New York Leadership',
+        eyebrow: 'Team',
+        heading: 'MAPS New York',
       },
       layout: 'grouped',
       density: 'tight',
