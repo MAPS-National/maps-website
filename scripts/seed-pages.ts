@@ -3841,6 +3841,18 @@ const jumuahServicesSlice: PageSlice = async (_payload) => {
 }
 
 const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
+  // Bold-linked program name followed by its description, matching the live
+  // source's `<a><strong>Name</strong></a> — description` pattern (external
+  // link, new tab).
+  const bold = (value: string) => ({ ...text(value), format: 1 })
+  const fellowship = (label: string, url: string, description: string) =>
+    node('paragraph', {}, [
+      node('link', { version: 3, fields: { linkType: 'custom', url, newTab: true } }, [
+        bold(label),
+      ]),
+      text(` — ${description}`),
+    ])
+
   return [
     {
       slug: 'resources/public-service-fellowships-mid-career-to-senior-professionals',
@@ -3895,180 +3907,290 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
               question: 'Leadership & Public Administration',
               defaultOpen: false,
               answer: richText(
-                paragraph(
-                  'White House Fellowship — White House Fellowships offer exceptional emerging leaders first-hand experience working at the highest levels of the Federal government. Selected individuals typically spend a year working as a full-time, paid Fellow to senior White House Staff, Cabinet Secretaries, and other top-ranking government officials. There are no formal age restrictions; employees of the Federal government are not eligible unless they are career military personnel.',
+                fellowship(
+                  'White House Fellowship',
+                  'https://www.whitehouse.gov/get-involved/fellows/',
+                  'White House Fellowships offer exceptional emerging leaders first-hand experience working at the highest levels of the Federal government. Selected individuals typically spend a year working as a full-time, paid Fellow to senior White House Staff, Cabinet Secretaries, and other top-ranking government officials. There are no formal age restrictions; employees of the Federal government are not eligible unless they are career military personnel.',
                 ),
-                paragraph(
-                  'White House Leadership Development Program (WHLDP) — Engages a diverse annual cohort of GS-15 career employees to work on the federal government’s highest priority, highest impact challenges. Sponsored by the Executive Office of the President and supported by the Performance Improvement Council.',
+                fellowship(
+                  'White House Leadership Development Program (WHLDP)',
+                  'https://www.pic.gov/whldp/',
+                  'Engages a diverse annual cohort of GS-15 career employees to work on the federal government’s highest priority, highest impact challenges. Sponsored by the Executive Office of the President and supported by the Performance Improvement Council.',
                 ),
-                paragraph(
-                  'Excellence in Government Fellowship — The premier leadership development course for federal employees at the GS-14 to GS-15 levels. For more than 30 years, EIG has helped federal employees develop strong leadership skills through application-based learning, interactive activities, self-reflection, personalized coaching, and governmentwide networking.',
+                fellowship(
+                  'Excellence in Government Fellowship',
+                  'https://ourpublicservice.org/programs/excellence-in-government-fellows-program/',
+                  'The premier leadership development course for federal employees at the GS-14 to GS-15 levels. For more than 30 years, EIG has helped federal employees develop strong leadership skills through application-based learning, interactive activities, self-reflection, personalized coaching, and governmentwide networking.',
                 ),
-                paragraph(
-                  'President’s Management Council Interagency Rotation Program — Launched in 2011 by the PMC and CHCO Council to bolster cross-agency exposure for high-potential GS 13-15s through interagency rotation assignments that develop leadership competencies and broaden organizational experience.',
+                fellowship(
+                  'President’s Management Council Interagency Rotation Program',
+                  'https://www.opm.gov/policy-data-oversight/training-and-development/leadership-development/#url=PMC-Interagency-Rotation-Prgm',
+                  'Launched in 2011 by the PMC and CHCO Council to bolster cross-agency exposure for high-potential GS 13-15s through interagency rotation assignments that develop leadership competencies and broaden organizational experience.',
                 ),
-                paragraph(
-                  'HillVets House Fellowship — HillVets is the community of Veterans, Servicemembers, and their supporters interested in governance, international affairs, policy and politics. It provides a fellowship for veterans interested in policy, politics, or government, and leadership training for veterans in the National Capitol Region.',
+                fellowship(
+                  'HillVets House Fellowship',
+                  'https://www.hillvets.org/',
+                  'HillVets is the community of Veterans, Servicemembers, and their supporters interested in governance, international affairs, policy and politics. It provides a fellowship for veterans interested in policy, politics, or government, and leadership training for veterans in the National Capitol Region.',
                 ),
-                paragraph(
-                  'The Center for Ethics and the Rule of Law (CERL) — Affiliated with the Annenberg Public Policy Center at Penn, a non-partisan interdisciplinary institute dedicated to preserving and promoting ethics and the rule of law in national security, warfare, and democratic governance.',
+                fellowship(
+                  'The Center for Ethics and the Rule of Law (CERL)',
+                  'https://www.penncerl.org/',
+                  'Affiliated with the Annenberg Public Policy Center at Penn, a non-partisan interdisciplinary institute dedicated to preserving and promoting ethics and the rule of law in national security, warfare, and democratic governance.',
                 ),
-                paragraph(
-                  'The Millennium Fellowship — A year-long, high-impact leadership accelerator for rising leaders from around the world and across sectors, pairing world-class leadership development resources with access to the Atlantic Council’s geopolitical expertise and global networks.',
+                fellowship(
+                  'The Millennium Fellowship',
+                  'http://www.millenniumfellowship.org/#apply',
+                  'A year-long, high-impact leadership accelerator for rising leaders from around the world and across sectors, pairing world-class leadership development resources with access to the Atlantic Council’s geopolitical expertise and global networks.',
                 ),
-                paragraph(
-                  'AEI Leadership Network — An exclusive policy education and professional development program for state-based, mid-career executives in the public, private, and non-profit sectors.',
+                fellowship(
+                  'AEI Leadership Network',
+                  'http://www.aei.org/feature/leadership-network/',
+                  'An exclusive policy education and professional development program for state-based, mid-career executives in the public, private, and non-profit sectors.',
                 ),
               ),
             },
             {
               question: 'International Affairs / National Security',
               answer: richText(
-                paragraph(
-                  'Franklin Talent Exchange Partnership (FTEP) — A partnership program between the U.S. Department of State and private sector entities sharing an interest in advancing foreign policy priorities, offering a two-way exchange that brings in private-sector experts and sends State employees on assignment to partner organizations.',
+                fellowship(
+                  'Franklin Talent Exchange Partnership (FTEP)',
+                  'https://careers.state.gov/work/fellowships/franklin-fellows/',
+                  'A partnership program between the U.S. Department of State and private sector entities sharing an interest in advancing foreign policy priorities, offering a two-way exchange that brings in private-sector experts and sends State employees on assignment to partner organizations.',
                 ),
-                paragraph(
-                  'The ASG Rising Leaders Program — A year-long program under the aegis of the Aspen Strategy Group: participants attend the Aspen Security Forum, join tailored leadership seminars and discussions with foreign policy experts, and co-author policy papers, joining a lifetime alumni network.',
+                fellowship(
+                  'The ASG Rising Leaders Program',
+                  'https://www.aspensecurityforum.org/asg-rising-leaders',
+                  'A year-long program under the aegis of the Aspen Strategy Group: participants attend the Aspen Security Forum, join tailored leadership seminars and discussions with foreign policy experts, and co-author policy papers, joining a lifetime alumni network.',
                 ),
-                paragraph(
-                  'The National Security Fellows Program (FDD) — A 12-month program supporting promising 30-40 year old professionals with networking, skill-building workshops, off-the-record dinners with senior officials, and roundtables with issue experts.',
+                fellowship(
+                  'The National Security Fellows Program (FDD)',
+                  'https://www.fdd.org/national-security-fellows-program/',
+                  'A 12-month program supporting promising 30-40 year old professionals with networking, skill-building workshops, off-the-record dinners with senior officials, and roundtables with issue experts.',
                 ),
-                paragraph(
-                  'The Shawn Brimley Next Generation National Security Leaders Fellowship (CNAS) — A year-long, part-time professional development fellowship bringing together young professionals across sectors to learn leadership best practices, culminating in a week-long international study tour.',
+                fellowship(
+                  'The Shawn Brimley Next Generation National Security Leaders Fellowship (CNAS)',
+                  'https://www.cnas.org/next-generation-programs/nextgeneration',
+                  'A year-long, part-time professional development fellowship bringing together young professionals across sectors to learn leadership best practices, culminating in a week-long international study tour.',
                 ),
-                paragraph(
-                  'The National Security Institute Fellows (GMU) — National security practitioners and industry leaders drawing on experience across the intelligence community, government, private sector, and academia, contributing scholarship on legal and practical national security challenges.',
+                fellowship(
+                  'The National Security Institute Fellows (GMU)',
+                  'https://nationalsecurity.gmu.edu/fellows/',
+                  'National security practitioners and industry leaders drawing on experience across the intelligence community, government, private sector, and academia, contributing scholarship on legal and practical national security challenges.',
                 ),
-                paragraph(
-                  'The Strategy and Statecraft Fellowship (CSIS) — Monthly dinners on key topics in foreign policy, national security, and strategic thought featuring current and former senior officials, concluding with the Strategy and Statecraft Summit.',
+                fellowship(
+                  'The Strategy and Statecraft Fellowship (CSIS)',
+                  'https://www.csis.org/programs/international-security-program/strategy-and-statecraft-fellowship',
+                  'Monthly dinners on key topics in foreign policy, national security, and strategic thought featuring current and former senior officials, concluding with the Strategy and Statecraft Summit.',
                 ),
-                paragraph(
-                  'The Nuclear Scholars Initiative (CSIS) — Provides top graduate students and young professionals a venue to dialogue with senior experts on nuclear weapons issues across daylong monthly workshops over six months at CSIS.',
+                fellowship(
+                  'The Nuclear Scholars Initiative (CSIS)',
+                  'https://nuclearnetwork.csis.org/programs/nuclear-scholars-initiative/',
+                  'Provides top graduate students and young professionals a venue to dialogue with senior experts on nuclear weapons issues across daylong monthly workshops over six months at CSIS.',
                 ),
-                paragraph(
-                  'Emerging as a Global Leader Experience (EaGLE) Program — Accelerates the careers of emerging leaders in national security and public service through immersive virtual workshops on design thinking, lean startup methods, and strengths-based leadership.',
+                fellowship(
+                  'The Emissary Program (MilitaryMentors)',
+                  'https://www.militarymentors.org/emissary',
+                  'Trains industry leaders through a six-month cohort-style leadership curriculum to serve as mentors ("eMMissaries"), increasing organizational awareness and seeking opportunities to influence and develop others.',
                 ),
-                paragraph(
-                  'National Security and Counterterrorism Fellowship (McCain Institute) — Brings together promising rising leaders in national security and counterterrorism across Five Eyes partner nations, preparing character-driven leaders for future leadership.',
+                fellowship(
+                  'Emerging as a Global Leader Experience (EaGLE) Program',
+                  'https://globally.org/eagle',
+                  'Accelerates the careers of emerging leaders in national security and public service through immersive virtual workshops on design thinking, lean startup methods, and strengths-based leadership.',
                 ),
-                paragraph(
-                  'The International Affairs Fellowship (IAF, CFR) — Bridges the gap between the study and making of U.S. foreign policy: academics are placed in policy-oriented public service settings and government officials in scholarly settings.',
+                fellowship(
+                  'The Military Fellows Program (William & Mary PIPS)',
+                  'https://www.wm.edu/offices/global-research/research-labs/pips/people/military-fellows/index.php',
+                  'Pairs research fellows with active-duty military officers who mentor and lend strategic expertise throughout the academic year, from identifying emerging international challenges in the fall to providing analytical feedback on policy recommendations in the spring.',
                 ),
-                paragraph(
-                  'The Emissary Program (MilitaryMentors) — Trains industry leaders through a six-month cohort-style leadership curriculum to serve as mentors ("eMMissaries"), increasing organizational awareness and seeking opportunities to influence and develop others.',
+                fellowship(
+                  'National Security and Counterterrorism Fellowship (McCain Institute)',
+                  'https://www.mccaininstitute.org/programs/national-security-counterterrorism/national-security-and-counterterrorism-fellowship/',
+                  'Brings together promising rising leaders in national security and counterterrorism across Five Eyes partner nations, preparing character-driven leaders for future leadership.',
                 ),
-                paragraph(
-                  'The Military Fellows Program (William & Mary PIPS) — Pairs research fellows with active-duty military officers who mentor and lend strategic expertise throughout the academic year, from identifying emerging international challenges in the fall to providing analytical feedback on policy recommendations in the spring.',
+                fellowship(
+                  'The McCain Global Leaders Program',
+                  'https://www.mccaininstitute.org/programs/leadership-programs/mccain-global-leaders/',
+                  'A 10-month fellowship supporting 25 character-driven leaders per cohort from around the world who are advancing democracy, human rights, and freedom, providing training, resources, and access to global networks.',
                 ),
-                paragraph(
-                  'The McCain Global Leaders Program — A 10-month fellowship supporting 25 character-driven leaders per cohort from around the world who are advancing democracy, human rights, and freedom, providing training, resources, and access to global networks.',
+                fellowship(
+                  'The USGLC (U.S. Global Leadership Coalition)',
+                  'https://www.usglc.org/nextgen/',
+                  'A year-long leadership training and engagement program for a diverse, bipartisan group of next-generation leaders, culminating in a seat on a USGLC State Advisory Committee.',
                 ),
-                paragraph(
-                  'The USGLC (U.S. Global Leadership Coalition) — A year-long leadership training and engagement program for a diverse, bipartisan group of next-generation leaders, culminating in a seat on a USGLC State Advisory Committee.',
+                fellowship(
+                  'The Presidential Leadership Scholars Program',
+                  'https://www.presidentialleadershipscholars.org/apply/',
+                  'Challenges Scholars to develop their leadership skills through deep reflection and meaningful engagement across differing perspectives, drawing on the resources of four presidential foundations.',
                 ),
-                paragraph(
-                  'The Presidential Leadership Scholars Program — Challenges Scholars to develop their leadership skills through deep reflection and meaningful engagement across differing perspectives, drawing on the resources of four presidential foundations.',
+                fellowship(
+                  'The Great Leaders & Great Biographies Fellowship (Hertog Foundation)',
+                  'https://hertogfoundation.org/programs/great-leaders-great-biographies',
+                  'Uses the rigorous study of great biography to investigate geopolitics, leadership, and human character, with guest scholars and national security leaders.',
                 ),
-                paragraph(
-                  'The Great Leaders & Great Biographies Fellowship (Hertog Foundation) — Uses the rigorous study of great biography to investigate geopolitics, leadership, and human character, with guest scholars and national security leaders.',
+                fellowship(
+                  'The CXO Fellows Program',
+                  'https://www.cfo.gov/cxo-fellows/',
+                  'A year-long virtual professional development program engaging the next generation of federal leaders in acquisition, financial management, human capital, IT, and data.',
                 ),
-                paragraph(
-                  'The CXO Fellows Program — A year-long virtual professional development program engaging the next generation of federal leaders in acquisition, financial management, human capital, IT, and data.',
+                fellowship(
+                  "New America's Fellows Program",
+                  'https://www.newamerica.org/fellows/about/',
+                  'Invests in journalists, scholars, filmmakers, and policy analysts who generate bold ideas, providing a competitive one-year term with an intellectual home, community, and resources to pursue their projects.',
                 ),
-                paragraph(
-                  "New America's Fellows Program — Invests in journalists, scholars, filmmakers, and policy analysts who generate bold ideas, providing a competitive one-year term with an intellectual home, community, and resources to pursue their projects.",
+                fellowship(
+                  "The Wilson Center's Foreign Policy Fellowship Program (FPFP)",
+                  'https://www.wilsoncenter.org/foreignpolicyfellowship',
+                  'A six-week seminar series encouraging Fellows to debate key global issues with leading foreign policy thinkers, concluding with a bipartisan foreign policy roleplay scenario.',
                 ),
-                paragraph(
-                  "The Wilson Center's Foreign Policy Fellowship Program (FPFP) — A six-week seminar series encouraging Fellows to debate key global issues with leading foreign policy thinkers, concluding with a bipartisan foreign policy roleplay scenario.",
+                fellowship(
+                  'The Rising Experts Program (YPFP)',
+                  'https://www.ypfp.org/amplify/fellowship-program/',
+                  'A roughly year-long writing initiative pairing young professionals with editors to build writing skills and a portfolio of published analysis and op-eds.',
                 ),
-                paragraph(
-                  'The Rising Experts Program (YPFP) — A roughly year-long writing initiative pairing young professionals with editors to build writing skills and a portfolio of published analysis and op-eds.',
+                fellowship(
+                  'The Technology and National Security Fellowship (NSIN)',
+                  'https://www.nsin.mil/tnsf/',
+                  'A one-year Department of Defense fellowship embedding recent advanced-degree graduates with key decision-makers in the Pentagon or on Capitol Hill to address technology and national security policy.',
                 ),
-                paragraph(
-                  'The Technology and National Security Fellowship (NSIN) — A one-year Department of Defense fellowship embedding recent advanced-degree graduates with key decision-makers in the Pentagon or on Capitol Hill to address technology and national security policy.',
+                fellowship(
+                  'The Truman Project',
+                  'https://www.trumanproject.org/membership/membership-overview',
+                  'A national security leadership network of over 2,000 members, admitted by competitive application across three cohorts: Fellows, Partners, and the Defense Council.',
                 ),
-                paragraph(
-                  'The Truman Project — A national security leadership network of over 2,000 members, admitted by competitive application across three cohorts: Fellows, Partners, and the Defense Council.',
+                fellowship(
+                  'The National Security & Sino-American Technology Competition Fellowship (Hertog Foundation)',
+                  'https://hertogfoundation.org/programs/national-security-sino-american-technology-competition-fellowship',
+                  'Educates the next generation of East Asia strategists and national security generalists on how technology shapes U.S.-China strategic rivalry.',
                 ),
-                paragraph(
-                  'The National Security & Sino-American Technology Competition Fellowship (Hertog Foundation) — Educates the next generation of East Asia strategists and national security generalists on how technology shapes U.S.-China strategic rivalry.',
+                fellowship(
+                  'The Public Interest Fellowship (TPIF)',
+                  'https://publicinterestfellowship.org/',
+                  'Operates four programs, including a flagship two-year fellowship, identifying and developing future leaders devoted to liberty and the public interest across policy and journalism.',
                 ),
-                paragraph(
-                  'The Public Interest Fellowship (TPIF) — Operates four programs, including a flagship two-year fellowship, identifying and developing future leaders devoted to liberty and the public interest across policy and journalism.',
+                fellowship(
+                  'The National Defense Fellowship (NDF)',
+                  'https://www.alexanderhamiltonsociety.org/rri-ahs-national-defense-fellowship',
+                  'A joint program of the Alexander Hamilton Society and the Ronald Reagan Institute educating roughly 20 advanced students through a Peace Through Strength Boot Camp and the Reagan National Defense Forum.',
                 ),
-                paragraph(
-                  'The National Defense Fellowship (NDF) — A joint program of the Alexander Hamilton Society and the Ronald Reagan Institute educating roughly 20 advanced students through a Peace Through Strength Boot Camp and the Reagan National Defense Forum.',
+                fellowship(
+                  'Defense Ventures (Shift, with AFWERX)',
+                  'https://www.shift.org/dvp-cohorts/seventeen',
+                  'An 8-week fellowship identifying emerging innovators from the Department of Defense and facilitating industry immersions at venture capital firms, incubators, and startups.',
                 ),
-                paragraph(
-                  'Defense Ventures (Shift, with AFWERX) — An 8-week fellowship identifying emerging innovators from the Department of Defense and facilitating industry immersions at venture capital firms, incubators, and startups.',
+                fellowship(
+                  'The German-American Young Leaders Conference',
+                  'https://www.atlantik-bruecke.org/en/the-young-leaders-program/',
+                  'An intensive, interdisciplinary exchange on current transatlantic issues that builds professional and personal bridges across the Atlantic, featuring leading public figures as guest speakers.',
                 ),
-                paragraph(
-                  'The German-American Young Leaders Conference — An intensive, interdisciplinary exchange on current transatlantic issues that builds professional and personal bridges across the Atlantic, featuring leading public figures as guest speakers.',
+                fellowship(
+                  "The Heritage Foundation's George C. Marshall Fellows Program",
+                  'https://www.heritage.org/george-c-marshall-fellowship',
+                  'Gives exceptional young professionals a comprehensive overview of national security principles and the practice of strategic leadership.',
                 ),
-                paragraph(
-                  "The Heritage Foundation's George C. Marshall Fellows Program — Gives exceptional young professionals a comprehensive overview of national security principles and the practice of strategic leadership.",
+                fellowship(
+                  'The Carnegie Ethics Fellowship',
+                  'https://www.carnegiecouncil.org/initiatives-issues/carnegie-ethics-fellows',
+                  'A two-year fellowship developing the next generation of ethical leaders from business, government, academia, and non-governmental organizations through values-driven, reflective leadership work.',
                 ),
-                paragraph(
-                  'The Carnegie Ethics Fellowship — A two-year fellowship developing the next generation of ethical leaders from business, government, academia, and non-governmental organizations through values-driven, reflective leadership work.',
+                fellowship(
+                  'Harold W. Rosenthal Fellowship in International Relations',
+                  'https://gogovernment.org/fellowship/harold-w-rosenthal-fellowship-in-international-relations/',
+                  'Offers outstanding, civic-minded graduate students in international affairs a summer working to solve major national and global challenges.',
                 ),
-                paragraph(
-                  'Harold W. Rosenthal Fellowship in International Relations — Offers outstanding, civic-minded graduate students in international affairs a summer working to solve major national and global challenges.',
+                fellowship(
+                  'The Herbert Scoville Jr. Peace Fellowship Program',
+                  'https://scoville.org/apply/application-information/',
+                  'Full-time, six-to-nine-month fellowships in Washington, DC for recent college and graduate alumni to work with nonprofit, public-interest organizations addressing peace and security issues.',
                 ),
-                paragraph(
-                  'The Herbert Scoville Jr. Peace Fellowship Program — Full-time, six-to-nine-month fellowships in Washington, DC for recent college and graduate alumni to work with nonprofit, public-interest organizations addressing peace and security issues.',
+                fellowship(
+                  'CSIS Fellowship: Enriching the Future of Foreign Policy',
+                  'https://www.csis.org/programs/executive-education/university-programs/csis-fellowship-enriching-future-foreign-policy',
+                  'A semester-long fellowship for rising sophomores, juniors, and seniors from any academic background who want to prepare for a career in the policy field.',
                 ),
-                paragraph(
-                  'CSIS Fellowship: Enriching the Future of Foreign Policy — A semester-long fellowship for rising sophomores, juniors, and seniors from any academic background who want to prepare for a career in the policy field.',
+                fellowship(
+                  'The Belfer Center National Security Fellowship (Harvard)',
+                  'https://www.belfercenter.org/fellowship/national-security-fellowship',
+                  'A 10-month research fellowship for U.S. military officers at the Lt. Col./Colonel rank and their civilian counterparts who show promise of rising to the most challenging leadership positions.',
                 ),
-                paragraph(
-                  'The Belfer Center National Security Fellowship (Harvard) — A 10-month research fellowship for U.S. military officers at the Lt. Col./Colonel rank and their civilian counterparts who show promise of rising to the most challenging leadership positions.',
+                fellowship(
+                  'The Abshire-Inamori Leadership Academy (AILA) at CSIS',
+                  'https://www.csis.org/programs/executive-education/leadership-development/aila-international-fellowship',
+                  'An intensive week of seminars and experiential learning equipping aspiring global leaders to be effective and ethical changemakers.',
                 ),
-                paragraph(
-                  'The Abshire-Inamori Leadership Academy (AILA) at CSIS — An intensive week of seminars and experiential learning equipping aspiring global leaders to be effective and ethical changemakers.',
+                fellowship(
+                  'The Executive Leaders Program (ELP, Naval Postgraduate School CHDS)',
+                  'https://www.chds.us/c/academic-programs/elp/',
+                  'A non-degree, graduate-level program for senior homeland security and public safety leaders, developing critical thinking through a diverse, cross-functional cohort.',
                 ),
-                paragraph(
-                  'The Executive Leaders Program (ELP, Naval Postgraduate School CHDS) — A non-degree, graduate-level program for senior homeland security and public safety leaders, developing critical thinking through a diverse, cross-functional cohort.',
+                fellowship(
+                  'The International Strategy Forum (ISF, Schmidt Futures)',
+                  'https://isf.schmidtfutures.com/fellowship/',
+                  'Chaired by Fareed Zakaria and Jared Cohen, seeks out non-traditional talent across boardrooms, newsrooms, labs, and policy councils, equipping rising leaders in technology and international affairs to tackle hard global problems.',
                 ),
-                paragraph(
-                  'The International Strategy Forum (ISF, Schmidt Futures) — Chaired by Fareed Zakaria and Jared Cohen, seeks out non-traditional talent across boardrooms, newsrooms, labs, and policy councils, equipping rising leaders in technology and international affairs to tackle hard global problems.',
+                fellowship(
+                  'The Irregular Warfare Initiative Nonresident Fellows Program',
+                  'https://irregularwarfare.org/iwi-fellows/',
+                  'A network of academics, practitioners, and policy makers advancing research and discussion on irregular warfare, with opportunities to present research and travel.',
                 ),
-                paragraph(
-                  'The Irregular Warfare Initiative Nonresident Fellows Program — A network of academics, practitioners, and policy makers advancing research and discussion on irregular warfare, with opportunities to present research and travel.',
+                fellowship(
+                  'The Robert and Marion Oster National Security Affairs Fellows (NSAF) Program (Hoover Institution)',
+                  'https://www.hoover.org/fellows/category/national-security-affairs-fellows',
+                  'Gives a high-ranking military or government official with extensive foreign policy experience an academic year at Hoover to conduct independent research and mentor students.',
                 ),
-                paragraph(
-                  'The Robert and Marion Oster National Security Affairs Fellows (NSAF) Program (Hoover Institution) — Gives a high-ranking military or government official with extensive foreign policy experience an academic year at Hoover to conduct independent research and mentor students.',
+                fellowship(
+                  'The Bochnowski Family Veteran Fellowship Program (VFP, Hoover Institution)',
+                  'https://www.hoover.org/veteran-fellowship-program',
+                  'A nonresidential, year-long, project-based program for 10 military veterans accelerating solution-finding on public-sector challenges aligned with Hoover’s research priorities.',
                 ),
-                paragraph(
-                  'The Bochnowski Family Veteran Fellowship Program (VFP, Hoover Institution) — A nonresidential, year-long, project-based program for 10 military veterans accelerating solution-finding on public-sector challenges aligned with Hoover’s research priorities.',
+                fellowship(
+                  'The International Affairs Fellowship (IAF, CFR)',
+                  'https://www.cfr.org/fellowships/international-affairs-fellowship',
+                  'Bridges the gap between the study and making of U.S. foreign policy: academics are placed in policy-oriented public service settings and government officials in scholarly settings.',
                 ),
-                paragraph(
-                  'David Rockefeller Fellows: North America (Trilateral Commission) — For applicants 35 or younger with strong potential for future leadership, joining the Commission’s annual meetings as full participants with costs of attendance covered.',
+                fellowship(
+                  'David Rockefeller Fellows: North America (Trilateral Commission)',
+                  'https://www.trilateral.org/about/david-rockefeller-fellows-north-america/',
+                  'For applicants 35 or younger with strong potential for future leadership, joining the Commission’s annual meetings as full participants with costs of attendance covered.',
                 ),
-                paragraph(
-                  'The Artificial Intelligence Lab (Wilson Center) — A six-week seminar series introducing participants to foundational AI topics — machine learning, neural networks, autonomous systems, and AI’s implications for national security — led by top technologists and scholars.',
+                fellowship(
+                  'The Artificial Intelligence Lab (Wilson Center)',
+                  'https://www.wilsoncenter.org/artificial-intelligence-lab',
+                  'A six-week seminar series introducing participants to foundational AI topics — machine learning, neural networks, autonomous systems, and AI’s implications for national security — led by top technologists and scholars.',
                 ),
               ),
             },
             {
               question: 'Science, Tech, Engineering & Math',
               answer: richText(
-                paragraph(
-                  'ASME Federal Government Fellowship Program — The American Society of Mechanical Engineers established the first engineering-society Federal Government Fellowship in 1973, enabling selected members to spend a year providing engineering and technical advice to policy makers in Congress, the White House, and federal agencies.',
+                fellowship(
+                  'ASME Federal Government Fellowship Program',
+                  'https://www.asme.org/government-relations/federal-fellows-program',
+                  'The American Society of Mechanical Engineers established the first engineering-society Federal Government Fellowship in 1973, enabling selected members to spend a year providing engineering and technical advice to policy makers in Congress, the White House, and federal agencies.',
                 ),
-                paragraph(
-                  'Engineering & International Development Fellowship (IEEE-USA) — Fellows serve as advisors to the U.S. Agency for International Development (USAID), providing technical expertise while contributing to the foreign policy process.',
+                fellowship(
+                  'Engineering & International Development Fellowship (IEEE-USA)',
+                  'https://ieeeusa.org/advocacy/government-fellowships/usaid-fellowships/',
+                  'Fellows serve as advisors to the U.S. Agency for International Development (USAID), providing technical expertise while contributing to the foreign policy process.',
                 ),
-                paragraph(
-                  'Jefferson Science Fellows Program (JSF) — Engages the American academic STEM and medical communities in U.S. foreign policy and international development; tenured faculty spend a year advising at the U.S. Department of State or USAID.',
+                fellowship(
+                  'Jefferson Science Fellows Program (JSF)',
+                  'https://sites.nationalacademies.org/PGA/Jefferson/index.htm',
+                  'Engages the American academic STEM and medical communities in U.S. foreign policy and international development; tenured faculty spend a year advising at the U.S. Department of State or USAID.',
                 ),
-                paragraph(
-                  'AIP State Department Science Fellowship Program — An American Institute of Physics fellowship enhancing the science & technology capacity of the State Department by enabling scientists to work a one-year term at headquarters; mid- and late-career professionals are encouraged to apply.',
+                fellowship(
+                  'AIP State Department Science Fellowship Program',
+                  'https://www.aip.org/policy/fellowships/state-department',
+                  'An American Institute of Physics fellowship enhancing the science & technology capacity of the State Department by enabling scientists to work a one-year term at headquarters; mid- and late-career professionals are encouraged to apply.',
                 ),
-                paragraph(
-                  'Presidential Innovation Fellowship (PIF) — Pairs industry’s top technologists, designers, and strategists with federal changemakers as one-year "entrepreneurs in residence," bringing data science, design, engineering, product, and systems thinking into government at the GS-15 senior level.',
+                fellowship(
+                  'Presidential Innovation Fellowship (PIF)',
+                  'https://presidentialinnovationfellows.gov/',
+                  'Pairs industry’s top technologists, designers, and strategists with federal changemakers as one-year "entrepreneurs in residence," bringing data science, design, engineering, product, and systems thinking into government at the GS-15 senior level.',
                 ),
-                paragraph(
-                  'The Artificial Intelligence Lab (Wilson Center) — A six-week seminar series introducing participants to foundational AI topics — machine learning, neural networks, autonomous systems, and AI’s implications for national security — led by top technologists and scholars.',
+                fellowship(
+                  'The Artificial Intelligence Lab (Wilson Center)',
+                  'https://www.wilsoncenter.org/artificial-intelligence-lab',
+                  'A six-week seminar series introducing participants to foundational AI topics — machine learning, neural networks, autonomous systems, and AI’s implications for national security — led by top technologists and scholars.',
                 ),
               ),
             },
