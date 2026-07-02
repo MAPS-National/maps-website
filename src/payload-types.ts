@@ -1154,6 +1154,10 @@ export interface LogoStripBlock {
   items?:
     | {
         logo: number | Media;
+        /**
+         * Per-logo visual size nudge for eyeballing. The box auto-fits any shape, so this only scales how large the logo reads — bump a mark that looks too small up, or a heavy wordmark down.
+         */
+        size?: ('xs' | 'small' | 'default' | 'large' | 'xl') | null;
         enableLink?: boolean | null;
         link?: {
           type?: ('reference' | 'custom') | null;
@@ -2449,6 +2453,7 @@ export interface LogoStripBlockSelect<T extends boolean = true> {
     | T
     | {
         logo?: T;
+        size?: T;
         enableLink?: T;
         link?:
           | T
