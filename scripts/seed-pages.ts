@@ -5599,6 +5599,189 @@ const ensureTrackedMedia = async (
   )
 }
 
+// SEO meta (title + description) per page slug (LR14). Kept as one central map,
+// applied in the upsert loop below, rather than threaded through every slice —
+// the two hub one-liners and the eventChild factory would otherwise each need a
+// bespoke edit. generateMeta appends " | MAPS National" to the title tag, so
+// titles never restate it; descriptions stay <=165 chars to avoid SERP
+// truncation. Grounded in each page's own hero/section copy.
+const META_BY_SLUG: Record<string, { title: string; description: string }> = {
+  'about-us': {
+    title: 'About MAPS',
+    description:
+      'A volunteer-run 501(c)(3) founded in 2021, MAPS connects Muslim American public servants across every level of government. Free to join and nonpartisan.',
+  },
+  'about-us/advisory-council': {
+    title: 'Advisory Council',
+    description:
+      'The MAPS Advisory Council is a standing, non-decision-making body of accomplished professionals who advise the Board and serve as a resource to members.',
+  },
+  'about-us/board-leadership': {
+    title: 'Board & Leadership',
+    description:
+      'Muslim Americans in Public Service is led by a Board of Directors, supported by Deputy Directors, Board Committees, and State Committees across the country.',
+  },
+  'about-us/faq': {
+    title: 'Frequently Asked Questions',
+    description:
+      "Answers to common questions about MAPS National's organization, membership, funding, advocacy, and programming.",
+  },
+  'about-us/mission': {
+    title: 'Mission, Values & History',
+    description:
+      'Our mission is to support the career, community, and workplace development of Muslim American public servants and expand their collective impact in public service.',
+  },
+  'about-us/partners': {
+    title: 'Our Partner Organizations',
+    description:
+      'MAPS collaborates with independent organizations, government agencies, and advocacy groups that share its mission of empowering Muslim Americans in public service.',
+  },
+  'about-us/state-committees': {
+    title: 'State Committees',
+    description:
+      'MAPS State Committees organize members and public servants and represent MAPS with government officials, bringing professional development directly to their state.',
+  },
+  contact: {
+    title: 'Contact Us',
+    description:
+      'Get in touch with MAPS National. Send us a message and we will be in contact with you shortly.',
+  },
+  donate: {
+    title: 'Donate to MAPS',
+    description:
+      'MAPS is a 501(c)(3) nonprofit and donations are fully tax-deductible. Support the career, workplace, and community development of Muslim American public servants.',
+  },
+  events: {
+    title: 'Events',
+    description:
+      'Upcoming and recent MAPS member events, webinars, and professional development opportunities, plus cosponsored and partner events across the network.',
+  },
+  'events/maps': {
+    title: 'MAPS Events',
+    description:
+      'Browse events hosted by MAPS National, including member gatherings and professional development opportunities.',
+  },
+  'events/partner': {
+    title: 'Partner Events',
+    description:
+      "Events co-hosted with MAPS National's partner organizations across the public service community.",
+  },
+  'events/upcoming': {
+    title: 'Upcoming Events',
+    description: 'Register for upcoming MAPS webinars, training sessions, and member events.',
+  },
+  home: {
+    title: 'Empowering Muslim American Public Servants',
+    description:
+      'MAPS fosters a supportive community for Muslim American public servants, helping them excel in their careers through collaboration, mentorship, and advocacy.',
+  },
+  join: {
+    title: 'Join the MAPS Network',
+    description:
+      'MAPS is a grassroots community of Muslim Americans in government, supporting career, community, and workplace development through four membership categories.',
+  },
+  'latest-updates': {
+    title: 'Latest Updates',
+    description:
+      'Statements, press releases, events, photos, and professional development updates from across the MAPS National network.',
+  },
+  'members/communities-of-practice': {
+    title: 'Communities of Practice',
+    description:
+      'MAPS Communities of Practice connect members by public service career track, integrating prospective public servants directly into their desired professions.',
+  },
+  'members/community-building': {
+    title: 'Community Building for Members',
+    description:
+      'Find your community and join nationwide MAPS conversations about public service and community building.',
+  },
+  'members/maps-academy-vids': {
+    title: 'MAPS Academy Videos',
+    description:
+      'Browse recorded sessions from internal and public MAPS Academy career programs. Internal recordings are for members and instructors only.',
+  },
+  'members/new-york-state': {
+    title: 'MAPS New York',
+    description:
+      'The MAPS New York State Committee organizes and supports members and represents MAPS with officials, bringing development directly to NYC public servants.',
+  },
+  'members/policy-legal-advocacy': {
+    title: 'Policy & Legal Advocacy',
+    description:
+      'MAPS policy initiatives, advocacy campaigns, templates, and legal support for members facing workplace discrimination, plus recordings of exclusive member webinars.',
+  },
+  'members/portal': {
+    title: 'Member Portal',
+    description:
+      'A secure home for MAPS Members, Associates, Affiliates, and Allies, with event registrations and career, community, and policy resources by membership category.',
+  },
+  'members/professional-development': {
+    title: 'Professional Development',
+    description:
+      'Exclusive MAPS professional development resources, templates, one-on-one career services, political appointment and judicial pipelines, and recorded webinars.',
+  },
+  'members/resources-points-of-contact': {
+    title: 'Resources & Points of Contact',
+    description:
+      'A central directory of MAPS National resources and the people to reach for member support.',
+  },
+  press: {
+    title: 'Press Releases',
+    description:
+      'Latest statements, press releases, and media features from MAPS National for local and national press and the Muslim public service community.',
+  },
+  programs: {
+    title: 'Programs',
+    description:
+      'MAPS programs help Muslim American public servants advance their careers, build community across government, and shape the policy that affects them.',
+  },
+  'programs/career-support': {
+    title: 'Career Support',
+    description:
+      'MAPS supports members and partner networks with career assistance for Muslim American public servants, helping them advance in government and civic leadership.',
+  },
+  'programs/community-building': {
+    title: 'Community Building',
+    description:
+      'MAPS builds communities based on state of residence, place of employment, and profession, including State Committees, chapter groups, and communities of practice.',
+  },
+  'programs/legal-advocacy': {
+    title: 'Legal Advocacy',
+    description:
+      'The MAPS Legal Advocacy Committee offers legal information and support for members facing adversity in their public service careers.',
+  },
+  'programs/policy-initiatives': {
+    title: 'Policy & Advocacy Initiatives',
+    description:
+      'MAPS policy initiatives, toolkits, and resources promote inclusive government, helping Muslim American employees serve without fear of discrimination or retaliation.',
+  },
+  'programs/private-sector-engagement': {
+    title: 'Private Sector Engagement (PSE)',
+    description:
+      'MAPS PSE Committee leads engagement with Muslim-led companies and government contractors, recognizing their role alongside government employees in public service.',
+  },
+  'resources/federal-employment': {
+    title: 'Federal & State Government Jobs',
+    description:
+      'MAPS helps members navigate pathways to careers in Federal, State, and local government, from the Executive Branch to Congress.',
+  },
+  'resources/jumuah-services': {
+    title: 'Jumuah Services in Washington, DC',
+    description:
+      'Many Federal employees hold Friday Jumuah services at their offices. Learn how to establish an employee resource group to organize communal prayer at your agency.',
+  },
+  'resources/public-service-fellowships-mid-career-to-senior-professionals': {
+    title: 'Fellowships: Mid-Career to Senior',
+    description:
+      'MAPS has compiled well-known public service fellowships for mid-career to senior professionals, entry points into government across nearly every career track.',
+  },
+  'resources/public-service-fellowships-young-professionals': {
+    title: 'Fellowships for Young Professionals',
+    description:
+      'MAPS has compiled public service fellowships for students, PhD candidates, and young professionals, building experience or entry into specific Federal agencies.',
+  },
+}
+
 const run = async () => {
   const payload = await getPayload({ config: configPromise })
 
@@ -5617,6 +5800,15 @@ const run = async () => {
         limit: 1,
         depth: 0,
       })
+
+      // Backfill SEO meta from the central map (LR14), preserving any meta the
+      // slice already set (e.g. meta.image). Only title/description are managed
+      // here, so a slice that sets its own is never overwritten field-for-field.
+      const seo = META_BY_SLUG[data.slug]
+      if (seo) {
+        const existingMeta = (data as { meta?: Record<string, unknown> }).meta
+        ;(data as { meta?: Record<string, unknown> }).meta = { ...seo, ...existingMeta }
+      }
 
       // Payload only auto-stamps publishedAt on an actual draft->published
       // transition; re-running this upsert against an already-published doc
