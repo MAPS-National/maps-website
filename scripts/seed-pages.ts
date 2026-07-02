@@ -1952,6 +1952,18 @@ const newYorkStateSlice: PageSlice = async (payload) => {
     return typeof id === 'number' ? id : null
   }
 
+  const teamMemberIdBySlug = async (slug: string): Promise<number | null> => {
+    const found = await payload.find({
+      collection: 'team',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const id = found.docs[0]?.id
+    return typeof id === 'number' ? id : null
+  }
+
   const customLink = (
     label: string,
     url: string,
@@ -2057,6 +2069,29 @@ const newYorkStateSlice: PageSlice = async (payload) => {
       items: cardItems,
     })
   }
+
+  // NY State Committee leadership teaser — just the President + Vice President;
+  // the full committee roster lives on /about-us/state-committees (linked from
+  // the hero's "Meet our Leadership team" text).
+  const nyLeadSlugs = ['basem-hassan', 'hesham-el-meligy']
+  const nyLeadIds = (await Promise.all(nyLeadSlugs.map(teamMemberIdBySlug))).filter(
+    (id): id is number => id != null,
+  )
+  if (nyLeadIds.length > 0) {
+    featureBlocks.push({
+      blockType: 'team',
+      header: {
+        enableHeader: true,
+        eyebrow: 'Leadership',
+        heading: 'MAPS New York Leadership',
+      },
+      layout: 'grouped',
+      density: 'airy',
+      populateBy: 'selection',
+      selectedMembers: nyLeadIds,
+    })
+  }
+
   if (connectDef) {
     const imageId = await mediaIdByFile(connectDef.file)
     if (imageId != null) {
