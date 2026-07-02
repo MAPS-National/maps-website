@@ -11,7 +11,8 @@ export const LogoStrip: Block = {
       type: 'text',
       label: 'Heading',
       admin: {
-        description: 'Optional label above the logos, e.g. "Trusted by organizations across the nation".',
+        description:
+          'Optional label above the logos, e.g. "Trusted by organizations across the nation".',
       },
     },
     {
@@ -35,13 +36,33 @@ export const LogoStrip: Block = {
       label: 'Logos',
       labels: { singular: 'Logo', plural: 'Logos' },
       minRows: 1,
-      admin: { initCollapsed: true },
+      admin: {
+        initCollapsed: true,
+        components: { RowLabel: '@/blocks/LogoStrip/RowLabel#LogoRowLabel' },
+      },
       fields: [
         {
           name: 'logo',
           type: 'upload',
           relationTo: 'media',
           required: true,
+        },
+        {
+          name: 'size',
+          type: 'select',
+          defaultValue: 'default',
+          label: 'Size',
+          admin: {
+            description:
+              'Per-logo visual size nudge for eyeballing. The box auto-fits any shape, so this only scales how large the logo reads — bump a mark that looks too small up, or a heavy wordmark down.',
+          },
+          options: [
+            { label: 'XS', value: 'xs' },
+            { label: 'Small', value: 'small' },
+            { label: 'Default', value: 'default' },
+            { label: 'Large', value: 'large' },
+            { label: 'XL', value: 'xl' },
+          ],
         },
         {
           name: 'enableLink',
