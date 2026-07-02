@@ -3090,7 +3090,13 @@ const careerSupportSlice: PageSlice = async (payload) => {
 
 const communityBuildingSlice: PageSlice = async (_payload) => {
   const contactLink = {
-    link: { type: 'custom', url: '#', label: 'Contact', appearance: 'outline', newTab: false },
+    link: {
+      type: 'custom',
+      url: '/contact',
+      label: 'Contact',
+      appearance: 'outline',
+      newTab: false,
+    },
   }
 
   return [
