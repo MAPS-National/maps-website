@@ -3993,6 +3993,11 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
 }
 
 const fellowshipsYoungSlice: PageSlice = async (_payload) => {
+  // Linked program-name paragraph — restores the outbound link Webflow carried
+  // on the bolded program name (opens in a new tab, since every target is external).
+  const progLink = (label: string, url: string) =>
+    node('paragraph', {}, [linkNode(label, url, true)])
+
   return [
     {
       slug: 'resources/public-service-fellowships-young-professionals',
@@ -4049,63 +4054,85 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
               question: 'Muslim Public Service Fellowships',
               defaultOpen: false,
               answer: richText(
-                // Muslim Public Service Network (MPSN) – Summer Fellowship — https://www.muslimpublicservice.org/
-                paragraph('Muslim Public Service Network (MPSN) – Summer Fellowship'),
-                paragraph(
-                  'Since 1994, the MPSN Fellowship has been a one-of-a-kind summer experience that educates, connects, and inspires talented Muslims to make a difference through public service. Components of the MPSN Summer Fellowship include cooperative living for students and young professionals undertaking summer internships in Washington, D.C., and career mentoring from well-placed MPSN alumni. Through living, learning, and working together in the MPSN residence, fellows build relationships across ideological differences, while the experience includes an eight-week graduate level lecture series on Islam and public ethics. Learn More / Apply: https://www.muslimpublicservice.org/',
+                progLink(
+                  'Muslim Public Service Network (MPSN) – Summer Fellowship',
+                  'https://www.muslimpublicservice.org/',
                 ),
-                // Congressional Leadership Development Program (CLDP) — https://cldp.org/
-                paragraph('Congressional Leadership Development Program (CLDP)'),
                 paragraph(
-                  'Now powered by the Muslim Public Affairs Council (MPAC), CLDP provides unique access to networks inside government departments, sectors, support groups and other allies in Washington. CLDP trains fellows to engage with elected officials and public figures in ways that create discourse and influence policy change. Accepted fellows will work with MPAC staff to apply for and secure internships/fellowships on Capitol Hill throughout February and March. The summer program itself lasts 10 weeks. Learn More / Apply: https://cldp.org/',
+                  'Since 1994, the MPSN Fellowship has been a one-of-a-kind summer experience that educates, connects, and inspires talented Muslims to make a difference through public service. Components of the MPSN Summer Fellowship include cooperative living for students and young professionals undertaking summer internships in Washington, D.C., and career mentoring from well-placed MPSN alumni. Through living, learning, and working together in the MPSN residence, fellows build relationships across ideological differences, while the experience includes an eight-week graduate level lecture series on Islam and public ethics.',
+                ),
+                progLink(
+                  'Congressional Leadership Development Program (CLDP)',
+                  'https://cldp.org/',
+                ),
+                paragraph(
+                  'Now powered by the Muslim Public Affairs Council (MPAC), CLDP provides unique access to networks inside government departments, sectors, support groups and other allies in Washington. CLDP trains fellows to engage with elected officials and public figures in ways that create discourse and influence policy change. Accepted fellows will work with MPAC staff to apply for and secure internships/fellowships on Capitol Hill throughout February and March. The summer program itself lasts 10 weeks.',
                 ),
               ),
             },
             {
               question: 'Leadership & Public Administration',
               answer: richText(
-                // White House Fellowship — https://www.whitehouse.gov/get-involved/fellows/
-                paragraph('White House Fellowship'),
+                progLink(
+                  'White House Fellowship',
+                  'https://www.whitehouse.gov/get-involved/fellows/',
+                ),
                 paragraph(
                   'White House Fellowships offer exceptional emerging leaders first-hand experience working at the highest levels of the Federal government. Selected individuals typically spend a year working as a full-time, paid Fellow to senior White House Staff, Cabinet Secretaries, and other top-ranking government officials. There are no formal age restrictions; the Fellowship program was created to give selected Americans the experience of government service early in their careers. Employees of the Federal government are not eligible unless they are career military personnel.',
                 ),
-                // APSA Congressional Fellowship Program — https://www.apsanet.org/cfp
-                paragraph('APSA Congressional Fellowship Program for Political Scientists'),
+                progLink(
+                  'APSA Congressional Fellowship Program for Political Scientists',
+                  'https://www.apsanet.org/cfp',
+                ),
                 paragraph(
                   'The American Political Science Association (APSA) Congressional Fellowship gives early to mid-career political scientists an opportunity to learn more about Congress and the legislative process. Office assignments as full-time legislative aides in the House of Representatives and/or Senate for candidates with a PhD completed within the last 15 years or a dissertation near completion, and a scholarly interest in Congress and the policymaking process.',
                 ),
-                // International Leadership Foundation (ILF) Civic Fellowship — https://www.ilfnational.org/fellowship.html
-                paragraph('International Leadership Foundation (ILF) Civic Fellowship Program'),
+                progLink(
+                  'International Leadership Foundation (ILF) Civic Fellowship Program',
+                  'https://www.ilfnational.org/fellowship.html',
+                ),
                 paragraph(
                   'The International Leadership Foundation Civic Fellowship is a civic leadership development program designed specifically to foster the next generation of Asian American and Pacific Islander (AAPI) leaders in public service. ILF Civic Fellowship provides an 8 to 10-week public service internship at federal agencies, scholarships, and a variety of seminars and workshops on civic engagement and career, personal, and leadership development.',
                 ),
-                // Running Start Congressional Fellowship — https://runningstart.org/college-programs/
-                paragraph('Running Start Congressional Fellowship'),
+                progLink(
+                  'Running Start Congressional Fellowship',
+                  'https://runningstart.org/college-programs/',
+                ),
                 paragraph(
                   'A seasonal lecture series that meets monthly and provides young working professionals aspiring for a career in US foreign policy, or in the early stages of their career, the opportunity to engage and interact with current and former senior-ranking US policymakers, diplomats and military officials.',
                 ),
-                // Local Government Management Fellowship (LGMF) — https://icma.org/local-government-management-fellowship
-                paragraph('Local Government Management Fellowship (LGMF)'),
+                progLink(
+                  'Local Government Management Fellowship (LGMF)',
+                  'https://icma.org/local-government-management-fellowship',
+                ),
                 paragraph(
                   'The Local Government Management Fellowship is a career development opportunity for recent graduate-degree recipients pursuing careers in local government management, offering a full-time placement and mentorship in a participating local government.',
                 ),
-                // Jamestown’s Young Professionals Program — https://jamestown.org/programs/jamestowns-young-professionals-program/
-                paragraph('Jamestown’s Young Professionals Program'),
+                progLink(
+                  'Jamestown’s Young Professionals Program',
+                  'https://jamestown.org/programs/jamestowns-young-professionals-program/',
+                ),
                 paragraph(
                   'A program that connects young working professionals aspiring for a career in US foreign policy, or in the early stages of their career, with current and former senior-ranking US policymakers, diplomats, and military officials.',
                 ),
-                // The Young Leaders Program — https://frenchamerican.org/young-leaders/apply/
-                paragraph('The French-American Foundation Young Leaders Program'),
+                progLink(
+                  'The French-American Foundation Young Leaders Program',
+                  'https://frenchamerican.org/young-leaders/apply/',
+                ),
                 paragraph(
                   'The Young Leaders Program brings together a select group of emerging leaders from France and the United States for a two-year program of cross-cultural exchange and dialogue. Participants agree to the Young Leaders Responsibilities Charter; the Foundation reserves the right to withdraw a Young Leader who does not abide by the charter.',
                 ),
-                // The Shawn Brimley Next Generation National Security Leaders Fellowship — https://www.cnas.org/next-generation-programs/nextgeneration
-                paragraph('The Shawn Brimley Next Generation National Security Leaders Fellowship'),
+                progLink(
+                  'The Shawn Brimley Next Generation National Security Leaders Fellowship',
+                  'https://www.cnas.org/next-generation-programs/nextgeneration',
+                ),
                 paragraph(
                   'A year-long, part-time professional development fellowship that aims to bring together young professionals across sectors within the national security field to learn best practices and lessons in leadership. Next Gen fellows engage with thought leaders on leadership principles and national security through various engagements, including a monthly dinner series. The program culminates in a week-long international study tour to delve deeper into national security issues and leadership.',
                 ),
-                // The Young Strategists Forum — https://www.gmfus.org/young-strategists-forum
-                paragraph('The Young Strategists Forum'),
+                progLink(
+                  'The Young Strategists Forum',
+                  'https://www.gmfus.org/young-strategists-forum',
+                ),
                 paragraph(
                   'Run by the German Marshall Fund, the Young Strategists Forum seeks to develop a new generation of strategic thinkers and equip them with the skills to successfully navigate a world in flux. Held in Tokyo, the program centers on the US-Japan alliance and security dynamics in the Indo-Pacific region through lectures, a 36-hour simulation exercise, meetings with policymakers and journalists, and a study tour.',
                 ),
@@ -4114,33 +4141,42 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
             {
               question: 'International Affairs & Law',
               answer: richText(
-                // Charles B. Rangel International Affairs Fellowship — http://rangelprogram.org/
-                paragraph('Charles B. Rangel International Affairs Fellowship Program'),
+                progLink(
+                  'Charles B. Rangel International Affairs Fellowship Program',
+                  'http://rangelprogram.org/',
+                ),
                 paragraph(
                   'For college seniors or graduates who want to become Foreign Service Officers in the U.S. Department of State, the Rangel Graduate Fellowship Program provides benefits of up to $95,000 over two years toward a two-year master’s degree, arranges internships on Capitol Hill and at U.S. embassies, and provides mentorship and professional development support.',
                 ),
-                // Robertson Foundation for Government Fellowships — https://rfg.org/overview
-                paragraph('Robertson Foundation for Government Fellowships'),
+                progLink(
+                  'Robertson Foundation for Government Fellowships',
+                  'https://rfg.org/overview',
+                ),
                 paragraph(
                   'RFG seeks to support outstanding graduate students from public service, policy and administration schools who represent diverse backgrounds and perspectives, with a common embrace of government service as a future calling. By supporting their education through academic fellowships and funding for government internships, RFG enables fellows to emerge from graduate school with lower or no financial burden so that they may pursue federal careers with complete dedication.',
                 ),
-                // Thomas R. Pickering Graduate Foreign Affairs Fellowship — https://pickeringfellowship.org/
-                paragraph('Thomas R. Pickering Graduate Foreign Affairs Fellowship'),
+                progLink(
+                  'Thomas R. Pickering Graduate Foreign Affairs Fellowship',
+                  'https://pickeringfellowship.org/',
+                ),
                 paragraph(
                   'The Thomas R. Pickering Foreign Affairs Fellowship Program attracts and prepares outstanding young people for Foreign Service careers in the U.S. Department of State. It welcomes the application of members of minority groups historically underrepresented in the State Department, women, and those with financial need. Based on the fundamental principle that diversity is a strength in our diplomatic efforts, the program values varied backgrounds, including ethnic, racial, social, and geographic diversity.',
                 ),
-                // Mike Mansfield Fellowship Program — https://mansfieldfellows.org/about-the-fellowship/
-                paragraph('Mike Mansfield Fellowship Program'),
+                progLink(
+                  'Mike Mansfield Fellowship Program',
+                  'https://mansfieldfellows.org/about-the-fellowship/',
+                ),
                 paragraph(
                   'The Mansfield Fellowship Program was established by the U.S. Congress in 1994 to build a corps of U.S. Federal government employees with proficiency in the Japanese language and practical, firsthand knowledge about Japan and its government. Applicants must be federal government employees with at least two consecutive years of service and are subsequently required to serve at least two years in the Federal government.',
                 ),
-                // Barbara A. Ringer Copyright Honors Program — https://www.copyright.gov/about/special-programs/ringer.html
-                paragraph('Barbara A. Ringer Copyright Honors Program'),
+                progLink(
+                  'Barbara A. Ringer Copyright Honors Program',
+                  'https://www.copyright.gov/about/special-programs/ringer.html',
+                ),
                 paragraph(
                   'The Ringer Honors Program offers 18-24-month paid fellowships for attorneys in the initial stages of their careers who demonstrate promising ability and interest in copyright law. Ringer Fellows work closely with United States Copyright Office senior attorneys on a range of copyright-related law and policy matters.',
                 ),
-                // Dave Kennedy Fellowship — https://ij.org/opportunities/students/
-                paragraph('Dave Kennedy Fellowship'),
+                progLink('Dave Kennedy Fellowship', 'https://ij.org/opportunities/students/'),
                 paragraph(
                   'The Institute for Justice recruits the most talented law students from across the country as summer fellowship program participants, called Dave Kennedy Fellows. The program offers an unparalleled professional opportunity to substantively contribute to active and future strategic litigation in both state and federal courts.',
                 ),
@@ -4149,8 +4185,10 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
             {
               question: 'Economics',
               answer: richText(
-                // JPSM Junior Fellows Program — https://jpsm.umd.edu/academics/junior-fellows-program
-                paragraph('JPSM Junior Fellows Program'),
+                progLink(
+                  'JPSM Junior Fellows Program',
+                  'https://jpsm.umd.edu/academics/junior-fellows-program',
+                ),
                 paragraph(
                   'The Junior Fellow Program supports career opportunities for those who have the knowledge and skills to design, collect, and analyze large-scale databases by offering a paid research assistantship, plus educational benefits that can expand the horizons of what you can do in your career. Junior Fellows will be placed at various statistical and survey organizations.',
                 ),
@@ -4159,71 +4197,81 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
             {
               question: 'Science, Tech, Engineering & Math',
               answer: richText(
-                // AAAS Science & Technology Policy Fellowships — https://www.aaas.org/fellowships
-                paragraph('American Association for the Advancement of Science (AAAS)'),
+                progLink(
+                  'American Association for the Advancement of Science (AAAS)',
+                  'https://www.aaas.org/fellowships',
+                ),
                 paragraph(
                   'The Science & Technology Policy Fellowships program provides opportunities for scientists and engineers to contribute to federal policymaking while learning firsthand about the intersection of science and policy.',
                 ),
-                // Christine Mirzayan Science & Technology Policy Graduate Fellowship — https://www.nationalacademies.org/our-work/the-christine-mirzayan-science--technology-policy-graduate-fellowship-program
-                paragraph('Christine Mirzayan Science & Technology Policy Graduate Fellowship'),
+                progLink(
+                  'Christine Mirzayan Science & Technology Policy Graduate Fellowship',
+                  'https://www.nationalacademies.org/our-work/the-christine-mirzayan-science--technology-policy-graduate-fellowship-program',
+                ),
                 paragraph(
                   'A full-time hands-on training and educational program that provides early career individuals with the opportunity to spend 12 weeks at the National Academies of Sciences, Engineering, and Medicine in Washington, DC learning about science and technology policy and the role that scientists and engineers play in advising the nation.',
                 ),
-                // Cybersecurity Talent Initiative — https://cybertalentinitiative.org/
-                paragraph('Cybersecurity Talent Initiative'),
+                progLink('Cybersecurity Talent Initiative', 'https://cybertalentinitiative.org/'),
                 paragraph(
                   'The Cybersecurity Talent Initiative is a public-private partnership aimed at recruiting and training a world-class cybersecurity workforce. Participants selected for the program will be guaranteed a two-year placement at a federal agency with cybersecurity needs.',
                 ),
-                // DOE NNSA Laboratory Residency Graduate Fellowship — https://www.krellinst.org/lrgf/about-doe-nnsa-lrgf
-                paragraph(
+                progLink(
                   'Department of Energy National Nuclear Security Administration Laboratory Residency Graduate Fellowship',
+                  'https://www.krellinst.org/lrgf/about-doe-nnsa-lrgf',
                 ),
                 paragraph(
                   'Launched in 2017, the DOE NNSA Laboratory Residency Graduate Fellowship (DOE NNSA LRGF) provides excellent financial benefits and professional development opportunities to students pursuing a Ph.D. in fields of study that address complex science and engineering problems critical to stewardship science.',
                 ),
-                // FDA Scientific Internships and Fellowships — https://www.fda.gov/about-fda/jobs-and-training-fda/scientific-internships-fellowships-trainees-and-non-us-citizens
-                paragraph(
+                progLink(
                   'U.S. Food and Drug Administration (FDA) Scientific Internships and Fellowships',
+                  'https://www.fda.gov/about-fda/jobs-and-training-fda/scientific-internships-fellowships-trainees-and-non-us-citizens',
                 ),
                 paragraph(
                   'Whether you’re an undergraduate looking to pursue a career in science, a graduate science student seeking experience in regulatory science, a postgraduate looking for fellowship opportunities, or a senior scientist pursuing research experience in your field of expertise, FDA offers many paths to learning about the field of regulatory science.',
                 ),
-                // Foreign Affairs Information Technology (FAIT) Fellowship — https://www.faitfellowship.org/
-                paragraph('Foreign Affairs Information Technology (FAIT) Fellowship'),
+                progLink(
+                  'Foreign Affairs Information Technology (FAIT) Fellowship',
+                  'https://www.faitfellowship.org/',
+                ),
                 paragraph(
                   'The FAIT Fellowship, funded by the United States Department of State, provides undergraduate and graduate students in IT-related fields with tuition assistance, as well as mentorship and professional development, to launch their careers in the Foreign Service as Information Management Specialists.',
                 ),
-                // Mickey Leland Energy Fellowship (MLEF) — https://orise.orau.gov/mlef/
-                paragraph('Mickey Leland Energy Fellowship (MLEF) Program'),
+                progLink(
+                  'Mickey Leland Energy Fellowship (MLEF) Program',
+                  'https://orise.orau.gov/mlef/',
+                ),
                 paragraph(
                   'The Mickey Leland Energy Fellowship Program provides students with educational opportunities to gain real-world, hands-on research experience with the Department of Energy’s (DOE) Office of Fossil Energy. The MLEF program was created in 1995 with the goal of improving opportunities for under-represented and minority students in STEM fields.',
                 ),
-                // NASA Postdoctoral Program — https://npp.usra.edu/
-                paragraph('NASA Postdoctoral Program'),
+                progLink('NASA Postdoctoral Program', 'https://npp.usra.edu/'),
                 paragraph(
                   'The NASA Postdoctoral Program (NPP) provides early-career and more senior scientists the opportunity to share in NASA’s mission. NASA Postdoctoral Fellows work on 1 to 3 year assignments with NASA scientists and engineers at NASA centers and institutes to advance NASA’s missions in earth science, heliophysics, planetary science, astrophysics, space bioscience, aeronautics, engineering, human exploration and space operations, astrobiology, and science management.',
                 ),
-                // ORISE Department of Defense Fellowship Program — https://orise.orau.gov/dodprograms/
-                paragraph(
+                progLink(
                   'Oak Ridge Institute of Science and Education Department of Defense Fellowship Program',
+                  'https://orise.orau.gov/dodprograms/',
                 ),
                 paragraph(
                   'To ensure the robust supply of scientists and engineers to meet the U.S. Department of Defense’s future science and technology needs, the ORISE program places individuals from the academic community (students, recent graduates, and faculty) in DoD research projects.',
                 ),
-                // SMART Scholarship for Service — https://www.smartscholarship.org/smart
-                paragraph(
+                progLink(
                   'Science, Mathematics and Research for Transformation (SMART) Scholarship for Service Program',
+                  'https://www.smartscholarship.org/smart',
                 ),
                 paragraph(
                   'The SMART Scholarship for Service Program is an opportunity for students pursuing an undergraduate, graduate or doctoral degree in STEM disciplines to receive a full scholarship and be gainfully employed upon degree completion in the U.S. Department of Defense.',
                 ),
-                // STPI Fellowship — https://www.ida.org/en/careers/students-and-recent-graduates/summer-associate-internships-and-fellowships/science-policy-fellowship
-                paragraph('The Science and Technology Policy Institute (STPI) Fellowship'),
+                progLink(
+                  'The Science and Technology Policy Institute (STPI) Fellowship',
+                  'https://www.ida.org/en/careers/students-and-recent-graduates/summer-associate-internships-and-fellowships/science-policy-fellowship',
+                ),
                 paragraph(
                   'The STPI Fellowship provides recent bachelor’s degree recipients with an opportunity to use their critical thinking and analytic skills to work on science and technology (S&T) policy areas, including energy and the environment, space sciences, innovation and competitiveness, evaluation, life sciences, information technologies, national security, and STEM education. Fellows are involved in collaborative research for leaders in the White House Office of Science and Technology Policy (OSTP) and other Federal Government organizations.',
                 ),
-                // USGS Mendenhall Research Fellowship Program — https://www.usgs.gov/centers/mendenhall
-                paragraph('USGS Mendenhall Research Fellowship Program'),
+                progLink(
+                  'USGS Mendenhall Research Fellowship Program',
+                  'https://www.usgs.gov/centers/mendenhall',
+                ),
                 paragraph(
                   'The Mendenhall Research Fellowship Program of the U.S. Geological Survey (USGS) provides Fellows research experiences that enhance their scientific stature and credentials. The USGS invites postdoctoral scholars to conduct concentrated research in association with selected members of the USGS professional staff. Fellows have two-year appointments to the USGS, receiving a full salary and benefits at the GS-12 level. Applicants must have their PhD degree no earlier than 5 years before the application opening date.',
                 ),
@@ -4232,14 +4280,16 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
             {
               question: 'Health',
               answer: richText(
-                // Sustaining Technical and Analytical Resources (STAR) — https://www.ghstar.org/participants/fellows
-                paragraph('Sustaining Technical and Analytical Resources (STAR)'),
+                progLink(
+                  'Sustaining Technical and Analytical Resources (STAR)',
+                  'https://www.ghstar.org/participants/fellows',
+                ),
                 paragraph(
                   'Through fellowships, internships, and strategic partnerships, STAR supports building the capacity of diverse global health professionals and organizations at all levels to make inclusive, collaborative, and innovative contributions to global health.',
                 ),
-                // Post Baccalaureate Intramural Research Training Award (Postbac IRTA/CRTA) — https://www.training.nih.gov/programs/postbac_irta
-                paragraph(
+                progLink(
                   'Post Baccalaureate Intramural Research Training Award (Postbac IRTA/CRTA)',
+                  'https://www.training.nih.gov/programs/postbac_irta',
                 ),
                 paragraph(
                   'The NIH Postbac IRTA program provides recent college graduates who are planning to apply to graduate or professional (medical/dental/pharmacy) school an opportunity to spend one or two years performing full-time research at the NIH. Postbac IRTAs/CRTAs work side-by-side with some of the leading scientists in the world, in an environment devoted exclusively to biomedical research.',
