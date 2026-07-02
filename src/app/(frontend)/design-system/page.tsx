@@ -200,8 +200,7 @@ export default function StyleGuidePage() {
               </blockquote>
             </div>
             <span className="text-xs text-muted-foreground">
-              <code>blockquote</code> · @tailwindcss/typography default (no bespoke token) ·
-              RichText citation / attribution
+              <code>blockquote</code> · Montserrat · 300 · italic · RichText citation / attribution
             </span>
           </div>
           <TypeSpec

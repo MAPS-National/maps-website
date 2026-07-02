@@ -18,7 +18,7 @@ const config = {
               h2: { fontWeight: 600 },
               h3: { fontWeight: 600 },
               h4: { fontWeight: 600 },
-              blockquote: { fontWeight: 400 },
+              blockquote: { fontWeight: 300 },
             },
           ],
         },
