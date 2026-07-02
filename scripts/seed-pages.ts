@@ -2038,7 +2038,20 @@ const newYorkStateSlice: PageSlice = async (payload) => {
   if (cardItems.length > 0) {
     featureBlocks.push({
       blockType: 'cardGrid',
-      header: { enableHeader: false },
+      header: {
+        enableHeader: true,
+        eyebrow: 'Grow',
+        heading: 'Supporting MAPS in New York',
+        anchorId: 'main-section',
+        body: richText(
+          paragraph(
+            'NYC government employees deliver essential services and make critical decisions that shape our daily lives, and it is vital that our city’s workforce reflects the rich diversity of the communities it serves.',
+          ),
+          paragraph(
+            'As part of our mission to elevate Muslim American voices in local government, MAPS New York is actively collecting candidate profiles from Full, Associate, and Affiliate members for career opportunities within New York City government.',
+          ),
+        ),
+      },
       columns: '3',
       mediaType: 'image',
       items: cardItems,
@@ -2089,9 +2102,20 @@ const newYorkStateSlice: PageSlice = async (payload) => {
         eyebrow: 'Members',
         richText: richText(
           heading('MAPS New York State Committee'),
-          paragraph(
-            'The MAPS New York State Committee helps organize and support MAPS members and represents MAPS among government officials within the State. MAPS-NY leaders ensure professional development and community are brought directly to local public servants where they live and work.',
-          ),
+          node('paragraph', {}, [
+            text(
+              'The MAPS New York State Committee helps organize and support MAPS members and represent MAPS among government officials within the State. MAPS-NY leaders ensure professional development and community are brought directly to local public servants where they live and work. Meet our Leadership team ',
+            ),
+            node(
+              'link',
+              {
+                version: 3,
+                fields: { linkType: 'custom', url: '/about-us/state-committees', newTab: false },
+              },
+              [{ ...text('here'), format: 1 }],
+            ),
+            text(' or email us below.'),
+          ]),
         ),
         links: [
           {
