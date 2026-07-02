@@ -728,6 +728,9 @@ const partnersSlice: PageSlice = async (payload) => {
     'amhp.webp',
     'muppies.webp',
     'poligon.webp',
+    'sahara.webp',
+    'de-lune.webp',
+    'myna.webp',
   ]
 
   const mediaDocs = await payload.find({

@@ -12,12 +12,21 @@ const LogoImage: React.FC<{ item: LogoItem }> = ({ item }) => {
 
   if (!logo || typeof logo !== 'object') return null
 
+  // Real partner logos are a grab-bag of raw exports: some carry their own
+  // white/colored background rectangle, some are dark-on-transparent. Matting
+  // every logo on a fixed white card (regardless of site theme) normalizes
+  // the mismatched sources and keeps dark logos legible on the dark theme's
+  // near-black page background — the same theme-invariant-white pattern
+  // PostHero uses for its preview card.
   const image = (
-    <Media
-      className="flex items-center"
-      imgClassName="h-10 w-auto object-contain md:h-12"
-      resource={logo}
-    />
+    <div className="flex h-20 w-40 items-center justify-center rounded-md border border-border bg-[var(--neutral-white)] shadow-sm md:h-24 md:w-44">
+      <Media
+        className="relative h-12 w-28 md:h-14 md:w-32"
+        fill
+        imgClassName="object-contain"
+        resource={logo}
+      />
+    </div>
   )
 
   if (enableLink && link) {
@@ -46,11 +55,7 @@ export const LogoStripBlock: React.FC<LogoStripBlockProps> = (props) => {
 
   return (
     <section className="container">
-      {heading && (
-        <p className="mb-8 text-center type-eyebrow text-content-secondary">
-          {heading}
-        </p>
-      )}
+      {heading && <p className="mb-8 text-center type-eyebrow text-content-secondary">{heading}</p>}
 
       {isMarquee ? (
         <div className="relative overflow-hidden">
