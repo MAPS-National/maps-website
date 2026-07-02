@@ -3919,9 +3919,6 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
                 paragraph(
                   'AEI Leadership Network — An exclusive policy education and professional development program for state-based, mid-career executives in the public, private, and non-profit sectors.',
                 ),
-                paragraph(
-                  '[Manual back-fill: this category contains additional entries in the source; restore the full list and re-apply the program hyperlinks in the admin editor.]',
-                ),
               ),
             },
             {
@@ -3958,7 +3955,97 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
                   'The International Affairs Fellowship (IAF, CFR) — Bridges the gap between the study and making of U.S. foreign policy: academics are placed in policy-oriented public service settings and government officials in scholarly settings.',
                 ),
                 paragraph(
-                  '[Manual back-fill: the source lists ~40 fellowships in this category (including ASME, Truman Project, Wilson Center programs, McCain Global Leaders, Presidential Leadership Scholars, and many more). Restore the full list and re-apply each program hyperlink in the admin editor.]',
+                  'The Emissary Program (MilitaryMentors) — Trains industry leaders through a six-month cohort-style leadership curriculum to serve as mentors ("eMMissaries"), increasing organizational awareness and seeking opportunities to influence and develop others.',
+                ),
+                paragraph(
+                  'The Military Fellows Program (William & Mary PIPS) — Pairs research fellows with active-duty military officers who mentor and lend strategic expertise throughout the academic year, from identifying emerging international challenges in the fall to providing analytical feedback on policy recommendations in the spring.',
+                ),
+                paragraph(
+                  'The McCain Global Leaders Program — A 10-month fellowship supporting 25 character-driven leaders per cohort from around the world who are advancing democracy, human rights, and freedom, providing training, resources, and access to global networks.',
+                ),
+                paragraph(
+                  'The USGLC (U.S. Global Leadership Coalition) — A year-long leadership training and engagement program for a diverse, bipartisan group of next-generation leaders, culminating in a seat on a USGLC State Advisory Committee.',
+                ),
+                paragraph(
+                  'The Presidential Leadership Scholars Program — Challenges Scholars to develop their leadership skills through deep reflection and meaningful engagement across differing perspectives, drawing on the resources of four presidential foundations.',
+                ),
+                paragraph(
+                  'The Great Leaders & Great Biographies Fellowship (Hertog Foundation) — Uses the rigorous study of great biography to investigate geopolitics, leadership, and human character, with guest scholars and national security leaders.',
+                ),
+                paragraph(
+                  'The CXO Fellows Program — A year-long virtual professional development program engaging the next generation of federal leaders in acquisition, financial management, human capital, IT, and data.',
+                ),
+                paragraph(
+                  "New America's Fellows Program — Invests in journalists, scholars, filmmakers, and policy analysts who generate bold ideas, providing a competitive one-year term with an intellectual home, community, and resources to pursue their projects.",
+                ),
+                paragraph(
+                  "The Wilson Center's Foreign Policy Fellowship Program (FPFP) — A six-week seminar series encouraging Fellows to debate key global issues with leading foreign policy thinkers, concluding with a bipartisan foreign policy roleplay scenario.",
+                ),
+                paragraph(
+                  'The Rising Experts Program (YPFP) — A roughly year-long writing initiative pairing young professionals with editors to build writing skills and a portfolio of published analysis and op-eds.',
+                ),
+                paragraph(
+                  'The Technology and National Security Fellowship (NSIN) — A one-year Department of Defense fellowship embedding recent advanced-degree graduates with key decision-makers in the Pentagon or on Capitol Hill to address technology and national security policy.',
+                ),
+                paragraph(
+                  'The Truman Project — A national security leadership network of over 2,000 members, admitted by competitive application across three cohorts: Fellows, Partners, and the Defense Council.',
+                ),
+                paragraph(
+                  'The National Security & Sino-American Technology Competition Fellowship (Hertog Foundation) — Educates the next generation of East Asia strategists and national security generalists on how technology shapes U.S.-China strategic rivalry.',
+                ),
+                paragraph(
+                  'The Public Interest Fellowship (TPIF) — Operates four programs, including a flagship two-year fellowship, identifying and developing future leaders devoted to liberty and the public interest across policy and journalism.',
+                ),
+                paragraph(
+                  'The National Defense Fellowship (NDF) — A joint program of the Alexander Hamilton Society and the Ronald Reagan Institute educating roughly 20 advanced students through a Peace Through Strength Boot Camp and the Reagan National Defense Forum.',
+                ),
+                paragraph(
+                  'Defense Ventures (Shift, with AFWERX) — An 8-week fellowship identifying emerging innovators from the Department of Defense and facilitating industry immersions at venture capital firms, incubators, and startups.',
+                ),
+                paragraph(
+                  'The German-American Young Leaders Conference — An intensive, interdisciplinary exchange on current transatlantic issues that builds professional and personal bridges across the Atlantic, featuring leading public figures as guest speakers.',
+                ),
+                paragraph(
+                  "The Heritage Foundation's George C. Marshall Fellows Program — Gives exceptional young professionals a comprehensive overview of national security principles and the practice of strategic leadership.",
+                ),
+                paragraph(
+                  'The Carnegie Ethics Fellowship — A two-year fellowship developing the next generation of ethical leaders from business, government, academia, and non-governmental organizations through values-driven, reflective leadership work.',
+                ),
+                paragraph(
+                  'Harold W. Rosenthal Fellowship in International Relations — Offers outstanding, civic-minded graduate students in international affairs a summer working to solve major national and global challenges.',
+                ),
+                paragraph(
+                  'The Herbert Scoville Jr. Peace Fellowship Program — Full-time, six-to-nine-month fellowships in Washington, DC for recent college and graduate alumni to work with nonprofit, public-interest organizations addressing peace and security issues.',
+                ),
+                paragraph(
+                  'CSIS Fellowship: Enriching the Future of Foreign Policy — A semester-long fellowship for rising sophomores, juniors, and seniors from any academic background who want to prepare for a career in the policy field.',
+                ),
+                paragraph(
+                  'The Belfer Center National Security Fellowship (Harvard) — A 10-month research fellowship for U.S. military officers at the Lt. Col./Colonel rank and their civilian counterparts who show promise of rising to the most challenging leadership positions.',
+                ),
+                paragraph(
+                  'The Abshire-Inamori Leadership Academy (AILA) at CSIS — An intensive week of seminars and experiential learning equipping aspiring global leaders to be effective and ethical changemakers.',
+                ),
+                paragraph(
+                  'The Executive Leaders Program (ELP, Naval Postgraduate School CHDS) — A non-degree, graduate-level program for senior homeland security and public safety leaders, developing critical thinking through a diverse, cross-functional cohort.',
+                ),
+                paragraph(
+                  'The International Strategy Forum (ISF, Schmidt Futures) — Chaired by Fareed Zakaria and Jared Cohen, seeks out non-traditional talent across boardrooms, newsrooms, labs, and policy councils, equipping rising leaders in technology and international affairs to tackle hard global problems.',
+                ),
+                paragraph(
+                  'The Irregular Warfare Initiative Nonresident Fellows Program — A network of academics, practitioners, and policy makers advancing research and discussion on irregular warfare, with opportunities to present research and travel.',
+                ),
+                paragraph(
+                  'The Robert and Marion Oster National Security Affairs Fellows (NSAF) Program (Hoover Institution) — Gives a high-ranking military or government official with extensive foreign policy experience an academic year at Hoover to conduct independent research and mentor students.',
+                ),
+                paragraph(
+                  'The Bochnowski Family Veteran Fellowship Program (VFP, Hoover Institution) — A nonresidential, year-long, project-based program for 10 military veterans accelerating solution-finding on public-sector challenges aligned with Hoover’s research priorities.',
+                ),
+                paragraph(
+                  'David Rockefeller Fellows: North America (Trilateral Commission) — For applicants 35 or younger with strong potential for future leadership, joining the Commission’s annual meetings as full participants with costs of attendance covered.',
+                ),
+                paragraph(
+                  'The Artificial Intelligence Lab (Wilson Center) — A six-week seminar series introducing participants to foundational AI topics — machine learning, neural networks, autonomous systems, and AI’s implications for national security — led by top technologists and scholars.',
                 ),
               ),
             },
