@@ -7,10 +7,23 @@ import { Media } from '@/components/Media'
 
 type LogoItem = NonNullable<LogoStripBlockProps['items']>[number]
 
+// Per-logo manual size nudge (config `size` select). The box auto-fits any
+// aspect, so this is purely an eyeballing knob: scale the inner logo up/down.
+// XL is capped so the largest logo still clears the card's inner width.
+const SIZE_SCALE: Record<string, number> = {
+  xs: 0.55,
+  small: 0.78,
+  default: 1,
+  large: 1.18,
+  xl: 1.35,
+}
+
 const LogoImage: React.FC<{ item: LogoItem }> = ({ item }) => {
-  const { enableLink, link, logo } = item
+  const { enableLink, link, logo, size } = item
 
   if (!logo || typeof logo !== 'object') return null
+
+  const scale = SIZE_SCALE[size ?? 'default'] ?? 1
 
   // Real partner logos are a grab-bag of raw exports: some carry their own
   // white/colored background rectangle, some are dark-on-transparent. Matting
@@ -20,12 +33,20 @@ const LogoImage: React.FC<{ item: LogoItem }> = ({ item }) => {
   // PostHero uses for its preview card.
   const image = (
     <div className="flex h-20 w-40 items-center justify-center rounded-md border border-border bg-[var(--neutral-white)] shadow-sm md:h-24 md:w-44">
-      <Media
-        className="relative h-12 w-28 md:h-14 md:w-32"
-        fill
-        imgClassName="object-contain"
-        resource={logo}
-      />
+      {/* Transform-only wrapper: the Media box keeps its own relative+size so
+          the fill image's positioning context is unchanged; this div just
+          scales it per the manual `size` flag. */}
+      <div
+        className="inline-flex"
+        style={scale !== 1 ? { transform: `scale(${scale})` } : undefined}
+      >
+        <Media
+          className="relative h-12 w-28 md:h-14 md:w-32"
+          fill
+          imgClassName="object-contain"
+          resource={logo}
+        />
+      </div>
     </div>
   )
 
