@@ -1514,9 +1514,9 @@ export interface TeamBlock {
    */
   layout: 'grouped' | 'tabs';
   /**
-   * People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk.
+   * People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk. Tight: a full committee roster (many people, small photos, no bio hint).
    */
-  density: 'airy' | 'medium' | 'compact';
+  density: 'airy' | 'medium' | 'compact' | 'tight';
   populateBy?: ('collection' | 'selection') | null;
   /**
    * Leave empty to show every group.

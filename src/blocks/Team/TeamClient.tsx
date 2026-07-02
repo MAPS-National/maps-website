@@ -27,6 +27,7 @@ const densityClass: Record<string, string> = {
   airy: 'sm:[grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))]',
   medium: 'sm:[grid-template-columns:repeat(auto-fit,minmax(13rem,1fr))]',
   compact: 'sm:[grid-template-columns:repeat(auto-fit,minmax(11rem,1fr))]',
+  tight: 'sm:[grid-template-columns:repeat(auto-fit,minmax(7rem,1fr))]',
 }
 
 const initials = (name: string): string =>
@@ -61,7 +62,8 @@ export const TeamClient: React.FC<{
   // the editor's configured category order when given, else first appearance.
   const groups = useMemo(() => {
     const order = new Map<string, string>()
-    for (const m of members) for (const c of m.categories) if (!order.has(c.value)) order.set(c.value, c.label)
+    for (const m of members)
+      for (const c of m.categories) if (!order.has(c.value)) order.set(c.value, c.label)
     const list = Array.from(order, ([value, label]) => ({
       value,
       label,
@@ -81,7 +83,9 @@ export const TeamClient: React.FC<{
 
   const visible = useMemo(
     () =>
-      active === 'all' ? members : members.filter((m) => m.categories.some((c) => c.value === active)),
+      active === 'all'
+        ? members
+        : members.filter((m) => m.categories.some((c) => c.value === active)),
     [active, members],
   )
 
@@ -221,13 +225,14 @@ const PersonGrid: React.FC<{
 }> = ({ density, members, onOpen }) => (
   <ul
     className={cn(
-      'grid grid-cols-1 justify-items-center gap-y-12 sm:justify-center sm:gap-x-10 sm:gap-y-14',
+      'grid grid-cols-1 justify-items-center sm:justify-center',
+      density === 'tight' ? 'gap-y-6 sm:gap-x-5 sm:gap-y-8' : 'gap-y-12 sm:gap-x-10 sm:gap-y-14',
       densityClass[density] ?? densityClass['medium'],
     )}
   >
     {members.map((m) => (
       <li key={m.id}>
-        <Person member={m} onOpen={onOpen} />
+        <Person density={density} member={m} onOpen={onOpen} />
       </li>
     ))}
   </ul>
@@ -261,38 +266,62 @@ const FilterTab: React.FC<{ active: boolean; label: string; onClick: () => void 
  * for focus restoration. See MediaGallery's Thumb.
  */
 const Person: React.FC<{
+  density: string
   member: TeamMember
   onOpen: (id: string, el: HTMLElement) => void
-}> = ({ member, onOpen }) => (
-  <button
-    aria-haspopup="dialog"
-    className="group flex w-full flex-col items-center text-center focus:outline-none"
-    onClick={(e) => onOpen(member.id, e.currentTarget)}
-    type="button"
-  >
-    <Photo
-      className="size-28 ring-1 ring-border/60 transition duration-300 group-hover:ring-2 group-hover:ring-primary group-hover:ring-offset-2 group-hover:ring-offset-background group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background md:size-36"
-      member={member}
-    />
-    <span className="mt-5 font-serif text-lg font-medium text-content transition-colors group-hover:text-primary md:text-xl">
-      {member.name}
-    </span>
-    {member.jobTitle && (
-      <span className="mt-1 max-w-[16rem] text-sm leading-snug text-content-secondary">
-        {member.jobTitle}
+}> = ({ density, member, onOpen }) => {
+  const tight = density === 'tight'
+  return (
+    <button
+      aria-haspopup="dialog"
+      className="group flex w-full flex-col items-center text-center focus:outline-none"
+      onClick={(e) => onOpen(member.id, e.currentTarget)}
+      type="button"
+    >
+      <Photo
+        className={cn(
+          'ring-1 ring-border/60 transition duration-300 group-hover:ring-2 group-hover:ring-primary group-hover:ring-offset-2 group-hover:ring-offset-background group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-background',
+          tight ? 'size-14 md:size-16' : 'size-28 md:size-36',
+        )}
+        member={member}
+      />
+      <span
+        className={cn(
+          'font-serif font-medium text-content transition-colors group-hover:text-primary',
+          tight ? 'mt-2 text-sm md:text-base' : 'mt-5 text-lg md:text-xl',
+        )}
+      >
+        {member.name}
       </span>
-    )}
-    {member.jobTitleSecondary && (
-      <span className="max-w-[16rem] text-sm leading-snug text-content-secondary">
-        {member.jobTitleSecondary}
-      </span>
-    )}
-    <span className="mt-2 flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 max-sm:opacity-100">
-      Read bio
-      <ArrowIcon />
-    </span>
-  </button>
-)
+      {member.jobTitle && (
+        <span
+          className={cn(
+            'max-w-[16rem] leading-snug text-content-secondary',
+            tight ? 'mt-0.5 text-xs' : 'mt-1 text-sm',
+          )}
+        >
+          {member.jobTitle}
+        </span>
+      )}
+      {member.jobTitleSecondary && (
+        <span
+          className={cn(
+            'max-w-[16rem] leading-snug text-content-secondary',
+            tight ? 'text-xs' : 'text-sm',
+          )}
+        >
+          {member.jobTitleSecondary}
+        </span>
+      )}
+      {!tight && (
+        <span className="mt-2 flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 max-sm:opacity-100">
+          Read bio
+          <ArrowIcon />
+        </span>
+      )}
+    </button>
+  )
+}
 
 /** Chromeless circular headshot, or initials on a brand tint when no photo. */
 const Photo: React.FC<{ className?: string; member: TeamMember }> = ({ className, member }) => {
