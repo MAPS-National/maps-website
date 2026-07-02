@@ -12,10 +12,22 @@ export const ArchiveBlock: React.FC<
     id?: string
   }
 > = async (props) => {
-  const { id, anchorId, categories, display, introContent, limit: limitFromProps, populateBy, selectedDocs, showRegisterLinks } =
-    props
+  const {
+    id,
+    anchorId,
+    categories,
+    display,
+    introContent,
+    limit: limitFromProps,
+    populateBy,
+    selectedDocs,
+    showRegisterLinks,
+  } = props
 
-  const limit = limitFromProps || 3
+  // ponytail: `|| 3` would coerce an intentional `limit: 0` ("no limit", a
+  // real Payload query convention) to a hardcoded 3, silently hiding most
+  // posts on pages like /latest-updates that seed limit:0 on purpose.
+  const limit = limitFromProps ?? 10
 
   let posts: Post[] = []
 
@@ -70,14 +82,14 @@ export const ArchiveBlock: React.FC<
     <div className="my-16 scroll-mt-24" id={anchorId || `block-${id}`}>
       {introContent && (
         <div className="container mb-16">
-          <RichText
-            className="ms-0 max-w-[48rem]"
-            data={introContent}
-            enableGutter={false}
-          />
+          <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
         </div>
       )}
-      <CollectionArchive display={display ?? 'grid'} posts={posts} showRegister={Boolean(showRegisterLinks)} />
+      <CollectionArchive
+        display={display ?? 'grid'}
+        posts={posts}
+        showRegister={Boolean(showRegisterLinks)}
+      />
     </div>
   )
 }
