@@ -2127,7 +2127,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
         type: 'lowImpact',
         eyebrow: 'Members',
         richText: richText(
-          heading('MAPS New York State Committee'),
+          heading('MAPS New York'),
           node('paragraph', {}, [
             text(
               'The MAPS New York State Committee helps organize and support MAPS members and represent MAPS among government officials within the State. MAPS-NY leaders ensure professional development and community are brought directly to local public servants where they live and work. Meet our Leadership team ',
