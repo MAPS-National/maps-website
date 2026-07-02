@@ -5,15 +5,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from './ThemeToggle'
 
-const brandPrimary = [
-  'lightest',
-  'lighter',
-  'light',
-  'base',
-  'dark',
-  'darker',
-  'darkest',
-] as const
+const brandPrimary = ['lightest', 'lighter', 'light', 'base', 'dark', 'darker', 'darkest'] as const
 const brandSecondary = brandPrimary
 const neutral = [
   'white',
@@ -38,7 +30,10 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 
 const Swatch = ({ label, color }: { label: string; color: string }) => (
   <div className="flex flex-col gap-1">
-    <div className="h-16 w-full rounded-md border border-border" style={{ backgroundColor: color }} />
+    <div
+      className="h-16 w-full rounded-md border border-border"
+      style={{ backgroundColor: color }}
+    />
     <span className="text-xs text-muted-foreground">{label}</span>
   </div>
 )
@@ -136,10 +131,7 @@ export default function StyleGuidePage() {
         <div className="flex flex-wrap items-end gap-l">
           {radii.map((r) => (
             <div key={r} className="flex flex-col items-center gap-1">
-              <div
-                className="h-20 w-20 bg-primary"
-                style={{ borderRadius: `var(--rad-${r})` }}
-              />
+              <div className="h-20 w-20 bg-primary" style={{ borderRadius: `var(--rad-${r})` }} />
               <span className="text-xs text-muted-foreground">rad-{r}</span>
             </div>
           ))}
@@ -151,8 +143,7 @@ export default function StyleGuidePage() {
           One scale. Headings are Lora (serif) at a uniform 600 weight, so hierarchy is carried by
           size alone and a section heading can never out-weigh the hero display. Body, lead, and
           labels are Montserrat. Hardcoded headings use the <code>.type-*</code> classes; RichText /
-          prose headings get the same sizes from the typography config. Sizes show mobile →
-          desktop.
+          prose headings get the same sizes from the typography config. Sizes show mobile → desktop.
         </p>
         <div className="flex max-w-prose flex-col gap-4">
           <TypeSpec
@@ -201,6 +192,18 @@ export default function StyleGuidePage() {
             spec="Lora · 500 · 20 → 24px · pull-quote"
             sample="The roadmap into public service I did not know existed."
           />
+          <div className="flex flex-col gap-1 border-b border-border pb-4 last:border-b-0">
+            <div className="prose dark:prose-invert">
+              <blockquote>
+                “The best of people are those who are most beneficial to people” (Hadith of the
+                Prophet Muhammad, Al-Tabarani, 5937)
+              </blockquote>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              <code>blockquote</code> · @tailwindcss/typography default (no bespoke token) ·
+              RichText citation / attribution
+            </span>
+          </div>
           <TypeSpec
             as="span"
             className="type-eyebrow text-primary"
@@ -238,7 +241,9 @@ export default function StyleGuidePage() {
         <div className="grid gap-s sm:grid-cols-2 lg:grid-cols-3">
           <div className="flex flex-col gap-1 rounded-md border border-border bg-background p-m text-foreground">
             <span className="font-semibold">Surface — primary</span>
-            <span className="text-content-secondary text-sm">Secondary text on primary surface</span>
+            <span className="text-content-secondary text-sm">
+              Secondary text on primary surface
+            </span>
           </div>
           <div className="flex flex-col gap-1 rounded-md border border-border bg-surface-secondary p-m text-foreground">
             <span className="font-semibold">Surface — secondary</span>
