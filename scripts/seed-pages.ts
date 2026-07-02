@@ -325,7 +325,8 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
 // ---------------------------------------------------------------------------
 
 const aboutUsFaqSlice: PageSlice = async (_payload) => {
-  const qa = (question: string, ...answer: string[]) => ({
+  const qa = (group: string, question: string, ...answer: string[]) => ({
+    group,
     question,
     answer: richText(...answer.map((p) => paragraph(p))),
     defaultOpen: false,
@@ -333,75 +334,92 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
 
   const items = [
     qa(
+      'Membership',
       'Where do you get members from?',
       'MAPS’ membership can only be accessed through the form on our website. Our membership policy is 100% opt-in to ensure consent is affirmatively established and that member information and preferences are self-selected and identified.',
     ),
     qa(
+      'Membership',
       "Membership is free? What's the catch?",
       'There is no catch. MAPS is a grassroots effort to build and support the national community of Muslim Americans in public service/ government. We do this because we are Muslim American public servants, ourselves. We represent a range of backgrounds, career tracks, levels and branches of government, and we have found the individual and institutional support along our careers minimal or inaccessible. We feel not only that we can do better, but that supporting pipelines into service for underserved and underrepresented groups is key to improving outcomes for all, and ensuring that American government looks like America.',
     ),
     qa(
+      'Membership',
       'How does MAPS define “Muslim”?',
       'MAPS does not define or characterize Muslim American communities or individuals along theological or sectarian lines. Anyone who self-identifies as Muslim is accepted as such. While MAPS aims to support professional needs of our broader community, we defer to our member’s own respective clergy or faith traditions to serve their spiritual needs.',
     ),
     qa(
+      'Membership',
       "Am I welcome if I'm not Muslim?",
       'MAPS and its members regularly engage with non-Muslim colleagues, counterparts, allies, partner networks, and coalitions. They also constitute a highly supportive cadre that MAPS engages as Affiliates.',
     ),
     qa(
+      'Membership',
       'Does MAPS accept members from foreign countries?',
       'No. MAPS does not accept foreign nationals as members, associate members, or affiliates, which are limited to U.S. citizens, legal permanent residents or individuals who are within six months of obtaining either. However, all are welcome to follow MAPS via our general mailing list of non-members.',
     ),
     qa(
+      'Membership',
       'Without member dues, how does MAPS track who is still affiliated?',
       'As MAPS does not collect member dues, unsubscribing from the MAPS email list entails the termination of your membership or affiliation.',
     ),
     qa(
+      'Membership',
       'How can I invite individuals from my network to MAPS?',
       'We ask all to register via our website so they can be properly categorized while still being supported. From there, all distribution channels, event registration and chat group links are shared directly or upon request. We ask members not to share the messaging chat or member event registration links with friends or colleagues who are not yet registered via our website. This is both for the comfort and protection of our membership, as well as organizational management.',
     ),
     qa(
+      'Privacy',
       'What does MAPS do with my information?',
       'MAPS will never share your information with any external entities without your permission or self-selection. Information shared with potential employers is only done with the express permission of our members. While MAPS also has a very active service connecting individuals internal and external to MAPS with our members, this is always done with the requested segment or identified group of members messaged in blind carbon copy to protect their privacy and preferred degree of engagement. For additional security, our full member list is only accessible by the MAPS Chair and Membership Director.',
     ),
     qa(
+      'Privacy',
       'Who may contact me?',
       'The MAPS Chair and Membership Director would most often serve as active points of contact for the organization, but other Board Directors may reach out to members or segments of members that have self-identified as qualified or interested in specific services, volunteer or leadership opportunities within the organization.',
     ),
     qa(
+      'Privacy',
       'Do MAPS Chapter Federal ERGs share membership information with MAPS National?',
       'As MAPS State Committees are part of MAPS National, our Federal chapter ERGs are Departmental staff associations led by employees who are also MAPS National members. While MAPS National connects members within their Federal, State or local government agencies to one another in service of our mission of community building and formalization, our chapter ERGs’ membership lists are not shared with MAPS National.',
       'MAPS’ membership policy is 100% opt-in to ensure consent is affirmatively established and that member information and preferences are self-selected and identified.',
     ),
     qa(
+      'Chapters (Federal ERGs, State Committees)',
       'How can I start or join a MAPS Chapter ERGs at Federal, State or Local Government?',
       'Several chapter employee resource groups are now well established, many with several years of community building and member support within their respective Federal Departments. Many more are currently being formed or awaiting recognition, with additional chapters in development at the State or local government levels.',
       'The process for forming one can be straightforward or cumbersome, depending on the Department and the Agency overseeing the process. There have been many improvements in the process and resources devoted to Federal accommodation, but they are far from standard and may vary between Agencies. MAPS devotes plenty of resources and focus on nurturing and supporting its chapter ERGs, and would be happy to work with you or connect you to others at your agency working diligently to build these key staff associations. The first step is to connect with our Outreach team that oversees organizational support and partnerships via outreach@mapsnational.org.',
     ),
     qa(
+      'Chapters (Federal ERGs, State Committees)',
       'Are MAPS Federal ERG Chapters open to contractors? Non-MAPS members?',
       'While MAPS State Committees are officially incorporated within MAPS National, our Federal chapter ERGs are led by MAPS members but are open to all employees and contractors within their respective Federal, State or local government institutions.',
     ),
     qa(
+      'Programming',
       'How often does MAPS hold virtual or in person events?',
       'For some years now, based on experimentation and its current capabilities, MAPS National holds 3 major in-person events each year; an annual DC Iftar and summer and winter networking events. The summer networking event works to incorporate and accommodate Muslim American interns and young professionals in DC, while the winter networking event leans more toward engaging and connecting Federal staff associations and MAPS chapter employee resource groups across the executive branch.',
       'Apart from our 3 main events, MAPS National also organizes public service panels at many major Muslim community and partner events, conferences and conventions, including the annual MAS-ICNA Convention, the National Association of Muslim Lawyers (NAML) Conference, Arab American Anti-Discrimination Conference, and many others. Our State committees usually organize at least one in-person event per year, based on their capabilities and member needs.',
     ),
     qa(
+      'Scope & Focus',
       'Does MAPS take positions on or work with partisan or foreign policy organizations?',
       'As a nonpartisan nonprofit organization registered as a 501c(3), MAPS does not engage in political activity. MAPS also limits its active policy and advocacy activities to issues that affect Muslim American public servants and public sector employees across all levels and branches of government.',
       'As our core focus, MAPS serves as a leading voice for the advancement and promotion of diversity, equity, inclusion, accessibility, and religious accommodation in government.',
       'Other areas of domestic and foreign policy, while important or even central to the broader Muslim American community, remain largely out of our organizational scope and policy focus. MAPS urges its members and allies to engage dedicated organizations for such activities, including many of our Partner organizations.',
     ),
     qa(
+      'Funding',
       'How is MAPS funded?',
       'Since MAPS does not charge member dues, its National and State functions are primarily funded by Muslim American foundations, national public service focused foundations and non-profit organizations, and State Commissions. We also collect tax-deductible donations from our own members and supporters, and sizable in-kind contributions from members, organizations and partners.',
     ),
     qa(
+      'Funding',
       'Does MAPS receive funding from foreign sources?',
       'MAPS does not accept funding from foreign governments, foreign nationals, or foreign-based organizations.',
     ),
     qa(
+      'Funding',
       'Does MAPS offer grant funding or other financial support?',
       'MAPS does not typically fund external activities or events and programs where it is not a primary organizer. Nor does it fund or sponsor individuals at this time. Our value add for organizational co-sponsorship is more often access to our specialized national community of Muslim American public servants or a regional or technical subset thereof. Similarly, our value add for professionals and students are non-financial resources, including knowledge transfer, networking, skill development, and access to key public service networks.',
     ),

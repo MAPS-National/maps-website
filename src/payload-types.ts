@@ -1055,6 +1055,10 @@ export interface FAQBlock {
   layout: 'stacked' | 'sideBySide';
   items?:
     | {
+        /**
+         * Optional subheading. A heading renders above this question whenever its group differs from the previous question’s — leave blank for a flat list.
+         */
+        group?: string | null;
         question: string;
         answer: {
           root: {
@@ -2405,6 +2409,7 @@ export interface FAQBlockSelect<T extends boolean = true> {
   items?:
     | T
     | {
+        group?: T;
         question?: T;
         answer?: T;
         defaultOpen?: T;
