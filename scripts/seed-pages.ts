@@ -5618,11 +5618,25 @@ const run = async () => {
         depth: 0,
       })
 
+      // Payload only auto-stamps publishedAt on an actual draft->published
+      // transition; re-running this upsert against an already-published doc
+      // never backfills one that's missing (LR15), so stamp it here instead.
+      const needsPublishedAt =
+        data._status === 'published' && !data.publishedAt && !existing.docs[0]?.publishedAt
+      const pageData = needsPublishedAt
+        ? { ...data, publishedAt: existing.docs[0]?.createdAt ?? new Date().toISOString() }
+        : data
+
       if (existing.docs[0]) {
-        await payload.update({ collection: 'pages', id: existing.docs[0].id, data, context })
+        await payload.update({
+          collection: 'pages',
+          id: existing.docs[0].id,
+          data: pageData,
+          context,
+        })
         payload.logger.info(`Updated page /${data.slug}`)
       } else {
-        await payload.create({ collection: 'pages', data, context })
+        await payload.create({ collection: 'pages', data: pageData, context })
         payload.logger.info(`Created page /${data.slug}`)
       }
     }
