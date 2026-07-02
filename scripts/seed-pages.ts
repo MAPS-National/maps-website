@@ -4579,14 +4579,26 @@ const contactUsSlice: PageSlice = async (payload) => {
       heading('Thank you. Your message has been sent.', 'h3'),
       paragraph("We'll be in touch with you shortly."),
     ),
+    // Field set mirrors the live Webflow contact form (LR11): first/last name,
+    // email, phone, title/role, organization, a "describe yourself" select, and
+    // the message. Two-up (width 50) name/contact rows collapse to one column on
+    // mobile via the Width block.
     fields: [
       {
         blockType: 'text',
-        name: 'full-name',
-        blockName: 'full-name',
-        label: 'Full name',
+        name: 'first-name',
+        blockName: 'first-name',
+        label: 'First name',
         required: true,
-        width: 100,
+        width: 50,
+      },
+      {
+        blockType: 'text',
+        name: 'last-name',
+        blockName: 'last-name',
+        label: 'Last name',
+        required: true,
+        width: 50,
       },
       {
         blockType: 'email',
@@ -4594,15 +4606,48 @@ const contactUsSlice: PageSlice = async (payload) => {
         blockName: 'email',
         label: 'Email',
         required: true,
-        width: 100,
+        width: 50,
       },
       {
         blockType: 'text',
-        name: 'subject',
-        blockName: 'subject',
-        label: 'Subject',
+        name: 'phone',
+        blockName: 'phone',
+        label: 'Phone number',
         required: false,
+        width: 50,
+      },
+      {
+        blockType: 'text',
+        name: 'title-role',
+        blockName: 'title-role',
+        label: 'Title/Role',
+        required: false,
+        width: 50,
+      },
+      {
+        blockType: 'text',
+        name: 'organization',
+        blockName: 'organization',
+        label: 'Organization',
+        required: false,
+        width: 50,
+      },
+      {
+        blockType: 'select',
+        name: 'describe-yourself',
+        blockName: 'describe-yourself',
+        label: 'How would you describe yourself?',
+        required: true,
         width: 100,
+        // Values match the live form's option labels verbatim so submissions
+        // land in the same buckets ops already reports on.
+        options: [
+          { label: 'Current Member', value: 'Current Member' },
+          { label: 'Prospective member', value: 'Prospective member' },
+          { label: 'Organization partner', value: 'Organization partner' },
+          { label: 'Press / journalist', value: 'Press / journalist' },
+          { label: 'Other', value: 'Other' },
+        ],
       },
       {
         blockType: 'textarea',
@@ -4624,7 +4669,13 @@ const contactUsSlice: PageSlice = async (payload) => {
         // verified sender is set in one place; falls back to a sensible default.
         emailFrom: `"${process.env.EMAIL_FROM_NAME || 'MAPS National'}" <${process.env.EMAIL_FROM_ADDRESS || 'no-reply@mapsnational.org'}>`,
         subject: "You've received a new contact message.",
-        message: richText(paragraph('A new message was submitted via the website contact form.')),
+        // {{*:table}} is expanded by the form-builder into an HTML table of every
+        // submitted field, so ops gets the full submission (name, contact, role,
+        // message) in the notification instead of just a "you got a message" ping.
+        message: richText(
+          paragraph('A new message was submitted via the website contact form:'),
+          paragraph('{{*:table}}'),
+        ),
       },
     ],
   }
