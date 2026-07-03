@@ -1,6 +1,10 @@
 import type { Block } from 'payload'
 
-import { FixedToolbarFeature, InlineToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  FixedToolbarFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 
 const introEditor = lexicalEditor({
   features: ({ rootFeatures }) => [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()],
@@ -97,12 +101,13 @@ export const Team: Block = {
           admin: {
             width: '50%',
             description:
-              'People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk.',
+              'People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk. Tight: a full committee roster (many people, small photos, no bio hint).',
           },
           options: [
             { label: 'Airy — boards & leadership', value: 'airy' },
             { label: 'Medium — general team page', value: 'medium' },
             { label: 'Compact — large committees', value: 'compact' },
+            { label: 'Tight — full committee rosters', value: 'tight' },
           ],
         },
       ],

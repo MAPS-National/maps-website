@@ -15,7 +15,7 @@ const toTab = (c: number | TeamCategory): { value: string; label: string } | nul
   return { value: c.slug || String(c.id), label: c.title }
 }
 
-const toMember = (doc: Team, allowed: Set<number> | null): TeamMember => {
+const toMember = (doc: Team, allowed: Set<number> | null, primaryGroupOnly = false): TeamMember => {
   const photo = doc.photo
   const hasPhoto = photo && typeof photo === 'object' && photo.url
   const bio = doc.bio
@@ -23,10 +23,14 @@ const toMember = (doc: Team, allowed: Set<number> | null): TeamMember => {
   const categories = (doc.categories || [])
     // When the block filters to specific groups, only surface those groups on
     // the member — otherwise a cross-listed person spawns stray off-topic
-    // sections (e.g. a board member who also sits on a state committee).
+    // sections (e.g. a board member who also sits on a state committee). A
+    // hand-picked selection has no such filter, so cap to the member's own
+    // first-listed category instead — otherwise the same duplication happens
+    // per member rather than across the whole block.
     .filter((c) => !allowed || allowed.has(typeof c === 'object' ? c.id : c))
     .map(toTab)
     .filter((c): c is { value: string; label: string } => Boolean(c))
+    .slice(0, primaryGroupOnly ? 1 : undefined)
 
   return {
     id: String(doc.id),
@@ -107,7 +111,7 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
     docs = result.docs
   }
 
-  const members = docs.map((d) => toMember(d, allowed))
+  const members = docs.map((d) => toMember(d, allowed, populateBy === 'selection'))
   if (members.length === 0) return null
 
   const showHeader = header?.enableHeader
@@ -118,14 +122,8 @@ export const TeamBlock: React.FC<TeamBlockProps & { id?: string }> = async (prop
       <div className="mx-auto max-w-5xl">
         {showHeader && (header?.eyebrow || header?.heading || header?.body) && (
           <div className="mb-12 max-w-2xl">
-            {header?.eyebrow && (
-              <p className="mb-2 type-eyebrow text-primary">
-                {header.eyebrow}
-              </p>
-            )}
-            {header?.heading && (
-              <h2 className="type-h2">{header.heading}</h2>
-            )}
+            {header?.eyebrow && <p className="mb-2 type-eyebrow text-primary">{header.eyebrow}</p>}
+            {header?.heading && <h2 className="type-h2">{header.heading}</h2>}
             {header?.body && <RichText className="mt-4" data={header.body} enableGutter={false} />}
           </div>
         )}

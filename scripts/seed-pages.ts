@@ -55,6 +55,9 @@ const paragraph = (value: string) => node('paragraph', {}, [text(value)])
 // Inline rich-text link node (Lexical custom link) for cross-page references.
 const linkNode = (label: string, url: string, newTab = false) =>
   node('link', { version: 3, fields: { linkType: 'custom', url, newTab } }, [text(label)])
+// Blockquote (Lexical 'quote' node) — scriptural/attributed citations.
+const italic = (value: string) => ({ ...text(value), format: 2 })
+const blockquote = (...children: unknown[]) => node('quote', {}, children)
 
 // ---------------------------------------------------------------------------
 // Slice: about-us roster pages (migrated from scripts/seed-about-pages.ts)
@@ -322,7 +325,8 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
 // ---------------------------------------------------------------------------
 
 const aboutUsFaqSlice: PageSlice = async (_payload) => {
-  const qa = (question: string, ...answer: string[]) => ({
+  const qa = (group: string, question: string, ...answer: string[]) => ({
+    group,
     question,
     answer: richText(...answer.map((p) => paragraph(p))),
     defaultOpen: false,
@@ -330,75 +334,92 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
 
   const items = [
     qa(
+      'Membership',
       'Where do you get members from?',
       'MAPS’ membership can only be accessed through the form on our website. Our membership policy is 100% opt-in to ensure consent is affirmatively established and that member information and preferences are self-selected and identified.',
     ),
     qa(
+      'Membership',
       "Membership is free? What's the catch?",
       'There is no catch. MAPS is a grassroots effort to build and support the national community of Muslim Americans in public service/ government. We do this because we are Muslim American public servants, ourselves. We represent a range of backgrounds, career tracks, levels and branches of government, and we have found the individual and institutional support along our careers minimal or inaccessible. We feel not only that we can do better, but that supporting pipelines into service for underserved and underrepresented groups is key to improving outcomes for all, and ensuring that American government looks like America.',
     ),
     qa(
+      'Membership',
       'How does MAPS define “Muslim”?',
       'MAPS does not define or characterize Muslim American communities or individuals along theological or sectarian lines. Anyone who self-identifies as Muslim is accepted as such. While MAPS aims to support professional needs of our broader community, we defer to our member’s own respective clergy or faith traditions to serve their spiritual needs.',
     ),
     qa(
+      'Membership',
       "Am I welcome if I'm not Muslim?",
       'MAPS and its members regularly engage with non-Muslim colleagues, counterparts, allies, partner networks, and coalitions. They also constitute a highly supportive cadre that MAPS engages as Affiliates.',
     ),
     qa(
+      'Membership',
       'Does MAPS accept members from foreign countries?',
       'No. MAPS does not accept foreign nationals as members, associate members, or affiliates, which are limited to U.S. citizens, legal permanent residents or individuals who are within six months of obtaining either. However, all are welcome to follow MAPS via our general mailing list of non-members.',
     ),
     qa(
+      'Membership',
       'Without member dues, how does MAPS track who is still affiliated?',
       'As MAPS does not collect member dues, unsubscribing from the MAPS email list entails the termination of your membership or affiliation.',
     ),
     qa(
+      'Membership',
       'How can I invite individuals from my network to MAPS?',
       'We ask all to register via our website so they can be properly categorized while still being supported. From there, all distribution channels, event registration and chat group links are shared directly or upon request. We ask members not to share the messaging chat or member event registration links with friends or colleagues who are not yet registered via our website. This is both for the comfort and protection of our membership, as well as organizational management.',
     ),
     qa(
+      'Privacy',
       'What does MAPS do with my information?',
       'MAPS will never share your information with any external entities without your permission or self-selection. Information shared with potential employers is only done with the express permission of our members. While MAPS also has a very active service connecting individuals internal and external to MAPS with our members, this is always done with the requested segment or identified group of members messaged in blind carbon copy to protect their privacy and preferred degree of engagement. For additional security, our full member list is only accessible by the MAPS Chair and Membership Director.',
     ),
     qa(
+      'Privacy',
       'Who may contact me?',
       'The MAPS Chair and Membership Director would most often serve as active points of contact for the organization, but other Board Directors may reach out to members or segments of members that have self-identified as qualified or interested in specific services, volunteer or leadership opportunities within the organization.',
     ),
     qa(
+      'Privacy',
       'Do MAPS Chapter Federal ERGs share membership information with MAPS National?',
       'As MAPS State Committees are part of MAPS National, our Federal chapter ERGs are Departmental staff associations led by employees who are also MAPS National members. While MAPS National connects members within their Federal, State or local government agencies to one another in service of our mission of community building and formalization, our chapter ERGs’ membership lists are not shared with MAPS National.',
       'MAPS’ membership policy is 100% opt-in to ensure consent is affirmatively established and that member information and preferences are self-selected and identified.',
     ),
     qa(
+      'Chapters (Federal ERGs, State Committees)',
       'How can I start or join a MAPS Chapter ERGs at Federal, State or Local Government?',
       'Several chapter employee resource groups are now well established, many with several years of community building and member support within their respective Federal Departments. Many more are currently being formed or awaiting recognition, with additional chapters in development at the State or local government levels.',
       'The process for forming one can be straightforward or cumbersome, depending on the Department and the Agency overseeing the process. There have been many improvements in the process and resources devoted to Federal accommodation, but they are far from standard and may vary between Agencies. MAPS devotes plenty of resources and focus on nurturing and supporting its chapter ERGs, and would be happy to work with you or connect you to others at your agency working diligently to build these key staff associations. The first step is to connect with our Outreach team that oversees organizational support and partnerships via outreach@mapsnational.org.',
     ),
     qa(
+      'Chapters (Federal ERGs, State Committees)',
       'Are MAPS Federal ERG Chapters open to contractors? Non-MAPS members?',
       'While MAPS State Committees are officially incorporated within MAPS National, our Federal chapter ERGs are led by MAPS members but are open to all employees and contractors within their respective Federal, State or local government institutions.',
     ),
     qa(
+      'Programming',
       'How often does MAPS hold virtual or in person events?',
       'For some years now, based on experimentation and its current capabilities, MAPS National holds 3 major in-person events each year; an annual DC Iftar and summer and winter networking events. The summer networking event works to incorporate and accommodate Muslim American interns and young professionals in DC, while the winter networking event leans more toward engaging and connecting Federal staff associations and MAPS chapter employee resource groups across the executive branch.',
       'Apart from our 3 main events, MAPS National also organizes public service panels at many major Muslim community and partner events, conferences and conventions, including the annual MAS-ICNA Convention, the National Association of Muslim Lawyers (NAML) Conference, Arab American Anti-Discrimination Conference, and many others. Our State committees usually organize at least one in-person event per year, based on their capabilities and member needs.',
     ),
     qa(
+      'Scope & Focus',
       'Does MAPS take positions on or work with partisan or foreign policy organizations?',
       'As a nonpartisan nonprofit organization registered as a 501c(3), MAPS does not engage in political activity. MAPS also limits its active policy and advocacy activities to issues that affect Muslim American public servants and public sector employees across all levels and branches of government.',
       'As our core focus, MAPS serves as a leading voice for the advancement and promotion of diversity, equity, inclusion, accessibility, and religious accommodation in government.',
       'Other areas of domestic and foreign policy, while important or even central to the broader Muslim American community, remain largely out of our organizational scope and policy focus. MAPS urges its members and allies to engage dedicated organizations for such activities, including many of our Partner organizations.',
     ),
     qa(
+      'Funding',
       'How is MAPS funded?',
       'Since MAPS does not charge member dues, its National and State functions are primarily funded by Muslim American foundations, national public service focused foundations and non-profit organizations, and State Commissions. We also collect tax-deductible donations from our own members and supporters, and sizable in-kind contributions from members, organizations and partners.',
     ),
     qa(
+      'Funding',
       'Does MAPS receive funding from foreign sources?',
       'MAPS does not accept funding from foreign governments, foreign nationals, or foreign-based organizations.',
     ),
     qa(
+      'Funding',
       'Does MAPS offer grant funding or other financial support?',
       'MAPS does not typically fund external activities or events and programs where it is not a primary organizer. Nor does it fund or sponsor individuals at this time. Our value add for organizational co-sponsorship is more often access to our specialized national community of Muslim American public servants or a regional or technical subset thereof. Similarly, our value add for professionals and students are non-financial resources, including knowledge transfer, networking, skill development, and access to key public service networks.',
     ),
@@ -446,6 +467,34 @@ const aboutUsFaqSlice: PageSlice = async (_payload) => {
             anchorId: 'faq',
           },
           items,
+        },
+        {
+          blockType: 'cta',
+          richText: richText(
+            heading('Still have questions?', 'h4'),
+            node('paragraph', {}, [
+              text('Learn more about our '),
+              linkNode('Programs', '/programs'),
+              text(', benefit from our shared Resources, meet our '),
+              linkNode('Leadership Team', '/about-us/board-leadership'),
+              text(', support our work with a tax-deductible '),
+              linkNode('Donation', '/donate'),
+              text(', explore organizational '),
+              linkNode('Partnerships', '/about-us/partners'),
+              text(', and Sign Up as a Member/Associate Member, or join our Mailing List today.'),
+            ]),
+          ),
+          links: [
+            {
+              link: {
+                type: 'custom',
+                url: '/contact',
+                label: 'Contact',
+                appearance: 'outline',
+                newTab: false,
+              },
+            },
+          ],
         },
       ],
     },
@@ -551,19 +600,48 @@ const missionSlice: PageSlice = async (payload) => {
         ),
         heading('1. Public Service', 'h4'),
         paragraph(
-          'MAPS Members have made service to others a core part of their careers, their lives, and in many cases, their identity. They volunteer for their communities, offer support to those in need of it, and devote years to crafting, building, or improving national, state, or local programs, policies, and services. Supporting their work, and ushering others toward it, is a prime function of MAPS, and is rooted in faith traditions and examples. As the Prophet Muhammad taught, "The best of people are those who are most beneficial to people."',
+          'MAPS Members have made service to others a core part of their careers, their lives, and in many cases, their identity. They volunteer for their communities, offer support to those in need of it, and devote years to crafting, building, or improving national, state, or local programs, policies, and services. Supporting their work, and ushering others toward it, is a prime function of MAPS, and is rooted in faith traditions and examples.',
+        ),
+        blockquote(
+          text('“The best of people are those who are most beneficial to people” ('),
+          italic('Hadith'),
+          text(' of the Prophet Muhammad, Al-Tabarani, Al-Mu’jam Al-Awsaṭ, 5937)'),
         ),
         heading('2. Religious Freedom', 'h4'),
         paragraph(
           'As faith is a large part of the lives of countless Americans, the freedom to believe and practice authentically and without hindrance, discrimination, or persecution is a cornerstone of American democracy. Religious freedom, accommodation, tolerance and understanding are also key values of MAPS, its Members, and partner organizations. Members of MAPS are committed to public institutions that allow employees to observe their religious beliefs. Together, we can build stronger, more conducive, and just workplaces where the important functions of public service can be more effectively and productively undertaken for a broader segment of Americans.',
         ),
+        blockquote(text('“There shall be no coercion in matters of faith.” (Quran 2:256);')),
+        blockquote(text('“For you is your faith, and for me, my faith.” (Quran 109:6)')),
         heading('3. Community Building', 'h4'),
         paragraph(
           'Community building — the open and inclusive agglomeration of qualified professionals, channeling of resources toward their individual careers and interpersonal bonds, and facilitating and supporting formalized and communal action — is a daily function and priority of MAPS. It is how all of its goals and outcomes are made possible.',
         ),
+        blockquote(
+          text(
+            '“Never will God change the condition of a people until they change it themselves,” (Quran 13:11);',
+          ),
+        ),
+        blockquote(
+          text(
+            '“Help ye one another unto righteousness and piety. But help not one another unto sin and transgression,” (Quran 5:2);',
+          ),
+        ),
+        blockquote(
+          text(
+            '“Whoever fulfills the needs of his brother, God will fulfill his needs; whoever removes the troubles of his brother, God will remove one of his troubles” (',
+          ),
+          italic('Hadith'),
+          text(' of the Prophet Muhammad, Al-Bukhari, Chapter 47, Al-Mazalim, 2442).'),
+        ),
         heading('4. Partnership & Solidarity', 'h4'),
         paragraph(
           'MAPS builds its community while actively supporting, engaging, and collaborating with its partners to advance shared goals while reducing redundant efforts or potential conflict. These include formal organizations, informal communities, national and local non-profits, Federal, State and local governments, and feeder networks with overlapping constituencies or objectives to mint the newest public service leaders of tomorrow.',
+        ),
+        blockquote(
+          text(
+            '“We have made you into nations and tribes, so that you may come to know one another.” (Quran 49:13)',
+          ),
         ),
         heading('5. Broad-Based Inclusion', 'h4'),
         paragraph(
@@ -1960,12 +2038,51 @@ const newYorkStateSlice: PageSlice = async (payload) => {
   if (cardItems.length > 0) {
     featureBlocks.push({
       blockType: 'cardGrid',
-      header: { enableHeader: false },
+      header: {
+        enableHeader: true,
+        eyebrow: 'Grow',
+        heading: 'Supporting Members in New York',
+        anchorId: 'main-section',
+        body: richText(
+          paragraph(
+            'NYC government employees deliver essential services and make critical decisions that shape our daily lives, and it is vital that our city’s workforce reflects the rich diversity of the communities it serves.',
+          ),
+          paragraph(
+            'As part of our mission to elevate Muslim American voices in local government, MAPS New York is actively collecting candidate profiles from Full, Associate, and Affiliate members for career opportunities within New York City government.',
+          ),
+        ),
+      },
       columns: '3',
       mediaType: 'image',
       items: cardItems,
     })
   }
+
+  // Full NY State Committee roster (tight grid — 11 people).
+  const nyTeamCategory = await payload.find({
+    collection: 'team-categories',
+    where: { slug: { equals: 'new-york-state-committee' } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const nyTeamCategoryId = nyTeamCategory.docs[0]?.id
+  if (typeof nyTeamCategoryId === 'number') {
+    featureBlocks.push({
+      blockType: 'team',
+      header: {
+        enableHeader: true,
+        eyebrow: 'Leadership',
+        heading: 'Our Team',
+      },
+      layout: 'grouped',
+      density: 'tight',
+      populateBy: 'collection',
+      categories: [nyTeamCategoryId],
+      limit: 0,
+    })
+  }
+
   if (connectDef) {
     const imageId = await mediaIdByFile(connectDef.file)
     if (imageId != null) {
@@ -1995,7 +2112,7 @@ const newYorkStateSlice: PageSlice = async (payload) => {
   if (galleryImages.length > 0) {
     layout.push({
       blockType: 'mediaSlider',
-      heading: 'MAPS New York in the community',
+      heading: 'Leaders in the Community',
       enableLightbox: true,
       images: galleryImages,
     } as unknown as PageData['layout'][number])
@@ -2010,10 +2127,21 @@ const newYorkStateSlice: PageSlice = async (payload) => {
         type: 'lowImpact',
         eyebrow: 'Members',
         richText: richText(
-          heading('MAPS New York State Committee'),
-          paragraph(
-            'The MAPS New York State Committee helps organize and support MAPS members and represents MAPS among government officials within the State. MAPS-NY leaders ensure professional development and community are brought directly to local public servants where they live and work.',
-          ),
+          heading('MAPS New York'),
+          node('paragraph', {}, [
+            text(
+              'The MAPS New York State Committee helps organize and support MAPS members and represent MAPS among government officials within the State. MAPS-NY leaders ensure professional development and community are brought directly to local public servants where they live and work. Meet our Leadership team ',
+            ),
+            node(
+              'link',
+              {
+                version: 3,
+                fields: { linkType: 'custom', url: '/about-us/state-committees', newTab: false },
+              },
+              [{ ...text('here'), format: 1 }],
+            ),
+            text(' or email us below.'),
+          ]),
         ),
         links: [
           {
@@ -2962,7 +3090,13 @@ const careerSupportSlice: PageSlice = async (payload) => {
 
 const communityBuildingSlice: PageSlice = async (_payload) => {
   const contactLink = {
-    link: { type: 'custom', url: '#', label: 'Contact', appearance: 'outline', newTab: false },
+    link: {
+      type: 'custom',
+      url: '/contact',
+      label: 'Contact',
+      appearance: 'outline',
+      newTab: false,
+    },
   }
 
   return [
@@ -3763,6 +3897,18 @@ const jumuahServicesSlice: PageSlice = async (_payload) => {
 }
 
 const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
+  // Bold-linked program name followed by its description, matching the live
+  // source's `<a><strong>Name</strong></a> — description` pattern (external
+  // link, new tab).
+  const bold = (value: string) => ({ ...text(value), format: 1 })
+  const fellowship = (label: string, url: string, description: string) =>
+    node('paragraph', {}, [
+      node('link', { version: 3, fields: { linkType: 'custom', url, newTab: true } }, [
+        bold(label),
+      ]),
+      text(` — ${description}`),
+    ])
+
   return [
     {
       slug: 'resources/public-service-fellowships-mid-career-to-senior-professionals',
@@ -3817,93 +3963,290 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
               question: 'Leadership & Public Administration',
               defaultOpen: false,
               answer: richText(
-                paragraph(
-                  'White House Fellowship — White House Fellowships offer exceptional emerging leaders first-hand experience working at the highest levels of the Federal government. Selected individuals typically spend a year working as a full-time, paid Fellow to senior White House Staff, Cabinet Secretaries, and other top-ranking government officials. There are no formal age restrictions; employees of the Federal government are not eligible unless they are career military personnel.',
+                fellowship(
+                  'White House Fellowship',
+                  'https://www.whitehouse.gov/get-involved/fellows/',
+                  'White House Fellowships offer exceptional emerging leaders first-hand experience working at the highest levels of the Federal government. Selected individuals typically spend a year working as a full-time, paid Fellow to senior White House Staff, Cabinet Secretaries, and other top-ranking government officials. There are no formal age restrictions; employees of the Federal government are not eligible unless they are career military personnel.',
                 ),
-                paragraph(
-                  'White House Leadership Development Program (WHLDP) — Engages a diverse annual cohort of GS-15 career employees to work on the federal government’s highest priority, highest impact challenges. Sponsored by the Executive Office of the President and supported by the Performance Improvement Council.',
+                fellowship(
+                  'White House Leadership Development Program (WHLDP)',
+                  'https://www.pic.gov/whldp/',
+                  'Engages a diverse annual cohort of GS-15 career employees to work on the federal government’s highest priority, highest impact challenges. Sponsored by the Executive Office of the President and supported by the Performance Improvement Council.',
                 ),
-                paragraph(
-                  'Excellence in Government Fellowship — The premier leadership development course for federal employees at the GS-14 to GS-15 levels. For more than 30 years, EIG has helped federal employees develop strong leadership skills through application-based learning, interactive activities, self-reflection, personalized coaching, and governmentwide networking.',
+                fellowship(
+                  'Excellence in Government Fellowship',
+                  'https://ourpublicservice.org/programs/excellence-in-government-fellows-program/',
+                  'The premier leadership development course for federal employees at the GS-14 to GS-15 levels. For more than 30 years, EIG has helped federal employees develop strong leadership skills through application-based learning, interactive activities, self-reflection, personalized coaching, and governmentwide networking.',
                 ),
-                paragraph(
-                  'President’s Management Council Interagency Rotation Program — Launched in 2011 by the PMC and CHCO Council to bolster cross-agency exposure for high-potential GS 13-15s through interagency rotation assignments that develop leadership competencies and broaden organizational experience.',
+                fellowship(
+                  'President’s Management Council Interagency Rotation Program',
+                  'https://www.opm.gov/policy-data-oversight/training-and-development/leadership-development/#url=PMC-Interagency-Rotation-Prgm',
+                  'Launched in 2011 by the PMC and CHCO Council to bolster cross-agency exposure for high-potential GS 13-15s through interagency rotation assignments that develop leadership competencies and broaden organizational experience.',
                 ),
-                paragraph(
-                  'HillVets House Fellowship — HillVets is the community of Veterans, Servicemembers, and their supporters interested in governance, international affairs, policy and politics. It provides a fellowship for veterans interested in policy, politics, or government, and leadership training for veterans in the National Capitol Region.',
+                fellowship(
+                  'HillVets House Fellowship',
+                  'https://www.hillvets.org/',
+                  'HillVets is the community of Veterans, Servicemembers, and their supporters interested in governance, international affairs, policy and politics. It provides a fellowship for veterans interested in policy, politics, or government, and leadership training for veterans in the National Capitol Region.',
                 ),
-                paragraph(
-                  'The Center for Ethics and the Rule of Law (CERL) — Affiliated with the Annenberg Public Policy Center at Penn, a non-partisan interdisciplinary institute dedicated to preserving and promoting ethics and the rule of law in national security, warfare, and democratic governance.',
+                fellowship(
+                  'The Center for Ethics and the Rule of Law (CERL)',
+                  'https://www.penncerl.org/',
+                  'Affiliated with the Annenberg Public Policy Center at Penn, a non-partisan interdisciplinary institute dedicated to preserving and promoting ethics and the rule of law in national security, warfare, and democratic governance.',
                 ),
-                paragraph(
-                  'The Millennium Fellowship — A year-long, high-impact leadership accelerator for rising leaders from around the world and across sectors, pairing world-class leadership development resources with access to the Atlantic Council’s geopolitical expertise and global networks.',
+                fellowship(
+                  'The Millennium Fellowship',
+                  'http://www.millenniumfellowship.org/#apply',
+                  'A year-long, high-impact leadership accelerator for rising leaders from around the world and across sectors, pairing world-class leadership development resources with access to the Atlantic Council’s geopolitical expertise and global networks.',
                 ),
-                paragraph(
-                  'AEI Leadership Network — An exclusive policy education and professional development program for state-based, mid-career executives in the public, private, and non-profit sectors.',
-                ),
-                paragraph(
-                  '[Manual back-fill: this category contains additional entries in the source; restore the full list and re-apply the program hyperlinks in the admin editor.]',
+                fellowship(
+                  'AEI Leadership Network',
+                  'http://www.aei.org/feature/leadership-network/',
+                  'An exclusive policy education and professional development program for state-based, mid-career executives in the public, private, and non-profit sectors.',
                 ),
               ),
             },
             {
               question: 'International Affairs / National Security',
               answer: richText(
-                paragraph(
-                  'Franklin Talent Exchange Partnership (FTEP) — A partnership program between the U.S. Department of State and private sector entities sharing an interest in advancing foreign policy priorities, offering a two-way exchange that brings in private-sector experts and sends State employees on assignment to partner organizations.',
+                fellowship(
+                  'Franklin Talent Exchange Partnership (FTEP)',
+                  'https://careers.state.gov/work/fellowships/franklin-fellows/',
+                  'A partnership program between the U.S. Department of State and private sector entities sharing an interest in advancing foreign policy priorities, offering a two-way exchange that brings in private-sector experts and sends State employees on assignment to partner organizations.',
                 ),
-                paragraph(
-                  'The ASG Rising Leaders Program — A year-long program under the aegis of the Aspen Strategy Group: participants attend the Aspen Security Forum, join tailored leadership seminars and discussions with foreign policy experts, and co-author policy papers, joining a lifetime alumni network.',
+                fellowship(
+                  'The ASG Rising Leaders Program',
+                  'https://www.aspensecurityforum.org/asg-rising-leaders',
+                  'A year-long program under the aegis of the Aspen Strategy Group: participants attend the Aspen Security Forum, join tailored leadership seminars and discussions with foreign policy experts, and co-author policy papers, joining a lifetime alumni network.',
                 ),
-                paragraph(
-                  'The National Security Fellows Program (FDD) — A 12-month program supporting promising 30-40 year old professionals with networking, skill-building workshops, off-the-record dinners with senior officials, and roundtables with issue experts.',
+                fellowship(
+                  'The National Security Fellows Program (FDD)',
+                  'https://www.fdd.org/national-security-fellows-program/',
+                  'A 12-month program supporting promising 30-40 year old professionals with networking, skill-building workshops, off-the-record dinners with senior officials, and roundtables with issue experts.',
                 ),
-                paragraph(
-                  'The Shawn Brimley Next Generation National Security Leaders Fellowship (CNAS) — A year-long, part-time professional development fellowship bringing together young professionals across sectors to learn leadership best practices, culminating in a week-long international study tour.',
+                fellowship(
+                  'The Shawn Brimley Next Generation National Security Leaders Fellowship (CNAS)',
+                  'https://www.cnas.org/next-generation-programs/nextgeneration',
+                  'A year-long, part-time professional development fellowship bringing together young professionals across sectors to learn leadership best practices, culminating in a week-long international study tour.',
                 ),
-                paragraph(
-                  'The National Security Institute Fellows (GMU) — National security practitioners and industry leaders drawing on experience across the intelligence community, government, private sector, and academia, contributing scholarship on legal and practical national security challenges.',
+                fellowship(
+                  'The National Security Institute Fellows (GMU)',
+                  'https://nationalsecurity.gmu.edu/fellows/',
+                  'National security practitioners and industry leaders drawing on experience across the intelligence community, government, private sector, and academia, contributing scholarship on legal and practical national security challenges.',
                 ),
-                paragraph(
-                  'The Strategy and Statecraft Fellowship (CSIS) — Monthly dinners on key topics in foreign policy, national security, and strategic thought featuring current and former senior officials, concluding with the Strategy and Statecraft Summit.',
+                fellowship(
+                  'The Strategy and Statecraft Fellowship (CSIS)',
+                  'https://www.csis.org/programs/international-security-program/strategy-and-statecraft-fellowship',
+                  'Monthly dinners on key topics in foreign policy, national security, and strategic thought featuring current and former senior officials, concluding with the Strategy and Statecraft Summit.',
                 ),
-                paragraph(
-                  'The Nuclear Scholars Initiative (CSIS) — Provides top graduate students and young professionals a venue to dialogue with senior experts on nuclear weapons issues across daylong monthly workshops over six months at CSIS.',
+                fellowship(
+                  'The Nuclear Scholars Initiative (CSIS)',
+                  'https://nuclearnetwork.csis.org/programs/nuclear-scholars-initiative/',
+                  'Provides top graduate students and young professionals a venue to dialogue with senior experts on nuclear weapons issues across daylong monthly workshops over six months at CSIS.',
                 ),
-                paragraph(
-                  'Emerging as a Global Leader Experience (EaGLE) Program — Accelerates the careers of emerging leaders in national security and public service through immersive virtual workshops on design thinking, lean startup methods, and strengths-based leadership.',
+                fellowship(
+                  'The Emissary Program (MilitaryMentors)',
+                  'https://www.militarymentors.org/emissary',
+                  'Trains industry leaders through a six-month cohort-style leadership curriculum to serve as mentors ("eMMissaries"), increasing organizational awareness and seeking opportunities to influence and develop others.',
                 ),
-                paragraph(
-                  'National Security and Counterterrorism Fellowship (McCain Institute) — Brings together promising rising leaders in national security and counterterrorism across Five Eyes partner nations, preparing character-driven leaders for future leadership.',
+                fellowship(
+                  'Emerging as a Global Leader Experience (EaGLE) Program',
+                  'https://globally.org/eagle',
+                  'Accelerates the careers of emerging leaders in national security and public service through immersive virtual workshops on design thinking, lean startup methods, and strengths-based leadership.',
                 ),
-                paragraph(
-                  'The International Affairs Fellowship (IAF, CFR) — Bridges the gap between the study and making of U.S. foreign policy: academics are placed in policy-oriented public service settings and government officials in scholarly settings.',
+                fellowship(
+                  'The Military Fellows Program (William & Mary PIPS)',
+                  'https://www.wm.edu/offices/global-research/research-labs/pips/people/military-fellows/index.php',
+                  'Pairs research fellows with active-duty military officers who mentor and lend strategic expertise throughout the academic year, from identifying emerging international challenges in the fall to providing analytical feedback on policy recommendations in the spring.',
                 ),
-                paragraph(
-                  '[Manual back-fill: the source lists ~40 fellowships in this category (including ASME, Truman Project, Wilson Center programs, McCain Global Leaders, Presidential Leadership Scholars, and many more). Restore the full list and re-apply each program hyperlink in the admin editor.]',
+                fellowship(
+                  'National Security and Counterterrorism Fellowship (McCain Institute)',
+                  'https://www.mccaininstitute.org/programs/national-security-counterterrorism/national-security-and-counterterrorism-fellowship/',
+                  'Brings together promising rising leaders in national security and counterterrorism across Five Eyes partner nations, preparing character-driven leaders for future leadership.',
+                ),
+                fellowship(
+                  'The McCain Global Leaders Program',
+                  'https://www.mccaininstitute.org/programs/leadership-programs/mccain-global-leaders/',
+                  'A 10-month fellowship supporting 25 character-driven leaders per cohort from around the world who are advancing democracy, human rights, and freedom, providing training, resources, and access to global networks.',
+                ),
+                fellowship(
+                  'The USGLC (U.S. Global Leadership Coalition)',
+                  'https://www.usglc.org/nextgen/',
+                  'A year-long leadership training and engagement program for a diverse, bipartisan group of next-generation leaders, culminating in a seat on a USGLC State Advisory Committee.',
+                ),
+                fellowship(
+                  'The Presidential Leadership Scholars Program',
+                  'https://www.presidentialleadershipscholars.org/apply/',
+                  'Challenges Scholars to develop their leadership skills through deep reflection and meaningful engagement across differing perspectives, drawing on the resources of four presidential foundations.',
+                ),
+                fellowship(
+                  'The Great Leaders & Great Biographies Fellowship (Hertog Foundation)',
+                  'https://hertogfoundation.org/programs/great-leaders-great-biographies',
+                  'Uses the rigorous study of great biography to investigate geopolitics, leadership, and human character, with guest scholars and national security leaders.',
+                ),
+                fellowship(
+                  'The CXO Fellows Program',
+                  'https://www.cfo.gov/cxo-fellows/',
+                  'A year-long virtual professional development program engaging the next generation of federal leaders in acquisition, financial management, human capital, IT, and data.',
+                ),
+                fellowship(
+                  "New America's Fellows Program",
+                  'https://www.newamerica.org/fellows/about/',
+                  'Invests in journalists, scholars, filmmakers, and policy analysts who generate bold ideas, providing a competitive one-year term with an intellectual home, community, and resources to pursue their projects.',
+                ),
+                fellowship(
+                  "The Wilson Center's Foreign Policy Fellowship Program (FPFP)",
+                  'https://www.wilsoncenter.org/foreignpolicyfellowship',
+                  'A six-week seminar series encouraging Fellows to debate key global issues with leading foreign policy thinkers, concluding with a bipartisan foreign policy roleplay scenario.',
+                ),
+                fellowship(
+                  'The Rising Experts Program (YPFP)',
+                  'https://www.ypfp.org/amplify/fellowship-program/',
+                  'A roughly year-long writing initiative pairing young professionals with editors to build writing skills and a portfolio of published analysis and op-eds.',
+                ),
+                fellowship(
+                  'The Technology and National Security Fellowship (NSIN)',
+                  'https://www.nsin.mil/tnsf/',
+                  'A one-year Department of Defense fellowship embedding recent advanced-degree graduates with key decision-makers in the Pentagon or on Capitol Hill to address technology and national security policy.',
+                ),
+                fellowship(
+                  'The Truman Project',
+                  'https://www.trumanproject.org/membership/membership-overview',
+                  'A national security leadership network of over 2,000 members, admitted by competitive application across three cohorts: Fellows, Partners, and the Defense Council.',
+                ),
+                fellowship(
+                  'The National Security & Sino-American Technology Competition Fellowship (Hertog Foundation)',
+                  'https://hertogfoundation.org/programs/national-security-sino-american-technology-competition-fellowship',
+                  'Educates the next generation of East Asia strategists and national security generalists on how technology shapes U.S.-China strategic rivalry.',
+                ),
+                fellowship(
+                  'The Public Interest Fellowship (TPIF)',
+                  'https://publicinterestfellowship.org/',
+                  'Operates four programs, including a flagship two-year fellowship, identifying and developing future leaders devoted to liberty and the public interest across policy and journalism.',
+                ),
+                fellowship(
+                  'The National Defense Fellowship (NDF)',
+                  'https://www.alexanderhamiltonsociety.org/rri-ahs-national-defense-fellowship',
+                  'A joint program of the Alexander Hamilton Society and the Ronald Reagan Institute educating roughly 20 advanced students through a Peace Through Strength Boot Camp and the Reagan National Defense Forum.',
+                ),
+                fellowship(
+                  'Defense Ventures (Shift, with AFWERX)',
+                  'https://www.shift.org/dvp-cohorts/seventeen',
+                  'An 8-week fellowship identifying emerging innovators from the Department of Defense and facilitating industry immersions at venture capital firms, incubators, and startups.',
+                ),
+                fellowship(
+                  'The German-American Young Leaders Conference',
+                  'https://www.atlantik-bruecke.org/en/the-young-leaders-program/',
+                  'An intensive, interdisciplinary exchange on current transatlantic issues that builds professional and personal bridges across the Atlantic, featuring leading public figures as guest speakers.',
+                ),
+                fellowship(
+                  "The Heritage Foundation's George C. Marshall Fellows Program",
+                  'https://www.heritage.org/george-c-marshall-fellowship',
+                  'Gives exceptional young professionals a comprehensive overview of national security principles and the practice of strategic leadership.',
+                ),
+                fellowship(
+                  'The Carnegie Ethics Fellowship',
+                  'https://www.carnegiecouncil.org/initiatives-issues/carnegie-ethics-fellows',
+                  'A two-year fellowship developing the next generation of ethical leaders from business, government, academia, and non-governmental organizations through values-driven, reflective leadership work.',
+                ),
+                fellowship(
+                  'Harold W. Rosenthal Fellowship in International Relations',
+                  'https://gogovernment.org/fellowship/harold-w-rosenthal-fellowship-in-international-relations/',
+                  'Offers outstanding, civic-minded graduate students in international affairs a summer working to solve major national and global challenges.',
+                ),
+                fellowship(
+                  'The Herbert Scoville Jr. Peace Fellowship Program',
+                  'https://scoville.org/apply/application-information/',
+                  'Full-time, six-to-nine-month fellowships in Washington, DC for recent college and graduate alumni to work with nonprofit, public-interest organizations addressing peace and security issues.',
+                ),
+                fellowship(
+                  'CSIS Fellowship: Enriching the Future of Foreign Policy',
+                  'https://www.csis.org/programs/executive-education/university-programs/csis-fellowship-enriching-future-foreign-policy',
+                  'A semester-long fellowship for rising sophomores, juniors, and seniors from any academic background who want to prepare for a career in the policy field.',
+                ),
+                fellowship(
+                  'The Belfer Center National Security Fellowship (Harvard)',
+                  'https://www.belfercenter.org/fellowship/national-security-fellowship',
+                  'A 10-month research fellowship for U.S. military officers at the Lt. Col./Colonel rank and their civilian counterparts who show promise of rising to the most challenging leadership positions.',
+                ),
+                fellowship(
+                  'The Abshire-Inamori Leadership Academy (AILA) at CSIS',
+                  'https://www.csis.org/programs/executive-education/leadership-development/aila-international-fellowship',
+                  'An intensive week of seminars and experiential learning equipping aspiring global leaders to be effective and ethical changemakers.',
+                ),
+                fellowship(
+                  'The Executive Leaders Program (ELP, Naval Postgraduate School CHDS)',
+                  'https://www.chds.us/c/academic-programs/elp/',
+                  'A non-degree, graduate-level program for senior homeland security and public safety leaders, developing critical thinking through a diverse, cross-functional cohort.',
+                ),
+                fellowship(
+                  'The International Strategy Forum (ISF, Schmidt Futures)',
+                  'https://isf.schmidtfutures.com/fellowship/',
+                  'Chaired by Fareed Zakaria and Jared Cohen, seeks out non-traditional talent across boardrooms, newsrooms, labs, and policy councils, equipping rising leaders in technology and international affairs to tackle hard global problems.',
+                ),
+                fellowship(
+                  'The Irregular Warfare Initiative Nonresident Fellows Program',
+                  'https://irregularwarfare.org/iwi-fellows/',
+                  'A network of academics, practitioners, and policy makers advancing research and discussion on irregular warfare, with opportunities to present research and travel.',
+                ),
+                fellowship(
+                  'The Robert and Marion Oster National Security Affairs Fellows (NSAF) Program (Hoover Institution)',
+                  'https://www.hoover.org/fellows/category/national-security-affairs-fellows',
+                  'Gives a high-ranking military or government official with extensive foreign policy experience an academic year at Hoover to conduct independent research and mentor students.',
+                ),
+                fellowship(
+                  'The Bochnowski Family Veteran Fellowship Program (VFP, Hoover Institution)',
+                  'https://www.hoover.org/veteran-fellowship-program',
+                  'A nonresidential, year-long, project-based program for 10 military veterans accelerating solution-finding on public-sector challenges aligned with Hoover’s research priorities.',
+                ),
+                fellowship(
+                  'The International Affairs Fellowship (IAF, CFR)',
+                  'https://www.cfr.org/fellowships/international-affairs-fellowship',
+                  'Bridges the gap between the study and making of U.S. foreign policy: academics are placed in policy-oriented public service settings and government officials in scholarly settings.',
+                ),
+                fellowship(
+                  'David Rockefeller Fellows: North America (Trilateral Commission)',
+                  'https://www.trilateral.org/about/david-rockefeller-fellows-north-america/',
+                  'For applicants 35 or younger with strong potential for future leadership, joining the Commission’s annual meetings as full participants with costs of attendance covered.',
+                ),
+                fellowship(
+                  'The Artificial Intelligence Lab (Wilson Center)',
+                  'https://www.wilsoncenter.org/artificial-intelligence-lab',
+                  'A six-week seminar series introducing participants to foundational AI topics — machine learning, neural networks, autonomous systems, and AI’s implications for national security — led by top technologists and scholars.',
                 ),
               ),
             },
             {
               question: 'Science, Tech, Engineering & Math',
               answer: richText(
-                paragraph(
-                  'ASME Federal Government Fellowship Program — The American Society of Mechanical Engineers established the first engineering-society Federal Government Fellowship in 1973, enabling selected members to spend a year providing engineering and technical advice to policy makers in Congress, the White House, and federal agencies.',
+                fellowship(
+                  'ASME Federal Government Fellowship Program',
+                  'https://www.asme.org/government-relations/federal-fellows-program',
+                  'The American Society of Mechanical Engineers established the first engineering-society Federal Government Fellowship in 1973, enabling selected members to spend a year providing engineering and technical advice to policy makers in Congress, the White House, and federal agencies.',
                 ),
-                paragraph(
-                  'Engineering & International Development Fellowship (IEEE-USA) — Fellows serve as advisors to the U.S. Agency for International Development (USAID), providing technical expertise while contributing to the foreign policy process.',
+                fellowship(
+                  'Engineering & International Development Fellowship (IEEE-USA)',
+                  'https://ieeeusa.org/advocacy/government-fellowships/usaid-fellowships/',
+                  'Fellows serve as advisors to the U.S. Agency for International Development (USAID), providing technical expertise while contributing to the foreign policy process.',
                 ),
-                paragraph(
-                  'Jefferson Science Fellows Program (JSF) — Engages the American academic STEM and medical communities in U.S. foreign policy and international development; tenured faculty spend a year advising at the U.S. Department of State or USAID.',
+                fellowship(
+                  'Jefferson Science Fellows Program (JSF)',
+                  'https://sites.nationalacademies.org/PGA/Jefferson/index.htm',
+                  'Engages the American academic STEM and medical communities in U.S. foreign policy and international development; tenured faculty spend a year advising at the U.S. Department of State or USAID.',
                 ),
-                paragraph(
-                  'AIP State Department Science Fellowship Program — An American Institute of Physics fellowship enhancing the science & technology capacity of the State Department by enabling scientists to work a one-year term at headquarters; mid- and late-career professionals are encouraged to apply.',
+                fellowship(
+                  'AIP State Department Science Fellowship Program',
+                  'https://www.aip.org/policy/fellowships/state-department',
+                  'An American Institute of Physics fellowship enhancing the science & technology capacity of the State Department by enabling scientists to work a one-year term at headquarters; mid- and late-career professionals are encouraged to apply.',
                 ),
-                paragraph(
-                  'Presidential Innovation Fellowship (PIF) — Pairs industry’s top technologists, designers, and strategists with federal changemakers as one-year "entrepreneurs in residence," bringing data science, design, engineering, product, and systems thinking into government at the GS-15 senior level.',
+                fellowship(
+                  'Presidential Innovation Fellowship (PIF)',
+                  'https://presidentialinnovationfellows.gov/',
+                  'Pairs industry’s top technologists, designers, and strategists with federal changemakers as one-year "entrepreneurs in residence," bringing data science, design, engineering, product, and systems thinking into government at the GS-15 senior level.',
                 ),
-                paragraph(
-                  'The Artificial Intelligence Lab (Wilson Center) — A six-week seminar series introducing participants to foundational AI topics — machine learning, neural networks, autonomous systems, and AI’s implications for national security — led by top technologists and scholars.',
+                fellowship(
+                  'The Artificial Intelligence Lab (Wilson Center)',
+                  'https://www.wilsoncenter.org/artificial-intelligence-lab',
+                  'A six-week seminar series introducing participants to foundational AI topics — machine learning, neural networks, autonomous systems, and AI’s implications for national security — led by top technologists and scholars.',
                 ),
               ),
             },
@@ -3915,6 +4258,11 @@ const fellowshipsMidSeniorSlice: PageSlice = async (_payload) => {
 }
 
 const fellowshipsYoungSlice: PageSlice = async (_payload) => {
+  // Linked program-name paragraph — restores the outbound link Webflow carried
+  // on the bolded program name (opens in a new tab, since every target is external).
+  const progLink = (label: string, url: string) =>
+    node('paragraph', {}, [linkNode(label, url, true)])
+
   return [
     {
       slug: 'resources/public-service-fellowships-young-professionals',
@@ -3971,63 +4319,85 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
               question: 'Muslim Public Service Fellowships',
               defaultOpen: false,
               answer: richText(
-                // Muslim Public Service Network (MPSN) – Summer Fellowship — https://www.muslimpublicservice.org/
-                paragraph('Muslim Public Service Network (MPSN) – Summer Fellowship'),
-                paragraph(
-                  'Since 1994, the MPSN Fellowship has been a one-of-a-kind summer experience that educates, connects, and inspires talented Muslims to make a difference through public service. Components of the MPSN Summer Fellowship include cooperative living for students and young professionals undertaking summer internships in Washington, D.C., and career mentoring from well-placed MPSN alumni. Through living, learning, and working together in the MPSN residence, fellows build relationships across ideological differences, while the experience includes an eight-week graduate level lecture series on Islam and public ethics. Learn More / Apply: https://www.muslimpublicservice.org/',
+                progLink(
+                  'Muslim Public Service Network (MPSN) – Summer Fellowship',
+                  'https://www.muslimpublicservice.org/',
                 ),
-                // Congressional Leadership Development Program (CLDP) — https://cldp.org/
-                paragraph('Congressional Leadership Development Program (CLDP)'),
                 paragraph(
-                  'Now powered by the Muslim Public Affairs Council (MPAC), CLDP provides unique access to networks inside government departments, sectors, support groups and other allies in Washington. CLDP trains fellows to engage with elected officials and public figures in ways that create discourse and influence policy change. Accepted fellows will work with MPAC staff to apply for and secure internships/fellowships on Capitol Hill throughout February and March. The summer program itself lasts 10 weeks. Learn More / Apply: https://cldp.org/',
+                  'Since 1994, the MPSN Fellowship has been a one-of-a-kind summer experience that educates, connects, and inspires talented Muslims to make a difference through public service. Components of the MPSN Summer Fellowship include cooperative living for students and young professionals undertaking summer internships in Washington, D.C., and career mentoring from well-placed MPSN alumni. Through living, learning, and working together in the MPSN residence, fellows build relationships across ideological differences, while the experience includes an eight-week graduate level lecture series on Islam and public ethics.',
+                ),
+                progLink(
+                  'Congressional Leadership Development Program (CLDP)',
+                  'https://cldp.org/',
+                ),
+                paragraph(
+                  'Now powered by the Muslim Public Affairs Council (MPAC), CLDP provides unique access to networks inside government departments, sectors, support groups and other allies in Washington. CLDP trains fellows to engage with elected officials and public figures in ways that create discourse and influence policy change. Accepted fellows will work with MPAC staff to apply for and secure internships/fellowships on Capitol Hill throughout February and March. The summer program itself lasts 10 weeks.',
                 ),
               ),
             },
             {
               question: 'Leadership & Public Administration',
               answer: richText(
-                // White House Fellowship — https://www.whitehouse.gov/get-involved/fellows/
-                paragraph('White House Fellowship'),
+                progLink(
+                  'White House Fellowship',
+                  'https://www.whitehouse.gov/get-involved/fellows/',
+                ),
                 paragraph(
                   'White House Fellowships offer exceptional emerging leaders first-hand experience working at the highest levels of the Federal government. Selected individuals typically spend a year working as a full-time, paid Fellow to senior White House Staff, Cabinet Secretaries, and other top-ranking government officials. There are no formal age restrictions; the Fellowship program was created to give selected Americans the experience of government service early in their careers. Employees of the Federal government are not eligible unless they are career military personnel.',
                 ),
-                // APSA Congressional Fellowship Program — https://www.apsanet.org/cfp
-                paragraph('APSA Congressional Fellowship Program for Political Scientists'),
+                progLink(
+                  'APSA Congressional Fellowship Program for Political Scientists',
+                  'https://www.apsanet.org/cfp',
+                ),
                 paragraph(
                   'The American Political Science Association (APSA) Congressional Fellowship gives early to mid-career political scientists an opportunity to learn more about Congress and the legislative process. Office assignments as full-time legislative aides in the House of Representatives and/or Senate for candidates with a PhD completed within the last 15 years or a dissertation near completion, and a scholarly interest in Congress and the policymaking process.',
                 ),
-                // International Leadership Foundation (ILF) Civic Fellowship — https://www.ilfnational.org/fellowship.html
-                paragraph('International Leadership Foundation (ILF) Civic Fellowship Program'),
+                progLink(
+                  'International Leadership Foundation (ILF) Civic Fellowship Program',
+                  'https://www.ilfnational.org/fellowship.html',
+                ),
                 paragraph(
                   'The International Leadership Foundation Civic Fellowship is a civic leadership development program designed specifically to foster the next generation of Asian American and Pacific Islander (AAPI) leaders in public service. ILF Civic Fellowship provides an 8 to 10-week public service internship at federal agencies, scholarships, and a variety of seminars and workshops on civic engagement and career, personal, and leadership development.',
                 ),
-                // Running Start Congressional Fellowship — https://runningstart.org/college-programs/
-                paragraph('Running Start Congressional Fellowship'),
+                progLink(
+                  'Running Start Congressional Fellowship',
+                  'https://runningstart.org/college-programs/',
+                ),
                 paragraph(
                   'A seasonal lecture series that meets monthly and provides young working professionals aspiring for a career in US foreign policy, or in the early stages of their career, the opportunity to engage and interact with current and former senior-ranking US policymakers, diplomats and military officials.',
                 ),
-                // Local Government Management Fellowship (LGMF) — https://icma.org/local-government-management-fellowship
-                paragraph('Local Government Management Fellowship (LGMF)'),
+                progLink(
+                  'Local Government Management Fellowship (LGMF)',
+                  'https://icma.org/local-government-management-fellowship',
+                ),
                 paragraph(
                   'The Local Government Management Fellowship is a career development opportunity for recent graduate-degree recipients pursuing careers in local government management, offering a full-time placement and mentorship in a participating local government.',
                 ),
-                // Jamestown’s Young Professionals Program — https://jamestown.org/programs/jamestowns-young-professionals-program/
-                paragraph('Jamestown’s Young Professionals Program'),
+                progLink(
+                  'Jamestown’s Young Professionals Program',
+                  'https://jamestown.org/programs/jamestowns-young-professionals-program/',
+                ),
                 paragraph(
                   'A program that connects young working professionals aspiring for a career in US foreign policy, or in the early stages of their career, with current and former senior-ranking US policymakers, diplomats, and military officials.',
                 ),
-                // The Young Leaders Program — https://frenchamerican.org/young-leaders/apply/
-                paragraph('The French-American Foundation Young Leaders Program'),
+                progLink(
+                  'The French-American Foundation Young Leaders Program',
+                  'https://frenchamerican.org/young-leaders/apply/',
+                ),
                 paragraph(
                   'The Young Leaders Program brings together a select group of emerging leaders from France and the United States for a two-year program of cross-cultural exchange and dialogue. Participants agree to the Young Leaders Responsibilities Charter; the Foundation reserves the right to withdraw a Young Leader who does not abide by the charter.',
                 ),
-                // The Shawn Brimley Next Generation National Security Leaders Fellowship — https://www.cnas.org/next-generation-programs/nextgeneration
-                paragraph('The Shawn Brimley Next Generation National Security Leaders Fellowship'),
+                progLink(
+                  'The Shawn Brimley Next Generation National Security Leaders Fellowship',
+                  'https://www.cnas.org/next-generation-programs/nextgeneration',
+                ),
                 paragraph(
                   'A year-long, part-time professional development fellowship that aims to bring together young professionals across sectors within the national security field to learn best practices and lessons in leadership. Next Gen fellows engage with thought leaders on leadership principles and national security through various engagements, including a monthly dinner series. The program culminates in a week-long international study tour to delve deeper into national security issues and leadership.',
                 ),
-                // The Young Strategists Forum — https://www.gmfus.org/young-strategists-forum
-                paragraph('The Young Strategists Forum'),
+                progLink(
+                  'The Young Strategists Forum',
+                  'https://www.gmfus.org/young-strategists-forum',
+                ),
                 paragraph(
                   'Run by the German Marshall Fund, the Young Strategists Forum seeks to develop a new generation of strategic thinkers and equip them with the skills to successfully navigate a world in flux. Held in Tokyo, the program centers on the US-Japan alliance and security dynamics in the Indo-Pacific region through lectures, a 36-hour simulation exercise, meetings with policymakers and journalists, and a study tour.',
                 ),
@@ -4036,33 +4406,42 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
             {
               question: 'International Affairs & Law',
               answer: richText(
-                // Charles B. Rangel International Affairs Fellowship — http://rangelprogram.org/
-                paragraph('Charles B. Rangel International Affairs Fellowship Program'),
+                progLink(
+                  'Charles B. Rangel International Affairs Fellowship Program',
+                  'http://rangelprogram.org/',
+                ),
                 paragraph(
                   'For college seniors or graduates who want to become Foreign Service Officers in the U.S. Department of State, the Rangel Graduate Fellowship Program provides benefits of up to $95,000 over two years toward a two-year master’s degree, arranges internships on Capitol Hill and at U.S. embassies, and provides mentorship and professional development support.',
                 ),
-                // Robertson Foundation for Government Fellowships — https://rfg.org/overview
-                paragraph('Robertson Foundation for Government Fellowships'),
+                progLink(
+                  'Robertson Foundation for Government Fellowships',
+                  'https://rfg.org/overview',
+                ),
                 paragraph(
                   'RFG seeks to support outstanding graduate students from public service, policy and administration schools who represent diverse backgrounds and perspectives, with a common embrace of government service as a future calling. By supporting their education through academic fellowships and funding for government internships, RFG enables fellows to emerge from graduate school with lower or no financial burden so that they may pursue federal careers with complete dedication.',
                 ),
-                // Thomas R. Pickering Graduate Foreign Affairs Fellowship — https://pickeringfellowship.org/
-                paragraph('Thomas R. Pickering Graduate Foreign Affairs Fellowship'),
+                progLink(
+                  'Thomas R. Pickering Graduate Foreign Affairs Fellowship',
+                  'https://pickeringfellowship.org/',
+                ),
                 paragraph(
                   'The Thomas R. Pickering Foreign Affairs Fellowship Program attracts and prepares outstanding young people for Foreign Service careers in the U.S. Department of State. It welcomes the application of members of minority groups historically underrepresented in the State Department, women, and those with financial need. Based on the fundamental principle that diversity is a strength in our diplomatic efforts, the program values varied backgrounds, including ethnic, racial, social, and geographic diversity.',
                 ),
-                // Mike Mansfield Fellowship Program — https://mansfieldfellows.org/about-the-fellowship/
-                paragraph('Mike Mansfield Fellowship Program'),
+                progLink(
+                  'Mike Mansfield Fellowship Program',
+                  'https://mansfieldfellows.org/about-the-fellowship/',
+                ),
                 paragraph(
                   'The Mansfield Fellowship Program was established by the U.S. Congress in 1994 to build a corps of U.S. Federal government employees with proficiency in the Japanese language and practical, firsthand knowledge about Japan and its government. Applicants must be federal government employees with at least two consecutive years of service and are subsequently required to serve at least two years in the Federal government.',
                 ),
-                // Barbara A. Ringer Copyright Honors Program — https://www.copyright.gov/about/special-programs/ringer.html
-                paragraph('Barbara A. Ringer Copyright Honors Program'),
+                progLink(
+                  'Barbara A. Ringer Copyright Honors Program',
+                  'https://www.copyright.gov/about/special-programs/ringer.html',
+                ),
                 paragraph(
                   'The Ringer Honors Program offers 18-24-month paid fellowships for attorneys in the initial stages of their careers who demonstrate promising ability and interest in copyright law. Ringer Fellows work closely with United States Copyright Office senior attorneys on a range of copyright-related law and policy matters.',
                 ),
-                // Dave Kennedy Fellowship — https://ij.org/opportunities/students/
-                paragraph('Dave Kennedy Fellowship'),
+                progLink('Dave Kennedy Fellowship', 'https://ij.org/opportunities/students/'),
                 paragraph(
                   'The Institute for Justice recruits the most talented law students from across the country as summer fellowship program participants, called Dave Kennedy Fellows. The program offers an unparalleled professional opportunity to substantively contribute to active and future strategic litigation in both state and federal courts.',
                 ),
@@ -4071,8 +4450,10 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
             {
               question: 'Economics',
               answer: richText(
-                // JPSM Junior Fellows Program — https://jpsm.umd.edu/academics/junior-fellows-program
-                paragraph('JPSM Junior Fellows Program'),
+                progLink(
+                  'JPSM Junior Fellows Program',
+                  'https://jpsm.umd.edu/academics/junior-fellows-program',
+                ),
                 paragraph(
                   'The Junior Fellow Program supports career opportunities for those who have the knowledge and skills to design, collect, and analyze large-scale databases by offering a paid research assistantship, plus educational benefits that can expand the horizons of what you can do in your career. Junior Fellows will be placed at various statistical and survey organizations.',
                 ),
@@ -4081,71 +4462,81 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
             {
               question: 'Science, Tech, Engineering & Math',
               answer: richText(
-                // AAAS Science & Technology Policy Fellowships — https://www.aaas.org/fellowships
-                paragraph('American Association for the Advancement of Science (AAAS)'),
+                progLink(
+                  'American Association for the Advancement of Science (AAAS)',
+                  'https://www.aaas.org/fellowships',
+                ),
                 paragraph(
                   'The Science & Technology Policy Fellowships program provides opportunities for scientists and engineers to contribute to federal policymaking while learning firsthand about the intersection of science and policy.',
                 ),
-                // Christine Mirzayan Science & Technology Policy Graduate Fellowship — https://www.nationalacademies.org/our-work/the-christine-mirzayan-science--technology-policy-graduate-fellowship-program
-                paragraph('Christine Mirzayan Science & Technology Policy Graduate Fellowship'),
+                progLink(
+                  'Christine Mirzayan Science & Technology Policy Graduate Fellowship',
+                  'https://www.nationalacademies.org/our-work/the-christine-mirzayan-science--technology-policy-graduate-fellowship-program',
+                ),
                 paragraph(
                   'A full-time hands-on training and educational program that provides early career individuals with the opportunity to spend 12 weeks at the National Academies of Sciences, Engineering, and Medicine in Washington, DC learning about science and technology policy and the role that scientists and engineers play in advising the nation.',
                 ),
-                // Cybersecurity Talent Initiative — https://cybertalentinitiative.org/
-                paragraph('Cybersecurity Talent Initiative'),
+                progLink('Cybersecurity Talent Initiative', 'https://cybertalentinitiative.org/'),
                 paragraph(
                   'The Cybersecurity Talent Initiative is a public-private partnership aimed at recruiting and training a world-class cybersecurity workforce. Participants selected for the program will be guaranteed a two-year placement at a federal agency with cybersecurity needs.',
                 ),
-                // DOE NNSA Laboratory Residency Graduate Fellowship — https://www.krellinst.org/lrgf/about-doe-nnsa-lrgf
-                paragraph(
+                progLink(
                   'Department of Energy National Nuclear Security Administration Laboratory Residency Graduate Fellowship',
+                  'https://www.krellinst.org/lrgf/about-doe-nnsa-lrgf',
                 ),
                 paragraph(
                   'Launched in 2017, the DOE NNSA Laboratory Residency Graduate Fellowship (DOE NNSA LRGF) provides excellent financial benefits and professional development opportunities to students pursuing a Ph.D. in fields of study that address complex science and engineering problems critical to stewardship science.',
                 ),
-                // FDA Scientific Internships and Fellowships — https://www.fda.gov/about-fda/jobs-and-training-fda/scientific-internships-fellowships-trainees-and-non-us-citizens
-                paragraph(
+                progLink(
                   'U.S. Food and Drug Administration (FDA) Scientific Internships and Fellowships',
+                  'https://www.fda.gov/about-fda/jobs-and-training-fda/scientific-internships-fellowships-trainees-and-non-us-citizens',
                 ),
                 paragraph(
                   'Whether you’re an undergraduate looking to pursue a career in science, a graduate science student seeking experience in regulatory science, a postgraduate looking for fellowship opportunities, or a senior scientist pursuing research experience in your field of expertise, FDA offers many paths to learning about the field of regulatory science.',
                 ),
-                // Foreign Affairs Information Technology (FAIT) Fellowship — https://www.faitfellowship.org/
-                paragraph('Foreign Affairs Information Technology (FAIT) Fellowship'),
+                progLink(
+                  'Foreign Affairs Information Technology (FAIT) Fellowship',
+                  'https://www.faitfellowship.org/',
+                ),
                 paragraph(
                   'The FAIT Fellowship, funded by the United States Department of State, provides undergraduate and graduate students in IT-related fields with tuition assistance, as well as mentorship and professional development, to launch their careers in the Foreign Service as Information Management Specialists.',
                 ),
-                // Mickey Leland Energy Fellowship (MLEF) — https://orise.orau.gov/mlef/
-                paragraph('Mickey Leland Energy Fellowship (MLEF) Program'),
+                progLink(
+                  'Mickey Leland Energy Fellowship (MLEF) Program',
+                  'https://orise.orau.gov/mlef/',
+                ),
                 paragraph(
                   'The Mickey Leland Energy Fellowship Program provides students with educational opportunities to gain real-world, hands-on research experience with the Department of Energy’s (DOE) Office of Fossil Energy. The MLEF program was created in 1995 with the goal of improving opportunities for under-represented and minority students in STEM fields.',
                 ),
-                // NASA Postdoctoral Program — https://npp.usra.edu/
-                paragraph('NASA Postdoctoral Program'),
+                progLink('NASA Postdoctoral Program', 'https://npp.usra.edu/'),
                 paragraph(
                   'The NASA Postdoctoral Program (NPP) provides early-career and more senior scientists the opportunity to share in NASA’s mission. NASA Postdoctoral Fellows work on 1 to 3 year assignments with NASA scientists and engineers at NASA centers and institutes to advance NASA’s missions in earth science, heliophysics, planetary science, astrophysics, space bioscience, aeronautics, engineering, human exploration and space operations, astrobiology, and science management.',
                 ),
-                // ORISE Department of Defense Fellowship Program — https://orise.orau.gov/dodprograms/
-                paragraph(
+                progLink(
                   'Oak Ridge Institute of Science and Education Department of Defense Fellowship Program',
+                  'https://orise.orau.gov/dodprograms/',
                 ),
                 paragraph(
                   'To ensure the robust supply of scientists and engineers to meet the U.S. Department of Defense’s future science and technology needs, the ORISE program places individuals from the academic community (students, recent graduates, and faculty) in DoD research projects.',
                 ),
-                // SMART Scholarship for Service — https://www.smartscholarship.org/smart
-                paragraph(
+                progLink(
                   'Science, Mathematics and Research for Transformation (SMART) Scholarship for Service Program',
+                  'https://www.smartscholarship.org/smart',
                 ),
                 paragraph(
                   'The SMART Scholarship for Service Program is an opportunity for students pursuing an undergraduate, graduate or doctoral degree in STEM disciplines to receive a full scholarship and be gainfully employed upon degree completion in the U.S. Department of Defense.',
                 ),
-                // STPI Fellowship — https://www.ida.org/en/careers/students-and-recent-graduates/summer-associate-internships-and-fellowships/science-policy-fellowship
-                paragraph('The Science and Technology Policy Institute (STPI) Fellowship'),
+                progLink(
+                  'The Science and Technology Policy Institute (STPI) Fellowship',
+                  'https://www.ida.org/en/careers/students-and-recent-graduates/summer-associate-internships-and-fellowships/science-policy-fellowship',
+                ),
                 paragraph(
                   'The STPI Fellowship provides recent bachelor’s degree recipients with an opportunity to use their critical thinking and analytic skills to work on science and technology (S&T) policy areas, including energy and the environment, space sciences, innovation and competitiveness, evaluation, life sciences, information technologies, national security, and STEM education. Fellows are involved in collaborative research for leaders in the White House Office of Science and Technology Policy (OSTP) and other Federal Government organizations.',
                 ),
-                // USGS Mendenhall Research Fellowship Program — https://www.usgs.gov/centers/mendenhall
-                paragraph('USGS Mendenhall Research Fellowship Program'),
+                progLink(
+                  'USGS Mendenhall Research Fellowship Program',
+                  'https://www.usgs.gov/centers/mendenhall',
+                ),
                 paragraph(
                   'The Mendenhall Research Fellowship Program of the U.S. Geological Survey (USGS) provides Fellows research experiences that enhance their scientific stature and credentials. The USGS invites postdoctoral scholars to conduct concentrated research in association with selected members of the USGS professional staff. Fellows have two-year appointments to the USGS, receiving a full salary and benefits at the GS-12 level. Applicants must have their PhD degree no earlier than 5 years before the application opening date.',
                 ),
@@ -4154,14 +4545,16 @@ const fellowshipsYoungSlice: PageSlice = async (_payload) => {
             {
               question: 'Health',
               answer: richText(
-                // Sustaining Technical and Analytical Resources (STAR) — https://www.ghstar.org/participants/fellows
-                paragraph('Sustaining Technical and Analytical Resources (STAR)'),
+                progLink(
+                  'Sustaining Technical and Analytical Resources (STAR)',
+                  'https://www.ghstar.org/participants/fellows',
+                ),
                 paragraph(
                   'Through fellowships, internships, and strategic partnerships, STAR supports building the capacity of diverse global health professionals and organizations at all levels to make inclusive, collaborative, and innovative contributions to global health.',
                 ),
-                // Post Baccalaureate Intramural Research Training Award (Postbac IRTA/CRTA) — https://www.training.nih.gov/programs/postbac_irta
-                paragraph(
+                progLink(
                   'Post Baccalaureate Intramural Research Training Award (Postbac IRTA/CRTA)',
+                  'https://www.training.nih.gov/programs/postbac_irta',
                 ),
                 paragraph(
                   'The NIH Postbac IRTA program provides recent college graduates who are planning to apply to graduate or professional (medical/dental/pharmacy) school an opportunity to spend one or two years performing full-time research at the NIH. Postbac IRTAs/CRTAs work side-by-side with some of the leading scientists in the world, in an environment devoted exclusively to biomedical research.',
@@ -4186,14 +4579,26 @@ const contactUsSlice: PageSlice = async (payload) => {
       heading('Thank you. Your message has been sent.', 'h3'),
       paragraph("We'll be in touch with you shortly."),
     ),
+    // Field set mirrors the live Webflow contact form (LR11): first/last name,
+    // email, phone, title/role, organization, a "describe yourself" select, and
+    // the message. Two-up (width 50) name/contact rows collapse to one column on
+    // mobile via the Width block.
     fields: [
       {
         blockType: 'text',
-        name: 'full-name',
-        blockName: 'full-name',
-        label: 'Full name',
+        name: 'first-name',
+        blockName: 'first-name',
+        label: 'First name',
         required: true,
-        width: 100,
+        width: 50,
+      },
+      {
+        blockType: 'text',
+        name: 'last-name',
+        blockName: 'last-name',
+        label: 'Last name',
+        required: true,
+        width: 50,
       },
       {
         blockType: 'email',
@@ -4201,15 +4606,48 @@ const contactUsSlice: PageSlice = async (payload) => {
         blockName: 'email',
         label: 'Email',
         required: true,
-        width: 100,
+        width: 50,
       },
       {
         blockType: 'text',
-        name: 'subject',
-        blockName: 'subject',
-        label: 'Subject',
+        name: 'phone',
+        blockName: 'phone',
+        label: 'Phone number',
         required: false,
+        width: 50,
+      },
+      {
+        blockType: 'text',
+        name: 'title-role',
+        blockName: 'title-role',
+        label: 'Title/Role',
+        required: false,
+        width: 50,
+      },
+      {
+        blockType: 'text',
+        name: 'organization',
+        blockName: 'organization',
+        label: 'Organization',
+        required: false,
+        width: 50,
+      },
+      {
+        blockType: 'select',
+        name: 'describe-yourself',
+        blockName: 'describe-yourself',
+        label: 'How would you describe yourself?',
+        required: true,
         width: 100,
+        // Values match the live form's option labels verbatim so submissions
+        // land in the same buckets ops already reports on.
+        options: [
+          { label: 'Current Member', value: 'Current Member' },
+          { label: 'Prospective member', value: 'Prospective member' },
+          { label: 'Organization partner', value: 'Organization partner' },
+          { label: 'Press / journalist', value: 'Press / journalist' },
+          { label: 'Other', value: 'Other' },
+        ],
       },
       {
         blockType: 'textarea',
@@ -4231,7 +4669,13 @@ const contactUsSlice: PageSlice = async (payload) => {
         // verified sender is set in one place; falls back to a sensible default.
         emailFrom: `"${process.env.EMAIL_FROM_NAME || 'MAPS National'}" <${process.env.EMAIL_FROM_ADDRESS || 'no-reply@mapsnational.org'}>`,
         subject: "You've received a new contact message.",
-        message: richText(paragraph('A new message was submitted via the website contact form.')),
+        // {{*:table}} is expanded by the form-builder into an HTML table of every
+        // submitted field, so ops gets the full submission (name, contact, role,
+        // message) in the notification instead of just a "you got a message" ping.
+        message: richText(
+          paragraph('A new message was submitted via the website contact form:'),
+          paragraph('{{*:table}}'),
+        ),
       },
     ],
   }
@@ -5206,6 +5650,189 @@ const ensureTrackedMedia = async (
   )
 }
 
+// SEO meta (title + description) per page slug (LR14). Kept as one central map,
+// applied in the upsert loop below, rather than threaded through every slice —
+// the two hub one-liners and the eventChild factory would otherwise each need a
+// bespoke edit. generateMeta appends " | MAPS National" to the title tag, so
+// titles never restate it; descriptions stay <=165 chars to avoid SERP
+// truncation. Grounded in each page's own hero/section copy.
+const META_BY_SLUG: Record<string, { title: string; description: string }> = {
+  'about-us': {
+    title: 'About MAPS',
+    description:
+      'A volunteer-run 501(c)(3) founded in 2021, MAPS connects Muslim American public servants across every level of government. Free to join and nonpartisan.',
+  },
+  'about-us/advisory-council': {
+    title: 'Advisory Council',
+    description:
+      'The MAPS Advisory Council is a standing, non-decision-making body of accomplished professionals who advise the Board and serve as a resource to members.',
+  },
+  'about-us/board-leadership': {
+    title: 'Board & Leadership',
+    description:
+      'Muslim Americans in Public Service is led by a Board of Directors, supported by Deputy Directors, Board Committees, and State Committees across the country.',
+  },
+  'about-us/faq': {
+    title: 'Frequently Asked Questions',
+    description:
+      "Answers to common questions about MAPS National's organization, membership, funding, advocacy, and programming.",
+  },
+  'about-us/mission': {
+    title: 'Mission, Values & History',
+    description:
+      'Our mission is to support the career, community, and workplace development of Muslim American public servants and expand their collective impact in public service.',
+  },
+  'about-us/partners': {
+    title: 'Our Partner Organizations',
+    description:
+      'MAPS collaborates with independent organizations, government agencies, and advocacy groups that share its mission of empowering Muslim Americans in public service.',
+  },
+  'about-us/state-committees': {
+    title: 'State Committees',
+    description:
+      'MAPS State Committees organize members and public servants and represent MAPS with government officials, bringing professional development directly to their state.',
+  },
+  contact: {
+    title: 'Contact Us',
+    description:
+      'Get in touch with MAPS National. Send us a message and we will be in contact with you shortly.',
+  },
+  donate: {
+    title: 'Donate to MAPS',
+    description:
+      'MAPS is a 501(c)(3) nonprofit and donations are fully tax-deductible. Support the career, workplace, and community development of Muslim American public servants.',
+  },
+  events: {
+    title: 'Events',
+    description:
+      'Upcoming and recent MAPS member events, webinars, and professional development opportunities, plus cosponsored and partner events across the network.',
+  },
+  'events/maps': {
+    title: 'MAPS Events',
+    description:
+      'Browse events hosted by MAPS National, including member gatherings and professional development opportunities.',
+  },
+  'events/partner': {
+    title: 'Partner Events',
+    description:
+      "Events co-hosted with MAPS National's partner organizations across the public service community.",
+  },
+  'events/upcoming': {
+    title: 'Upcoming Events',
+    description: 'Register for upcoming MAPS webinars, training sessions, and member events.',
+  },
+  home: {
+    title: 'Empowering Muslim American Public Servants',
+    description:
+      'MAPS fosters a supportive community for Muslim American public servants, helping them excel in their careers through collaboration, mentorship, and advocacy.',
+  },
+  join: {
+    title: 'Join the MAPS Network',
+    description:
+      'MAPS is a grassroots community of Muslim Americans in government, supporting career, community, and workplace development through four membership categories.',
+  },
+  'latest-updates': {
+    title: 'Latest Updates',
+    description:
+      'Statements, press releases, events, photos, and professional development updates from across the MAPS National network.',
+  },
+  'members/communities-of-practice': {
+    title: 'Communities of Practice',
+    description:
+      'MAPS Communities of Practice connect members by public service career track, integrating prospective public servants directly into their desired professions.',
+  },
+  'members/community-building': {
+    title: 'Community Building for Members',
+    description:
+      'Find your community and join nationwide MAPS conversations about public service and community building.',
+  },
+  'members/maps-academy-vids': {
+    title: 'MAPS Academy Videos',
+    description:
+      'Browse recorded sessions from internal and public MAPS Academy career programs. Internal recordings are for members and instructors only.',
+  },
+  'members/new-york-state': {
+    title: 'MAPS New York',
+    description:
+      'The MAPS New York State Committee organizes and supports members and represents MAPS with officials, bringing development directly to NYC public servants.',
+  },
+  'members/policy-legal-advocacy': {
+    title: 'Policy & Legal Advocacy',
+    description:
+      'MAPS policy initiatives, advocacy campaigns, templates, and legal support for members facing workplace discrimination, plus recordings of exclusive member webinars.',
+  },
+  'members/portal': {
+    title: 'Member Portal',
+    description:
+      'A secure home for MAPS Members, Associates, Affiliates, and Allies, with event registrations and career, community, and policy resources by membership category.',
+  },
+  'members/professional-development': {
+    title: 'Professional Development',
+    description:
+      'Exclusive MAPS professional development resources, templates, one-on-one career services, political appointment and judicial pipelines, and recorded webinars.',
+  },
+  'members/resources-points-of-contact': {
+    title: 'Resources & Points of Contact',
+    description:
+      'A central directory of MAPS National resources and the people to reach for member support.',
+  },
+  press: {
+    title: 'Press Releases',
+    description:
+      'Latest statements, press releases, and media features from MAPS National for local and national press and the Muslim public service community.',
+  },
+  programs: {
+    title: 'Programs',
+    description:
+      'MAPS programs help Muslim American public servants advance their careers, build community across government, and shape the policy that affects them.',
+  },
+  'programs/career-support': {
+    title: 'Career Support',
+    description:
+      'MAPS supports members and partner networks with career assistance for Muslim American public servants, helping them advance in government and civic leadership.',
+  },
+  'programs/community-building': {
+    title: 'Community Building',
+    description:
+      'MAPS builds communities based on state of residence, place of employment, and profession, including State Committees, chapter groups, and communities of practice.',
+  },
+  'programs/legal-advocacy': {
+    title: 'Legal Advocacy',
+    description:
+      'The MAPS Legal Advocacy Committee offers legal information and support for members facing adversity in their public service careers.',
+  },
+  'programs/policy-initiatives': {
+    title: 'Policy & Advocacy Initiatives',
+    description:
+      'MAPS policy initiatives, toolkits, and resources promote inclusive government, helping Muslim American employees serve without fear of discrimination or retaliation.',
+  },
+  'programs/private-sector-engagement': {
+    title: 'Private Sector Engagement (PSE)',
+    description:
+      'MAPS PSE Committee leads engagement with Muslim-led companies and government contractors, recognizing their role alongside government employees in public service.',
+  },
+  'resources/federal-employment': {
+    title: 'Federal & State Government Jobs',
+    description:
+      'MAPS helps members navigate pathways to careers in Federal, State, and local government, from the Executive Branch to Congress.',
+  },
+  'resources/jumuah-services': {
+    title: 'Jumuah Services in Washington, DC',
+    description:
+      'Many Federal employees hold Friday Jumuah services at their offices. Learn how to establish an employee resource group to organize communal prayer at your agency.',
+  },
+  'resources/public-service-fellowships-mid-career-to-senior-professionals': {
+    title: 'Fellowships: Mid-Career to Senior',
+    description:
+      'MAPS has compiled well-known public service fellowships for mid-career to senior professionals, entry points into government across nearly every career track.',
+  },
+  'resources/public-service-fellowships-young-professionals': {
+    title: 'Fellowships for Young Professionals',
+    description:
+      'MAPS has compiled public service fellowships for students, PhD candidates, and young professionals, building experience or entry into specific Federal agencies.',
+  },
+}
+
 const run = async () => {
   const payload = await getPayload({ config: configPromise })
 
@@ -5225,11 +5852,34 @@ const run = async () => {
         depth: 0,
       })
 
+      // Backfill SEO meta from the central map (LR14), preserving any meta the
+      // slice already set (e.g. meta.image). Only title/description are managed
+      // here, so a slice that sets its own is never overwritten field-for-field.
+      const seo = META_BY_SLUG[data.slug]
+      if (seo) {
+        const existingMeta = (data as { meta?: Record<string, unknown> }).meta
+        ;(data as { meta?: Record<string, unknown> }).meta = { ...seo, ...existingMeta }
+      }
+
+      // Payload only auto-stamps publishedAt on an actual draft->published
+      // transition; re-running this upsert against an already-published doc
+      // never backfills one that's missing (LR15), so stamp it here instead.
+      const needsPublishedAt =
+        data._status === 'published' && !data.publishedAt && !existing.docs[0]?.publishedAt
+      const pageData = needsPublishedAt
+        ? { ...data, publishedAt: existing.docs[0]?.createdAt ?? new Date().toISOString() }
+        : data
+
       if (existing.docs[0]) {
-        await payload.update({ collection: 'pages', id: existing.docs[0].id, data, context })
+        await payload.update({
+          collection: 'pages',
+          id: existing.docs[0].id,
+          data: pageData,
+          context,
+        })
         payload.logger.info(`Updated page /${data.slug}`)
       } else {
-        await payload.create({ collection: 'pages', data, context })
+        await payload.create({ collection: 'pages', data: pageData, context })
         payload.logger.info(`Created page /${data.slug}`)
       }
     }

@@ -1,6 +1,10 @@
 import type { Block } from 'payload'
 
-import { FixedToolbarFeature, InlineToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  FixedToolbarFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 
 import { linkGroup } from '@/fields/linkGroup'
 
@@ -100,6 +104,15 @@ export const FAQ: Block = {
       minRows: 1,
       admin: { initCollapsed: true },
       fields: [
+        {
+          name: 'group',
+          type: 'text',
+          label: 'Group',
+          admin: {
+            description:
+              'Optional subheading. A heading renders above this question whenever its group differs from the previous question’s — leave blank for a flat list.',
+          },
+        },
         {
           name: 'question',
           type: 'text',

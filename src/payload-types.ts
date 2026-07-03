@@ -1055,6 +1055,10 @@ export interface FAQBlock {
   layout: 'stacked' | 'sideBySide';
   items?:
     | {
+        /**
+         * Optional subheading. A heading renders above this question whenever its group differs from the previous question’s — leave blank for a flat list.
+         */
+        group?: string | null;
         question: string;
         answer: {
           root: {
@@ -1510,9 +1514,9 @@ export interface TeamBlock {
    */
   layout: 'grouped' | 'tabs';
   /**
-   * People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk.
+   * People per row. Airy: boards & leadership (few people). Medium: a general about-us. Compact: large committees you scan in bulk. Tight: a full committee roster (many people, small photos, no bio hint).
    */
-  density: 'airy' | 'medium' | 'compact';
+  density: 'airy' | 'medium' | 'compact' | 'tight';
   populateBy?: ('collection' | 'selection') | null;
   /**
    * Leave empty to show every group.
@@ -2405,6 +2409,7 @@ export interface FAQBlockSelect<T extends boolean = true> {
   items?:
     | T
     | {
+        group?: T;
         question?: T;
         answer?: T;
         defaultOpen?: T;

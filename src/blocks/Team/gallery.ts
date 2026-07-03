@@ -53,7 +53,9 @@ const member = (
     jobTitle,
     categories,
     photo: portrait(file, name),
-    bio: prose(`${name} serves with MAPS National, supporting Muslim Americans across public service.`),
+    bio: prose(
+      `${name} serves with MAPS National, supporting Muslim Americans across public service.`,
+    ),
     ...extra,
   }) as unknown as Team
 
@@ -139,6 +141,19 @@ export const teamGallery: GalleryBlock<TeamBlockProps> = {
         layout: 'grouped',
         density: 'airy',
         header: { ...groupedHeader, eyebrow: 'Our board', heading: 'Board of Directors' },
+        selectedMembers: members,
+      },
+    },
+    {
+      name: 'Tight — full roster',
+      description:
+        'Small photos, minimal gaps, no bio-hint line — for a full committee roster (30+ people) where scanning names matters more than showcasing faces.',
+      props: {
+        blockType: 'team',
+        populateBy: 'selection',
+        layout: 'grouped',
+        density: 'tight',
+        header: { ...groupedHeader, eyebrow: 'Committee', heading: 'Full committee roster' },
         selectedMembers: members,
       },
     },
