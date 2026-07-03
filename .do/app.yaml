@@ -20,7 +20,10 @@ services:
       repo: MAPS-National/maps-website
       branch: master # PER-ENV: master for prod; a staging branch for stage
       deploy_on_push: true
-    build_command: npm run build # runs postbuild (next-sitemap) too
+    # Buildpack's auto `npm ci` omits devDependencies under NODE_ENV=production,
+    # but `next build` needs them (@tailwindcss/postcss, tailwindcss, etc.), so
+    # reinstall with dev deps first. postbuild (next-sitemap) runs after build.
+    build_command: npm ci --include=dev && npm run build
     run_command: npm start
     http_port: 8080
     instance_size_slug: apps-s-1vcpu-1gb # 1GB; tune down to 0.5gb if memory allows
@@ -36,6 +39,10 @@ services:
       - key: DATABASE_URL
         scope: RUN_TIME
         value: ${db.DATABASE_URL}
+      # DO's managed-database CA, so the app can verify the Postgres TLS cert.
+      - key: DATABASE_CA_CERT
+        scope: RUN_TIME
+        value: ${db.CA_CERT}
       # Public origin. BUILD too: NEXT_PUBLIC_* is inlined into the client bundle
       # and next-sitemap/robots resolve their URLs from it at build time.
       - key: NEXT_PUBLIC_SERVER_URL
@@ -115,6 +122,10 @@ jobs:
       - key: DATABASE_URL
         scope: RUN_TIME
         value: ${db.DATABASE_URL}
+      # DO's managed-database CA, so the app can verify the Postgres TLS cert.
+      - key: DATABASE_CA_CERT
+        scope: RUN_TIME
+        value: ${db.CA_CERT}
       - key: PAYLOAD_SECRET
         scope: RUN_TIME
         type: SECRET

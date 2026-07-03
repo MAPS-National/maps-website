@@ -64,7 +64,10 @@ const storagePlugins = s3Enabled
 // (422 "Invalid cc field") — it wants one address per entry or an array.
 const splitRecipients = (v: unknown) =>
   typeof v === 'string' && v.includes(',')
-    ? v.split(',').map((s) => s.trim()).filter(Boolean)
+    ? v
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
     : v
 
 const resendBase = process.env.RESEND_API_KEY
@@ -137,6 +140,14 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
+      // Managed Postgres (e.g. DigitalOcean) serves a cert chained to the
+      // provider's own CA, which Node does not trust by default, so verification
+      // fails on the `sslmode=require` URLs they inject. When the provider supplies
+      // that CA (DATABASE_CA_CERT), verify the connection against it. Local dev
+      // sets no CA and stays plaintext, unaffected.
+      ...(process.env.DATABASE_CA_CERT
+        ? { ssl: { ca: process.env.DATABASE_CA_CERT.replace(/\\n/g, '\n') } }
+        : {}),
     },
   }),
   collections: [
