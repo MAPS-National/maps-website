@@ -15,29 +15,35 @@ import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageTOC } from '@/components/PageTOC'
 
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const pages = await payload.find({
-    collection: 'pages',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
-
-  const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== 'home'
-    })
-    // Catch-all route: a slug may be a nested path ("about-us/board-leadership"),
-    // so split it into segments.
-    .map(({ slug }) => {
-      return { slug: (slug ?? '').split('/') }
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const pages = await payload.find({
+      collection: 'pages',
+      draft: false,
+      limit: 1000,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        slug: true,
+      },
     })
 
-  return params
+    const params = pages.docs
+      ?.filter((doc) => {
+        return doc.slug !== 'home'
+      })
+      // Catch-all route: a slug may be a nested path ("about-us/board-leadership"),
+      // so split it into segments.
+      .map(({ slug }) => {
+        return { slug: (slug ?? '').split('/') }
+      })
+
+    return params
+  } catch {
+    // ponytail: DB unreachable at build (managed hosts have no DB in the build
+    // container) — return no static paths; pages render on demand at runtime.
+    return []
+  }
 }
 
 type Args = {
