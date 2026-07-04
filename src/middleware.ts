@@ -30,6 +30,36 @@ const PUBLIC_MEMBER_PATHS = new Set(['/members/portal'])
 const looksLikeJwt = (value: string) => value.split('.').length === 3
 
 /**
+ * Staging access gate (#160). When STAGING_GATE_USER + STAGING_GATE_PASSWORD are
+ * both set — staging only; prod and local leave them unset, so this is inert
+ * there — every route requires HTTP Basic auth and the whole site is marked
+ * noindex. Keeps the permanently-reachable staging copy of prod content from
+ * being crawled or browsed anonymously. /api is not matched (see config below);
+ * that's fine — staging content mirrors prod content, which is already public.
+ */
+const GATE_USER = process.env.STAGING_GATE_USER
+const GATE_PASS = process.env.STAGING_GATE_PASSWORD
+const GATE_ON = Boolean(GATE_USER && GATE_PASS)
+
+function gatePasses(req: NextRequest): boolean {
+  // Railway's platform health check pings the healthcheck path and can't send
+  // credentials; let it through (it only pings, never browses).
+  // ponytail: UA match — if Railway changes the agent, point healthcheckPath at
+  // an unmatched /api route instead.
+  if (req.headers.get('user-agent')?.includes('RailwayHealthCheck')) return true
+  const [scheme, encoded] = (req.headers.get('authorization') || '').split(' ')
+  if (scheme !== 'Basic' || !encoded) return false
+  let decoded = ''
+  try {
+    decoded = atob(encoded)
+  } catch {
+    return false
+  }
+  const sep = decoded.indexOf(':')
+  return sep > 0 && decoded.slice(0, sep) === GATE_USER && decoded.slice(sep + 1) === GATE_PASS
+}
+
+/**
  * True if the request carries a cookie holding a valid Outseta-signed JWT. We
  * prefer the documented cookie name but fall back to verifying any JWT-shaped
  * cookie, so a forged/expired token never passes and a cookie-name change can't
@@ -61,7 +91,22 @@ export async function middleware(req: NextRequest) {
   // the request headers so `headers()` can read it downstream.
   const requestHeaders = new Headers(req.headers)
   requestHeaders.set('x-pathname', pathname)
-  const pass = () => NextResponse.next({ request: { headers: requestHeaders } })
+  const pass = () => {
+    const res = NextResponse.next({ request: { headers: requestHeaders } })
+    if (GATE_ON) res.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    return res
+  }
+
+  // Staging gate: every route needs Basic auth before anything else runs.
+  if (GATE_ON && !gatePasses(req)) {
+    return new NextResponse('Staging: authentication required.', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': 'Basic realm="staging", charset="UTF-8"',
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    })
+  }
 
   // The auth gate only guards the members area; every other route just passes
   // through (now that the matcher is site-wide for the x-pathname header).
