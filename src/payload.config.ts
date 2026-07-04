@@ -44,9 +44,10 @@ const storagePlugins = s3Enabled
             accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
             secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
           },
-          // Path-style addressing: required by MinIO, supported by R2.
-          // AWS S3 (virtual-hosted-style) deployments can drop this.
-          forcePathStyle: true,
+          // Path-style addressing: required by MinIO, supported by R2. Railway
+          // Buckets (and AWS S3) are virtual-hosted-style, so they set
+          // S3_FORCE_PATH_STYLE=false. Default stays true for the local MinIO dev.
+          forcePathStyle: process.env.S3_FORCE_PATH_STYLE !== 'false',
         },
       }),
     ]

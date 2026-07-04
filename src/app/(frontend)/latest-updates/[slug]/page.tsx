@@ -17,6 +17,10 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
+// SSR on demand: DB-backed, no DB in the build container, and draftMode() below is
+// a dynamic API that would throw DYNAMIC_SERVER_USAGE under static generation.
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   try {
     const payload = await getPayload({ config: configPromise })

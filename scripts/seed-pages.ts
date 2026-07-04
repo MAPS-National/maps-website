@@ -5895,5 +5895,7 @@ const run = async () => {
 
 run().catch((err) => {
   console.error(err)
+  const errs = err?.data?.errors
+  if (errs) console.error('VALIDATION_DETAIL ' + JSON.stringify(errs, null, 2))
   process.exit(1)
 })

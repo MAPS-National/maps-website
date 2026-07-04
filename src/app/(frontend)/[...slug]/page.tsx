@@ -14,6 +14,11 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { PageTOC } from '@/components/PageTOC'
 
+// Rendered on demand (SSR). The pages are DB-backed and managed hosts have no DB
+// in the build container, so nothing can prerender; the page also reads draftMode()
+// (a dynamic API), which would throw DYNAMIC_SERVER_USAGE under static generation.
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   try {
     const payload = await getPayload({ config: configPromise })
