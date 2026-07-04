@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
       - run: npm ci
       - run: npm run lint
@@ -43,6 +43,54 @@ jobs:
       - run: npm run seed:pages
       - run: npm run build
       - run: npm run test:int
+
+  migrations:
+    name: migration guard
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: payload_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/payload_test
+      PAYLOAD_SECRET: ci-test-secret
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+      CRON_SECRET: ci-cron-secret
+      PREVIEW_SECRET: ci-preview-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Prod runs push:false, so it only sees committed migrations. Apply them to
+      # a clean DB (the real preDeploy path), which also fails a broken migration.
+      - run: npm run payload -- migrate
+      # migrate:create diffs the live config against the latest committed migration
+      # snapshot. --skip-empty exits 0 writing nothing when there's no drift; on
+      # un-migrated schema changes it writes a migration file (+ rewrites index.ts),
+      # which git flags below. This is the drift the push:false prod deploy can't see.
+      # Flag must be kebab-case: payload's arg normalizer lowercases --skipEmpty to
+      # a non-matching key, silently no-opping it (then it hangs on the prompt).
+      - name: Fail if schema changed without a committed migration
+        run: |
+          npm run payload -- migrate:create ci_guard --skip-empty
+          if [ -n "$(git status --porcelain src/migrations)" ]; then
+            echo "::error::Schema changed but no migration was committed. Run: npm run payload -- migrate:create <name>"
+            git status --porcelain src/migrations
+            exit 1
+          fi
 
   e2e:
     name: e2e (playwright)
@@ -72,7 +120,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
