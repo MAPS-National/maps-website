@@ -57,6 +57,12 @@ Prod runs on **Railway** (US East): one project with the web service, managed Po
 
 **Running a CLI against the prod DB from a laptop** (seeding, migrating, one-off fixes): point `DATABASE_URL` at the Postgres **public** proxy URL plus `?sslmode=no-verify`, set the bucket `S3_*` vars, and use **Node 22** (the migrate CLI crashes on Node 24, a tsx `node:crypto` regression). The internal `*.railway.internal` DB host does not resolve off-platform.
 
+**Staging environment.** A persistent `staging` environment (forked from `production`) mirrors the prod shape: its own web service, Postgres, and media bucket, each with independent credentials (`PAYLOAD_SECRET`, DB, and `S3_*` are all distinct from prod, so staging can never read or write prod data). It runs `NODE_ENV=production` → `push: false`, so a staging deploy rehearses the exact prod migrate path. Reached at `stage.mapsnational.org`. The whole environment is locked behind an HTTP Basic-auth gate plus a site-wide `X-Robots-Tag: noindex` (`src/middleware.ts`, active only when `STAGING_GATE_USER`/`STAGING_GATE_PASSWORD` are set — unset in prod/local, so inert there). Per ADR 0002 staging is the mandatory first stop for every change; content flows the other way (prod → staging via the #161 refresh), never back. Until the `staging`-branch auto-deploy lands (#159), deploy manually from the repo root:
+
+```
+railway up --environment staging --service web --ci
+```
+
 ## Architecture
 
 This is the Payload Website Template: **one Next.js app serves both the public site and the Payload admin + API**, split by route groups under `src/app/`:
