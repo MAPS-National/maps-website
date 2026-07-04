@@ -17,24 +17,34 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
+// SSR on demand: DB-backed, no DB in the build container, and draftMode() below is
+// a dynamic API that would throw DYNAMIC_SERVER_USAGE under static generation.
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
-  const payload = await getPayload({ config: configPromise })
-  const posts = await payload.find({
-    collection: 'posts',
-    draft: false,
-    limit: 1000,
-    overrideAccess: false,
-    pagination: false,
-    select: {
-      slug: true,
-    },
-  })
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const posts = await payload.find({
+      collection: 'posts',
+      draft: false,
+      limit: 1000,
+      overrideAccess: false,
+      pagination: false,
+      select: {
+        slug: true,
+      },
+    })
 
-  const params = posts.docs.map(({ slug }) => {
-    return { slug }
-  })
+    const params = posts.docs.map(({ slug }) => {
+      return { slug }
+    })
 
-  return params
+    return params
+  } catch {
+    // ponytail: DB unreachable at build (managed hosts have no DB in the build
+    // container) — return no static paths; posts render on demand at runtime.
+    return []
+  }
 }
 
 type Args = {
