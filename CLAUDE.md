@@ -29,6 +29,8 @@ Requires a local PostgreSQL instance; connection via `DATABASE_URL` in `.env`. T
 
 **Seeding after an admin re-seed.** The admin "seed database" button is destructive and only creates home + contact. After running it, follow up with `npm run seed:pages` to restore the full assembled-page set (about-us roster and any future registered pages). `seed:pages` is idempotent — safe to re-run. To add a new page to the set, push a `PageSlice` factory into `scripts/seed-pages.ts`. `seed:about` is now an alias for `seed:pages`.
 
+**Content collections come from the import CLI, not the seed.** Team, Testimonials, AcademyVideos (with their categories), and Posts are populated by `npm run import -- <name>` (names: `team`, `testimonials-career`, `testimonials-programs`, `academy-videos`, `updates`), which reads the gitignored `migration/webflow_cms_data` CSVs and re-hosts photos into the bucket. Names are registered in `src/import/registry.ts`, and `dependsOn` auto-resolves (importing `team` pulls `team-categories` first). `seed:pages` only assembles the Pages; its team/video blocks resolve those collections **by category at seed time**, so it must run **after** the import. Run it before and the Team and AcademyVideos blocks come out empty (they render nothing, no error). Fresh-DB order: migrate, then `npm run import`, then `seed:pages`.
+
 **Cross-branch schema drift (dev gotcha).** With `push: true` and one shared dev DB, switching between feature branches that each add fields/blocks accumulates columns/tables in the DB that the current branch's config doesn't define. When a new block introduces a table while an old branch's table is now orphaned, drizzle-kit can't tell create from rename and **prompts interactively** ("Is X created or renamed from another table?", or a data-loss y/N). The headless dev server (Claude Preview) has no TTY to answer, so it **hangs holding the DB** — every DB-backed route (`/`, `/api/*`) stalls for tens of seconds while DB-free routes (the `/design-system/blocks` showroom) stay fast. That symptom = schema-push prompt, not slow rendering. Keep `master` ⊇ the dev DB schema: **merge block PRs promptly** (or build one block per branch and merge before the next) so the schema never diverges. The preview window auto-loads `/`, so a stalled `/` freezes it (and screenshots time out).
 
 ## Media storage (local S3 via MinIO)
@@ -42,6 +44,18 @@ Media uses `@payloadcms/storage-s3`, exercising the **same S3 code path locally 
 **Dangling Media docs (DB row, no objects).** A Media doc can reference storage objects that don't exist (e.g. a re-upload collision left a `<name>-1.webp` duplicate holding the real files while the original doc's objects were removed). `npm run rehost:images` matches by **filename** and skips any existing doc, so it won't repair this. Fix by re-uploading the tracked source into the **existing doc by id** (`payload.update({ collection:'media', id, file:{...} })`) — this regenerates all size variants into storage and keeps the id, so seeded page references (which point at the media **id**, not filename) stay valid. No reseed needed.
 
 `npm run rehost:images` re-hosts a fixed list of export/CDN images as Media docs (idempotent by stored `.webp` filename); see the script header for the two source lists.
+
+**Media-creating scripts must flush before exit.** A script that creates Media via the local API has to `await payload.destroy()` before `process.exit()`, or in-flight S3 uploads are killed and only the first file reaches the bucket (the remaining docs get no object, and their size variants then 404). `scripts/seed-pages.ts` and `src/import/cli.ts` both do this. A doc left with a main file but no variants renders on pages that use the original size but breaks anywhere a resized variant is requested (e.g. the `-800x600` card size). Reconciling only top-level `filename` against the bucket misses this: check the `sizes.*.filename` too.
+
+## Deployment (Railway)
+
+Prod runs on **Railway** (US East): one project with the web service, managed Postgres, and a Storage Bucket for media, on a single bill. `railway.json` drives it: NIXPACKS builder, `npm run payload -- migrate` as the `preDeployCommand`, healthcheck on `/`. Prod runs the Postgres adapter with `push: false`, so **schema changes need a committed migration** (`npm run payload -- migrate:create`); dev still auto-pushes. Baseline migration: `src/migrations/20260703_032255_initial`.
+
+**DB-backed routes are `force-dynamic` (SSR).** Home, the `[...slug]` catch-all, and the post route export `dynamic = 'force-dynamic'`. Managed build containers have no DB, so nothing can prerender (`generateStaticParams` is guarded to return `[]` when the build DB is unreachable) and the pages call `draftMode()`, which throws `DYNAMIC_SERVER_USAGE` under static generation. Upside: content edits go live with no redeploy, since every request re-queries.
+
+**Bucket addressing.** Railway Buckets and AWS S3 are virtual-hosted-style, so prod sets `S3_FORCE_PATH_STYLE=false`; `forcePathStyle` in `src/payload.config.ts` reads that env and defaults to path-style for local MinIO.
+
+**Running a CLI against the prod DB from a laptop** (seeding, migrating, one-off fixes): point `DATABASE_URL` at the Postgres **public** proxy URL plus `?sslmode=no-verify`, set the bucket `S3_*` vars, and use **Node 22** (the migrate CLI crashes on Node 24, a tsx `node:crypto` regression). The internal `*.railway.internal` DB host does not resolve off-platform.
 
 ## Architecture
 
