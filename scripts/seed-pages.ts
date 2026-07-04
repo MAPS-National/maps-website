@@ -5890,6 +5890,11 @@ const run = async () => {
   await applyRedirects(payload, context)
 
   payload.logger.info('Page seed complete.')
+  // Flush pending storage writes before exiting. Media uploads to S3 resolve on
+  // Payload's connection handles; process.exit() otherwise kills them in flight
+  // and only the first file reaches the bucket (the rest of the docs end up with
+  // no object, so their size variants 404). destroy() drains them first.
+  await payload.destroy()
   process.exit(0)
 }
 
