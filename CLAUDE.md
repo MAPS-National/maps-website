@@ -63,6 +63,8 @@ Prod runs on **Railway** (US East): one project with the web service, managed Po
 railway up --environment staging --service web --ci
 ```
 
+**Content refresh (prod → staging).** Staging starts empty (a fork copies no data). Populate it with a point-in-time prod snapshot: `npm run refresh:staging` (`scripts/refresh-staging.sh`; add `-- --yes` to skip the confirm). It pulls all connection details live from Railway by environment name, then (1) mirrors the prod media bucket into the staging bucket and (2) resets staging's schema and restores a full `pg_dump` of prod. A **full** dump preserves document ids, so page → media references survive; re-seeding would mint new ids and break them (ADR 0002). One-way only: a **direction lock** refuses to run if the target resolves to prod, and prod is read-only throughout. Needs Docker (runs `postgres:18` + `amazon/aws-cli` in throwaway containers, so no local Postgres/aws-cli). After a refresh, log into staging admin with your **prod** credentials (users come over in the dump; sessions stay isolated because staging signs JWTs with its own secret).
+
 ## Architecture
 
 This is the Payload Website Template: **one Next.js app serves both the public site and the Payload admin + API**, split by route groups under `src/app/`:
