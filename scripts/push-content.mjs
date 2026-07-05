@@ -190,6 +190,12 @@ const sql =
   'set -e; ' +
   'psql "$DST" -v ON_ERROR_STOP=1 -q -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"; ' +
   'pg_dump --no-owner --no-privileges "$SRC" | psql "$DST" -v ON_ERROR_STOP=1 -q; ' +
+  // The scratch is built with dev push (push:true), which leaves a "dev" row in
+  // payload_migrations. Restored verbatim, that marker makes the target's
+  // preDeploy `payload migrate` detect dev mode and PROMPT ("data loss will
+  // occur, proceed? y/N") — which hangs a non-TTY deploy container. Drop it so
+  // migrate sees only the real applied migrations and no-ops cleanly.
+  'psql "$DST" -v ON_ERROR_STOP=1 -q -c "DELETE FROM payload_migrations WHERE name = \'dev\'"; ' +
   'psql "$DST" -Atc "select \'pages=\'||count(*) from pages" ; ' +
   'psql "$DST" -Atc "select \'posts=\'||count(*) from posts" ; ' +
   'psql "$DST" -Atc "select \'media=\'||count(*) from media"'
