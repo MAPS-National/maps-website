@@ -31,7 +31,11 @@ DST_ENV=staging
 for bin in railway docker; do
   command -v "$bin" >/dev/null || { echo "!! missing required tool: $bin"; exit 1; }
 done
-railway status >/dev/null 2>&1 || { echo "!! not linked to a Railway project (run: railway link)"; exit 1; }
+# Probe with explicit flags (works without a TTY, unlike `railway status`).
+railway variables --service web --environment "$SRC_ENV" --kv >/dev/null 2>&1 || {
+  echo "!! can't read from Railway. From this repo run: railway login, then railway link (pick maps-website)."
+  exit 1
+}
 
 # rv KEY SERVICE ENV  ->  prints the value of one Railway variable.
 # Uses --kv (KEY=value lines) + shell text tools, so there's no python/jq dep.
