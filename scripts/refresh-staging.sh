@@ -26,21 +26,25 @@ set -euo pipefail
 
 SRC_ENV=production
 DST_ENV=staging
+# Pin the project id so we never depend on the CWD-based `railway link` (that
+# match is case-sensitive on the directory path, so `cd c:\...` vs `C:\...`
+# silently reads as "not linked"). This is the maps-website project.
+PROJECT_ID=aea720c6-7841-4e7a-955c-945a5ab210e7
 
 # --- prereqs -----------------------------------------------------------------
 for bin in railway docker; do
   command -v "$bin" >/dev/null || { echo "!! missing required tool: $bin"; exit 1; }
 done
 # Probe with explicit flags (works without a TTY, unlike `railway status`).
-railway variables --service web --environment "$SRC_ENV" --kv >/dev/null 2>&1 || {
-  echo "!! can't read from Railway. From this repo run: railway login, then railway link (pick maps-website)."
+railway variables --project "$PROJECT_ID" --service web --environment "$SRC_ENV" --kv >/dev/null 2>&1 || {
+  echo "!! can't read from Railway. Run 'railway login' (once), then retry."
   exit 1
 }
 
 # rv KEY SERVICE ENV  ->  prints the value of one Railway variable.
 # Uses --kv (KEY=value lines) + shell text tools, so there's no python/jq dep.
 rv() {
-  railway variables --service "$2" --environment "$3" --kv 2>/dev/null \
+  railway variables --project "$PROJECT_ID" --service "$2" --environment "$3" --kv 2>/dev/null \
     | grep -E "^$1=" | head -1 | cut -d= -f2- | sed -e 's/^"//' -e 's/"$//'
 }
 
