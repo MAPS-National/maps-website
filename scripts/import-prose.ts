@@ -325,6 +325,10 @@ const run = async (): Promise<void> => {
 
   await writeFile(path.join(ARTIFACTS, 'index.json'), JSON.stringify(index, null, 2))
   payload.logger.info(`Prose import complete: ${index.length} page(s).`)
+  // Flush before exit or in-flight S3 uploads of the re-hosted images are killed
+  // and their Media docs are left dangling (row, no object). Same reason
+  // import/cli.ts and seed-pages.ts destroy before exiting.
+  await payload.destroy()
   process.exit(0)
 }
 
