@@ -28,18 +28,16 @@ SRC_ENV=production
 DST_ENV=staging
 
 # --- prereqs -----------------------------------------------------------------
-for bin in railway docker python; do
+for bin in railway docker; do
   command -v "$bin" >/dev/null || { echo "!! missing required tool: $bin"; exit 1; }
 done
 railway status >/dev/null 2>&1 || { echo "!! not linked to a Railway project (run: railway link)"; exit 1; }
 
-# rv KEY SERVICE ENV  ->  prints the value of one Railway variable
+# rv KEY SERVICE ENV  ->  prints the value of one Railway variable.
+# Uses --kv (KEY=value lines) + shell text tools, so there's no python/jq dep.
 rv() {
-  railway variables --service "$2" --environment "$3" --json 2>/dev/null | python -c "
-import sys, json
-d = json.loads(sys.stdin.read())
-d = dict(d.items() if isinstance(d, dict) else [(x['name'], x['value']) for x in d])
-print(d.get('$1', ''))"
+  railway variables --service "$2" --environment "$3" --kv 2>/dev/null \
+    | grep -E "^$1=" | head -1 | cut -d= -f2- | sed -e 's/^"//' -e 's/"$//'
 }
 
 # append sslmode=require — encrypt but skip cert verification (Railway's public
