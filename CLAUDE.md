@@ -45,6 +45,8 @@ Media uses `@payloadcms/storage-s3`, exercising the **same S3 code path locally 
 
 `npm run rehost:images` re-hosts a fixed list of export/CDN images as Media docs (idempotent by stored `.webp` filename); see the script header for the two source lists.
 
+**Never reuse a `context` object across media creates.** The cloud-storage plugin stashes the first upload's file into `req.context` (`_payloadCloudStorage`) and skips the stash when it is already set. The Local API attaches a caller-passed `context` by reference, so one shared `const context = {...}` threaded through many `payload.create({ file })` calls uploads doc #1's original only and silently drops every file after it: rows commit, no errors, bucket stays empty (the dangling-media root cause fixed in seed-pages). Build a fresh object per file-carrying call (`context: { ...context }`), as `src/import/run.ts` does.
+
 **Media-creating scripts must flush before exit.** A script that creates Media via the local API has to `await payload.destroy()` before `process.exit()`, or in-flight S3 uploads are killed and only the first file reaches the bucket (the remaining docs get no object, and their size variants then 404). `scripts/seed-pages.ts` and `src/import/cli.ts` both do this. A doc left with a main file but no variants renders on pages that use the original size but breaks anywhere a resized variant is requested (e.g. the `-800x600` card size). Reconciling only top-level `filename` against the bucket misses this: check the `sizes.*.filename` too.
 
 ## Deployment (Railway)
