@@ -18,6 +18,7 @@ const slugify = (s: string): string =>
     .trim()
     .replace(/[\s_]+/g, '-')
     .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
 
 const MIME: Record<string, string> = {
   jpg: 'image/jpeg',
@@ -62,16 +63,20 @@ export const transforms: Record<string, TransformFactory> = {
   /** Text/email/url straight across; empty → undefined. */
   passthrough: () => (raw) => str(raw) || undefined,
 
-  /** Use the slug column if present, else slugify another column's value. */
-  slug:
-    (options) =>
-    (raw, ctx) => {
-      const v = str(raw)
-      if (v) return v
-      const from = options?.from as string | undefined
-      const src = from ? str(ctx.row[from]) : ''
-      return src ? slugify(src) : undefined
-    },
+  /**
+   * Use the slug column if present, else slugify another column's value.
+   * The slug column is sanitized too (not passed through raw): a malformed
+   * source slug — double hyphen, trailing hyphen, stray casing — would fail
+   * Payload's slug validation and drop the row on import. slugify is idempotent
+   * on already-valid slugs, so well-formed values are unchanged.
+   */
+  slug: (options) => (raw, ctx) => {
+    const v = str(raw)
+    if (v) return slugify(v)
+    const from = options?.from as string | undefined
+    const src = from ? str(ctx.row[from]) : ''
+    return src ? slugify(src) : undefined
+  },
 
   /** Numeric cell → number; empty → undefined. */
   number: () => (raw) => {
@@ -198,7 +203,12 @@ export const transforms: Record<string, TransformFactory> = {
         const media = await ctx.payload.create({
           collection: 'media',
           data: { alt },
-          file: { name: filename, data: buffer, mimetype: MIME[ext] || 'image/jpeg', size: buffer.length },
+          file: {
+            name: filename,
+            data: buffer,
+            mimetype: MIME[ext] || 'image/jpeg',
+            size: buffer.length,
+          },
           overrideAccess: true,
         })
         id = media.id
