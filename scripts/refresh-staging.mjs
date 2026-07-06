@@ -27,6 +27,8 @@
 import { execSync, spawnSync } from 'node:child_process'
 import { createInterface } from 'node:readline'
 
+import { assertRefreshDirection } from './refresh-lock.mjs'
+
 const SRC_ENV = 'production'
 const DST_ENV = 'staging'
 // Pin the project id so we never depend on the CWD-based `railway link` (that
@@ -98,11 +100,17 @@ const PROD_BUCKET = prod.S3_BUCKET
 const STAGE_BUCKET = stage.S3_BUCKET
 
 // --- direction lock (must pass before ANY write) -----------------------------
-if (DST_ENV !== 'staging') die("LOCK: target env is not 'staging'.")
-if (!PROD_DB || !STAGE_DB) die('LOCK: could not resolve both DB URLs.')
-if (PROD_DB === STAGE_DB) die('LOCK: prod and staging DB URLs are identical.')
-if (!STAGE_BUCKET || PROD_BUCKET === STAGE_BUCKET) die('LOCK: buckets identical or empty.')
-if (host(STAGE_DB).includes(host(PROD_DB))) die('LOCK: staging DB URL points at the prod host.')
+try {
+  assertRefreshDirection({
+    dstEnv: DST_ENV,
+    prodDb: PROD_DB,
+    stageDb: STAGE_DB,
+    prodBucket: PROD_BUCKET,
+    stageBucket: STAGE_BUCKET,
+  })
+} catch (e) {
+  die(e.message)
+}
 
 console.log(`   source (prod):    db ${host(PROD_DB)}  bucket ${PROD_BUCKET}`)
 console.log(`   target (staging): db ${host(STAGE_DB)}  bucket ${STAGE_BUCKET}`)
@@ -198,7 +206,11 @@ const sql =
   // migrate` then PROMPTS ("dev mode ... data loss, proceed? y/N"), hanging the
   // non-TTY deploy container. Drop it so migrate no-ops cleanly. (push-content
   // does the same.)
-  'psql "$DST" -v ON_ERROR_STOP=1 -q -c "DELETE FROM payload_migrations WHERE name = \'dev\'"'
+  'psql "$DST" -v ON_ERROR_STOP=1 -q -c "DELETE FROM payload_migrations WHERE name = \'dev\'"; ' +
+  // Scrub contact-form PII: the dump carries prod form submissions (names,
+  // emails, phones) into staging. CASCADE covers the child value table
+  // (form_submissions_submission_data), which holds the actual field values.
+  'psql "$DST" -v ON_ERROR_STOP=1 -q -c "TRUNCATE public.form_submissions CASCADE"'
 docker(['run', '--rm', '-e', 'SRC', '-e', 'DST', 'postgres:18', 'sh', '-lc', sql], {
   env: { SRC: withssl(PROD_DB), DST: withssl(STAGE_DB) },
 })
