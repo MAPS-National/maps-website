@@ -4,6 +4,7 @@ import { SITE_DESCRIPTION, SITE_NAME } from './brand'
 
 const defaultOpenGraph: Metadata['openGraph'] = {
   type: 'website',
+  locale: 'en_US',
   description: SITE_DESCRIPTION,
   images: [
     {
