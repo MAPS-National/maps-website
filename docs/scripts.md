@@ -39,7 +39,6 @@ Run directly with tsx (no npm script). Each skips work already done.
 | `npx tsx scripts/trim-logo-padding.ts` | `sharp.trim()` baked-in padding off partner logos so object-contain scales the real artwork consistently. | Idempotent. |
 | `node --import tsx/esm scripts/purge-junk-pages.ts` | Drop `E2E CRUD*` test pages and empty autosave-orphan drafts from the shared dev DB. | Idempotent. Dev DB only. |
 | `node --import tsx/esm scripts/wipe-media.ts` | **Delete every Media doc + versions.** For a storage-backend switch (disk ↔ S3); re-run the image imports afterward, then re-seed pages. | **Destructive.** |
-| `node --import tsx/esm scripts/seed-about-pages.ts` | Legacy standalone seed for the three about-us roster pages. **Superseded** — `seed:pages` now covers these; kept only for reference. | Idempotent, but prefer `seed:pages`. |
 
 ## Infra
 
