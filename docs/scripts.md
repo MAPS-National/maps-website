@@ -26,7 +26,8 @@ Both are Node scripts (not bash: `npm run` on Windows resolves `bash` to WSL whe
 | Command | Script | Direction | What |
 |---|---|---|---|
 | `npm run refresh:staging [-- --yes]` | `refresh-staging.mjs` | prod → staging | Mirror prod bucket → staging bucket and restore a full `pg_dump` of prod into staging. Direction-locked; prod is read-only. |
-| `npm run push:content -- --to staging\|prod [--yes]` | `push-content.mjs` | local scratch → env | Bulk-copy a locally built + verified content set (scratch DB + MinIO bucket) up. Source locked to localhost; `--to prod` always prompts. Strips the `dev` migration marker after restore (else the target's preDeploy `migrate` hangs). Defaults: `SRC_DATABASE_URL=…/payload_bootstrap`, `SRC_S3_BUCKET=bootstrap-media`. |
+| `npm run push:content -- --to staging\|prod [--yes]` | `push-content.mjs` | local scratch → env | Bulk-copy a locally built + verified content set (scratch DB + MinIO bucket) up. Source locked to localhost; `--to prod` always prompts. Strips the `dev` migration marker after restore (else the target's preDeploy `migrate` hangs). Runs `ensure:admin` as a final step when `ADMIN_EMAIL`/`ADMIN_PASSWORD` are set (a push wipes users). Defaults: `SRC_DATABASE_URL=…/payload_bootstrap`, `SRC_S3_BUCKET=bootstrap-media`. |
+| `npm run ensure:admin` | `ensure-admin.ts` | env (via `DATABASE_URL`) | Ensure a Payload admin `User` from `ADMIN_EMAIL`/`ADMIN_PASSWORD`: match by email, create when absent, reset password when present. No S3 writes, so safe against a remote env. Point `DATABASE_URL` at the target. Idempotent. |
 
 ## One-off maintenance
 

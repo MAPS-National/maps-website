@@ -192,7 +192,13 @@ console.log('>> resetting staging schema and restoring prod dump...')
 const sql =
   'set -e; ' +
   'psql "$DST" -v ON_ERROR_STOP=1 -q -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"; ' +
-  'pg_dump --no-owner --no-privileges "$SRC" | psql "$DST" -v ON_ERROR_STOP=1 -q'
+  'pg_dump --no-owner --no-privileges "$SRC" | psql "$DST" -v ON_ERROR_STOP=1 -q; ' +
+  // If prod's payload_migrations still carries a "dev" row (from a push:true
+  // build), the dump brings it to staging and staging's preDeploy `payload
+  // migrate` then PROMPTS ("dev mode ... data loss, proceed? y/N"), hanging the
+  // non-TTY deploy container. Drop it so migrate no-ops cleanly. (push-content
+  // does the same.)
+  'psql "$DST" -v ON_ERROR_STOP=1 -q -c "DELETE FROM payload_migrations WHERE name = \'dev\'"'
 docker(['run', '--rm', '-e', 'SRC', '-e', 'DST', 'postgres:18', 'sh', '-lc', sql], {
   env: { SRC: withssl(PROD_DB), DST: withssl(STAGE_DB) },
 })
