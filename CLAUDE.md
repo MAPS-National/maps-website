@@ -71,6 +71,8 @@ Prod runs on **Railway** (US East): one project with the web service, managed Po
 
 **Custom domains are cut over.** `mapsnational.org` now serves this app off Railway (responses carry `server: railway-hikari` and `x-powered-by: Next.js, Payload`; the old Webflow/Fastly `surrogate-key: pageId:` headers are gone). Verify prod against the custom domain directly; the `web-production-*.up.railway.app` URL still works as a fallback. Staging's `stage.mapsnational.org` is likewise cut over (behind the Basic-auth gate).
 
+**Build-log warnings are expected (Nixpacks, cosmetic).** Every Railway deploy prints two BuildKit lint warnings; both come from the managed Nixpacks builder, not our repo, and neither leaks a secret or affects the build/runtime. `SecretsUsedInArgOrEnv` fires because Railway injects service vars (`PAYLOAD_SECRET`, `CRON_SECRET`, `PREVIEW_SECRET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`) into the generated Dockerfile as `ENV` — the build does not use them (`build` = `next build` + `next-sitemap`, zero secret refs; they are runtime-only), and there is no committed-file way to scope a Nixpacks var to runtime; silencing it means abandoning the managed builder for a custom Dockerfile with BuildKit secret mounts, which is not worth the prod-deploy risk for a log line. `UndefinedVar: $NIXPACKS_PATH` is a known cosmetic Nixpacks quirk. If the log noise ever needs clearing, bump the builder via a `NIXPACKS_VERSION` Railway variable (dashboard, not committed) rather than reworking the build.
+
 ## Architecture
 
 This is the Payload Website Template: **one Next.js app serves both the public site and the Payload admin + API**, split by route groups under `src/app/`:
