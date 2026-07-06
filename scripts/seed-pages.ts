@@ -5641,7 +5641,12 @@ const ensureTrackedMedia = async (
       collection: 'media',
       data: { alt: filename.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ') },
       file: { name: filename, data, mimetype, size: data.length },
-      context,
+      // Fresh object per create, never the shared `context`: the cloud-storage
+      // plugin stashes the first upload's file into req.context
+      // (_payloadCloudStorage) and skips the stash if already set, so a context
+      // object reused across media creates uploads doc #1's original only and
+      // silently drops every file after it (rows commit, bucket stays empty).
+      context: { ...context },
     })
     created++
   }
