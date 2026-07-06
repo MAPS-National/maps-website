@@ -203,6 +203,31 @@ docker(['run', '--rm', '-e', 'SRC', '-e', 'DST', 'postgres:18', 'sh', '-lc', sql
   env: { SRC: fromContainer(SRC_DB), DST: withssl(DST_DB) },
 })
 
-console.log(`\nOK. ${toArg} now serves the local scratch content.`)
-console.log('   The scratch has no users, so /admin shows the create-first-user screen.')
-console.log('   Create the admin account there before editing content.')
+// --- 3. admin: ensure a login exists (scratch has no users) ---------------------
+// Guarded: only runs when both vars are set, else the freshly-pushed env is left
+// on the create-first-user screen. Creating a user touches no S3, so pointing
+// the local-API script at the remote DB is safe (unlike the media seed CLIs).
+if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+  console.log('>> ensuring admin user...')
+  const res = spawnSync(process.execPath, ['--import', 'tsx/esm', 'scripts/ensure-admin.ts'], {
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      DATABASE_URL: DST_DB.includes('?')
+        ? `${DST_DB}&sslmode=no-verify`
+        : `${DST_DB}?sslmode=no-verify`,
+      S3_BUCKET: DST_BUCKET,
+      S3_ENDPOINT: web.S3_ENDPOINT,
+      S3_REGION: web.S3_REGION,
+      S3_ACCESS_KEY_ID: web.S3_ACCESS_KEY_ID,
+      S3_SECRET_ACCESS_KEY: web.S3_SECRET_ACCESS_KEY,
+      S3_FORCE_PATH_STYLE: web.S3_FORCE_PATH_STYLE,
+    },
+  })
+  if (res.status !== 0) die('ensure-admin failed.')
+  console.log(`\nOK. ${toArg} now serves the local scratch content, admin login ready.`)
+} else {
+  console.log(`\nOK. ${toArg} now serves the local scratch content.`)
+  console.log('   No ADMIN_EMAIL/ADMIN_PASSWORD set, so /admin shows create-first-user.')
+  console.log('   Set both and re-run, or run `npm run ensure:admin` against the target.')
+}
