@@ -14,6 +14,8 @@ The Next.js + Payload application lives at the **repository root** — `package.
 
 `engines` asks for pnpm, but this repo is installed with **npm** (`package-lock.json`). Run the scripts below with `npm run`. Note that the `test`, `dev:prod`, and `reinstall` scripts hardcode `pnpm`/POSIX `rm -rf` and won't work as-is under npm/Windows — invoke the underlying scripts directly instead. A POSIX shell (git-bash / the Bash tool) is available for shell syntax.
 
+Every `scripts/` file and the import CLI (what each does, run order, idempotent vs destructive) is catalogued in **`docs/scripts.md`** — check it before running or editing a seed/import/sync/maintenance script.
+
 - `npm run dev` — dev server (Next + Payload) on :3000. Prefer the Claude Preview tool over running this manually.
 - `npm run build` — production build (also runs `next-sitemap`).
 - `npm run lint` / `npm run lint:fix` — ESLint.
