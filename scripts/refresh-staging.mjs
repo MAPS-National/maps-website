@@ -204,8 +204,7 @@ const sql =
   // If prod's payload_migrations still carries a "dev" row (from a push:true
   // build), the dump brings it to staging and staging's preDeploy `payload
   // migrate` then PROMPTS ("dev mode ... data loss, proceed? y/N"), hanging the
-  // non-TTY deploy container. Drop it so migrate no-ops cleanly. (push-content
-  // does the same.)
+  // non-TTY deploy container. Drop it so migrate no-ops cleanly.
   'psql "$DST" -v ON_ERROR_STOP=1 -q -c "DELETE FROM payload_migrations WHERE name = \'dev\'"; ' +
   // Scrub contact-form PII: the dump carries prod form submissions (names,
   // emails, phones) into staging. CASCADE covers the child value table

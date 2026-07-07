@@ -20,7 +20,6 @@
     "import:slider": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/import-slider.ts",
     "refresh:staging": "node scripts/refresh-staging.mjs",
     "refresh:staging:check": "node scripts/refresh-lock.check.mjs",
-    "push:content": "node scripts/push-content.mjs",
     "ensure:admin": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/ensure-admin.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
