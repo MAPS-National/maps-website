@@ -7,78 +7,16 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { cn } from '@/utilities/ui'
+import type { Header } from '@/payload-types'
 
 // window.Outseta is typed centrally in src/types/outseta.d.ts.
 
-type NavLink = { label: string; href: string }
-// `href` makes the group label itself a link to a hub/landing page (the single
-// front door for that section); the items remain the deeper destinations.
-type NavGroup = { label: string; href?: string; items: NavLink[]; gated?: boolean }
-
-// Site information architecture (G1). Hardcoded — this is the site's fixed
-// structure, not editorial content; the slugs match the seeded pages.
-const GROUPS: NavGroup[] = [
-  {
-    label: 'About Us',
-    href: '/about-us',
-    items: [
-      { label: 'Mission', href: '/about-us/mission' },
-      { label: 'FAQ', href: '/about-us/faq' },
-      { label: 'Partners', href: '/about-us/partners' },
-      { label: 'Board & Leadership', href: '/about-us/board-leadership' },
-      { label: 'Advisory Council', href: '/about-us/advisory-council' },
-      { label: 'State Committees', href: '/about-us/state-committees' },
-    ],
-  },
-  {
-    label: 'Events',
-    items: [
-      { label: 'Upcoming Events', href: '/events/upcoming' },
-      { label: 'MAPS Events', href: '/events/maps' },
-      { label: 'Partner Events', href: '/events/partner' },
-      { label: 'All Events', href: '/events' },
-    ],
-  },
-  {
-    label: 'Programs',
-    href: '/programs',
-    items: [
-      { label: 'Career Support', href: '/programs/career-support' },
-      { label: 'Community Building', href: '/programs/community-building' },
-      { label: 'Legal Advocacy', href: '/programs/legal-advocacy' },
-      { label: 'Policy Initiatives', href: '/programs/policy-initiatives' },
-      { label: 'Private Sector Engagement', href: '/programs/private-sector-engagement' },
-    ],
-  },
-  {
-    label: 'Resources',
-    items: [
-      { label: 'Federal Employment', href: '/resources/federal-employment' },
-      { label: 'Jumuah Services', href: '/resources/jumuah-services' },
-      {
-        label: 'Fellowships (Young Professionals)',
-        href: '/resources/public-service-fellowships-young-professionals',
-      },
-      {
-        label: 'Fellowships (Mid-Career to Senior)',
-        href: '/resources/public-service-fellowships-mid-career-to-senior-professionals',
-      },
-    ],
-  },
-  {
-    label: 'Members',
-    gated: true,
-    // Only the portal entry point is exposed publicly; the member-only sub-pages
-    // (Community Building, NY State, etc.) are reached from inside after sign-in.
-    items: [{ label: 'Member Portal', href: '/members/portal' }],
-  },
-]
-
-const FLAT: NavLink[] = [
-  { label: 'Press', href: '/press' },
-  { label: 'Latest Updates', href: '/latest-updates' },
-  { label: 'Contact', href: '/contact' },
-]
+// Nav IA is managed in the `header` global (src/Header/config.ts) and passed in
+// as props. A group's optional `href` makes its section title a link to a
+// hub/landing page; the items are the deeper destinations. `gated` marks the
+// members-only column (lock icon + account control).
+type NavGroup = NonNullable<Header['navGroups']>[number]
+type NavLink = NonNullable<Header['flatLinks']>[number]
 
 /**
  * Header navigation — a hamburger that opens a full-screen overlay menu at every
@@ -89,7 +27,10 @@ const FLAT: NavLink[] = [
  * each click calls the Outseta SDK directly (#115). Closes on Esc, backdrop, route
  * change, or a link.
  */
-export const NavMenu: React.FC = () => {
+export const NavMenu: React.FC<{ navGroups: NavGroup[]; flatLinks: NavLink[] }> = ({
+  navGroups,
+  flatLinks,
+}) => {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
@@ -227,7 +168,7 @@ export const NavMenu: React.FC = () => {
             </div>
 
             <nav className="container grid gap-x-10 gap-y-10 pb-20 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {GROUPS.map((group) => (
+              {navGroups.map((group) => (
                 <div key={group.label}>
                   <p className="mb-4 border-b border-border pb-2 font-serif text-lg font-semibold text-content">
                     {group.href ? (
@@ -243,11 +184,11 @@ export const NavMenu: React.FC = () => {
                     )}
                   </p>
                   <ul className="space-y-2.5">
-                    {group.items.map((item) => (
+                    {(group.items ?? []).map((item) => (
                       <li key={item.href}>
                         <MenuLink
                           active={pathname === item.href}
-                          gated={group.gated}
+                          gated={group.gated ?? undefined}
                           href={item.href}
                           onClick={close}
                         >
@@ -283,7 +224,7 @@ export const NavMenu: React.FC = () => {
 
             <div className="container flex flex-col gap-8 border-t border-border py-10 lg:flex-row lg:items-center lg:justify-between">
               <ul className="flex flex-wrap gap-x-8 gap-y-3">
-                {FLAT.map((item) => (
+                {flatLinks.map((item) => (
                   <li key={item.href}>
                     <MenuLink active={pathname === item.href} href={item.href} onClick={close}>
                       {item.label}
