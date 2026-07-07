@@ -97,7 +97,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
         if (id != null) gallery.push(id)
       }
 
-      await payload.create({
+      const created = await payload.create({
         collection: 'posts',
         data: {
           ...(meta.legacyItemId ? { legacyItemId: meta.legacyItemId } : {}),
@@ -120,8 +120,18 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
         overrideAccess: true,
         context: ctx(),
       })
+      // Posts has drafts.autosave enabled, where create with _status:'published'
+      // can still land as a draft. Explicitly publish (the admin "Publish"
+      // action) so the restored post goes live without a manual step.
+      await payload.update({
+        collection: 'posts',
+        id: created.id,
+        data: { _status: 'published' } as never,
+        overrideAccess: true,
+        context: ctx(),
+      })
       payload.logger.info(
-        `restore-summer-posts: created "${slug}" (${gallery.length} gallery images)`,
+        `restore-summer-posts: created + published "${slug}" (${gallery.length} gallery images)`,
       )
     } catch (err) {
       payload.logger.error(
