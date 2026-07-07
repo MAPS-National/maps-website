@@ -11,8 +11,6 @@ import { getPayload } from 'payload'
  * safe against a remote env unlike the media-heavy seed/import CLIs.
  *
  *   ADMIN_EMAIL=you@x.org ADMIN_PASSWORD=... node --import tsx/esm scripts/ensure-admin.ts
- *
- * push:content runs this as its final step when both vars are set.
  */
 const email = process.env.ADMIN_EMAIL
 const password = process.env.ADMIN_PASSWORD
