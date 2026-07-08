@@ -31,8 +31,9 @@ export const Logo = ({
 }: Props) => {
   const { width, height } = dims[variant]
   const base = clsx('h-[34px] w-auto', className)
+  // alt lives on each <img> directly (not in the spread) so jsx-a11y can see it.
+  const alt = 'MAPS National'
   const common = {
-    alt: 'MAPS National',
     width,
     height,
     loading,
@@ -44,7 +45,7 @@ export const Logo = ({
   if (theme) {
     return (
       /* eslint-disable-next-line @next/next/no-img-element */
-      <img {...common} className={base} src={`/maps-logo-${variant}-${theme}.svg`} />
+      <img {...common} alt={alt} className={base} src={`/maps-logo-${variant}-${theme}.svg`} />
     )
   }
 
@@ -54,12 +55,14 @@ export const Logo = ({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         {...common}
+        alt={alt}
         className={clsx(base, 'block dark:hidden')}
         src={`/maps-logo-${variant}-light.svg`}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         {...common}
+        alt={alt}
         className={clsx(base, 'hidden dark:block')}
         src={`/maps-logo-${variant}-dark.svg`}
       />

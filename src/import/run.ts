@@ -7,10 +7,15 @@ import { resolveTransform } from './transforms'
 import type { CollectionImport, RunOptions, RunReport, TransformContext } from './types'
 
 /** Expand `dependsOn` into a topologically ordered list of import names, deduped. */
-const resolveOrder = (name: string, seen: Set<string> = new Set(), stack: Set<string> = new Set()): string[] => {
+const resolveOrder = (
+  name: string,
+  seen: Set<string> = new Set(),
+  stack: Set<string> = new Set(),
+): string[] => {
   if (seen.has(name)) return []
   const imp = importsByName[name]
-  if (!imp) throw new Error(`Unknown import "${name}". Known: ${Object.keys(importsByName).join(', ')}`)
+  if (!imp)
+    throw new Error(`Unknown import "${name}". Known: ${Object.keys(importsByName).join(', ')}`)
   if (stack.has(name)) throw new Error(`Circular dependsOn at "${name}"`)
   stack.add(name)
   const order: string[] = []
@@ -28,7 +33,14 @@ const runOne = async (
   payload: Payload,
   options: RunOptions,
 ): Promise<RunReport> => {
-  const report: RunReport = { collection: imp.collection, created: 0, updated: 0, skipped: 0, errors: [], warnings: [] }
+  const report: RunReport = {
+    collection: imp.collection,
+    created: 0,
+    updated: 0,
+    skipped: 0,
+    errors: [],
+    warnings: [],
+  }
   const cache = new Map<string, unknown>()
   const upsertKey = imp.upsertKey || 'legacyItemId'
 
@@ -96,7 +108,8 @@ const runOne = async (
       }
 
       if (options.dryRun) {
-        existingId ? report.updated++ : report.created++
+        if (existingId != null) report.updated++
+        else report.created++
         continue
       }
 
@@ -105,12 +118,23 @@ const runOne = async (
       // (we're a standalone CLI). The hooks honour context.disableRevalidate.
       const context = { disableRevalidate: true }
       if (existingId != null) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await payload.update({ collection: imp.collection, id: existingId, data: finalDoc as any, overrideAccess: true, context })
+         
+        await payload.update({
+          collection: imp.collection,
+          id: existingId,
+          data: finalDoc as any,
+          overrideAccess: true,
+          context,
+        })
         report.updated++
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await payload.create({ collection: imp.collection, data: finalDoc as any, overrideAccess: true, context })
+         
+        await payload.create({
+          collection: imp.collection,
+          data: finalDoc as any,
+          overrideAccess: true,
+          context,
+        })
         report.created++
       }
     } catch (err) {

@@ -28,6 +28,12 @@ const eslintConfig = [
     },
   },
   {
+    // Payload generates migrations with the full `({ payload, req })` signature
+    // whether or not the body uses it; don't warn on the generated shape.
+    files: ['src/migrations/**'],
+    rules: { '@typescript-eslint/no-unused-vars': 'off' },
+  },
+  {
     // migration/ is the gitignored Webflow export — vendored, not part of the
     // build, and not ours to lint.
     ignores: ['.next/', 'migration/', 'src/payload-types.ts', 'src/payload-generated-schema.ts'],
