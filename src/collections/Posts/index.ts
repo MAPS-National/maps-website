@@ -1,4 +1,4 @@
-import type { CollectionConfig, PayloadRequest } from 'payload'
+import type { CollectionConfig } from 'payload'
 
 import {
   BlocksFeature,
@@ -81,23 +81,6 @@ export const Posts: CollectionConfig<'posts'> = {
               name: 'heroImage',
               type: 'upload',
               relationTo: 'media',
-              admin: {
-                description: 'Must be a square (1:1) image, e.g. an event flyer.',
-              },
-              validate: async (value: unknown, { req }: { req: PayloadRequest }) => {
-                if (!value) return true
-                const id =
-                  typeof value === 'object' && value !== null ? (value as { id: number }).id : value
-                const media = await req.payload.findByID({
-                  collection: 'media',
-                  id: id as number,
-                  req,
-                })
-                if (media?.width && media?.height && media.width !== media.height) {
-                  return 'Hero image must be square (1:1 aspect ratio).'
-                }
-                return true
-              },
             },
             {
               name: 'postSummary',
