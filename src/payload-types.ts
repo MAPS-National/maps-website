@@ -282,6 +282,9 @@ export interface Page {
 export interface Post {
   id: number;
   title: string;
+  /**
+   * Must be a square (1:1) image, e.g. an event flyer.
+   */
   heroImage?: (number | null) | Media;
   /**
    * Short excerpt shown on the listing card (Webflow "Post Summary").
