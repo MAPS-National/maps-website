@@ -276,7 +276,9 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     // An image keeps post cards off the "No image" placeholder, whose
     // muted-foreground-on-muted (#83807f on #f2f2f2 = 3.5:1) fails AA contrast
     // and trips the a11y e2e on any page that lists these posts (home strip).
-    // The Card reads meta.image; PostHero/detail uses heroImage — set both.
+    // The Card reads meta.image. heroImage is left unset — it's the PostHero
+    // flyer slot and must be square (1:1), which these source photos aren't;
+    // PostHero renders fine without one (masthead-only, no flyer column).
     const img = await postMedia(imageFile)
     const data = {
       slug,
@@ -284,7 +286,7 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
       _status: 'published',
       publishedAt: '2025-01-01T00:00:00.000Z',
       content: richText(paragraph(body)),
-      ...(img ? { heroImage: img, meta: { image: img } } : {}),
+      ...(img ? { meta: { image: img } } : {}),
     } as never
     if (existing.docs[0]) {
       await payload.update({
