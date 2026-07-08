@@ -5,7 +5,7 @@ import React from 'react'
  * Outseta auth / membership SDK. Ported from the Webflow site's end-of-<head>
  * snippet, with `tokenStorage: 'cookie'` added so the JWT access token is written
  * to a cookie the server can read — that cookie is what the /members gate
- * (`src/middleware.ts`) verifies. The SDK still powers the login / profile /
+ * (`src/proxy.ts`) verifies. The SDK still powers the login / profile /
  * signup widgets and the join-page plan modals.
  *
  * One script, not two: it sets `window.o_options` and THEN injects outseta.min.js
@@ -29,7 +29,7 @@ export const OutsetaScript: React.FC = () => {
     auth: {
       // Always land on the ungated /members/portal after hosted login (#115). Leaving
       // this null on prod fell back to the Outseta dashboard default, which could send
-      // members to a gated page and redirect-loop against the /members middleware gate
+      // members to a gated page and redirect-loop against the /members proxy gate
       // (the cookie is written client-side only after the redirect-back).
       authenticationCallbackUrl: window.location.origin + "/members/portal"
     }

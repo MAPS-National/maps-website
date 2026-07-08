@@ -37,7 +37,7 @@ import { getServerSideURL } from '@/utilities/getURL'
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
 
-  // Resolve the per-page header theme server-side (from the path middleware
+  // Resolve the per-page header theme server-side (from the path proxy
   // forwards) so the overlay header paints in the right theme immediately,
   // instead of flipping in a post-mount effect. (#134)
   const initialHeaderTheme = await resolveHeaderTheme((await headers()).get('x-pathname'))

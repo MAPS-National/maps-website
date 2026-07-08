@@ -83,7 +83,7 @@ async function hasValidToken(req: NextRequest): Promise<boolean> {
   return false
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Expose the current path to server components (the root layout reads it to
