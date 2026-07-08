@@ -21,11 +21,13 @@ Run in this order into an empty DB: **migrate → import (each name) → `import
 
 ## Environment sync (Railway)
 
-Both are Node scripts (not bash: `npm run` on Windows resolves `bash` to WSL where the `railway` shim dies). Both need Docker (`postgres:18` + `amazon/aws-cli` in throwaway containers) and a logged-in `railway`. See CLAUDE.md "Deployment" and ADR 0002.
+All are Node scripts (not bash: `npm run` on Windows resolves `bash` to WSL where the `railway` shim dies). All need Docker (`postgres:18` + `amazon/aws-cli` in throwaway containers) and a logged-in `railway`. See CLAUDE.md "Deployment" and ADR 0002.
 
 | Command | Script | Direction | What |
 |---|---|---|---|
 | `npm run refresh:staging [-- --yes]` | `refresh-staging.mjs` | prod → staging | Mirror prod bucket → staging bucket and restore a full `pg_dump` of prod into staging. Direction-locked; prod is read-only. |
+| `npm run refresh:local [-- --yes]` | `refresh-local.mjs` | prod → local | Mirror prod bucket → local MinIO bucket and restore a full `pg_dump` of prod into the local dev DB. Prod comes from Railway; the local target from `.env` (`DATABASE_URL` + `S3_*`). Direction-locked to a **loopback** target (refuses prod/staging); prod is read-only. Keeps the `form_submissions` PII scrub. Containers reach host Postgres/MinIO via `host.docker.internal` (Docker Desktop). Destructive to local. |
+| `npm run refresh:staging:check` / `refresh:local:check` | `refresh-lock.check.mjs` | — | No-infra self-check of both direction locks and the PII scrubs (same file). |
 | `npm run backup:prod [-- --out <dir>]` | `backup-prod.mjs` | prod → local/offsite | Read-only offsite backup of prod: gzipped full `pg_dump` (+ `.sha256`) into `<out>/db/` and an incremental `s3 sync` of the media bucket into `<out>/media/`. Creds pulled live from Railway. Point `--out` at a synced cloud folder. Default out `./backups` (gitignored). Restore drill: `docs/restore-drill.md`. |
 | `npm run ensure:admin` | `ensure-admin.ts` | env (via `DATABASE_URL`) | Ensure a Payload admin `User` from `ADMIN_EMAIL`/`ADMIN_PASSWORD`: match by email, create when absent, reset password when present. No S3 writes, so safe against a remote env. Point `DATABASE_URL` at the target. Idempotent. |
 
