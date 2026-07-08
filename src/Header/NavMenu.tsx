@@ -196,27 +196,6 @@ export const NavMenu: React.FC<{ navGroups: NavGroup[]; flatLinks: NavLink[] }> 
                         </MenuLink>
                       </li>
                     ))}
-                    {/* Account opens the Outseta profile modal; only the nocode
-                        module reveals it once authenticated. Lock matches the
-                        gated Members items. */}
-                    {group.label === 'Members' && (
-                      <li data-o-authenticated="true">
-                        <button
-                          className="text-base text-content-secondary transition-colors hover:text-primary"
-                          onClick={() => {
-                            window.Outseta?.profile?.open()
-                            close()
-                          }}
-                          type="button"
-                        >
-                          <Lock
-                            aria-hidden="true"
-                            className="mr-1.5 inline-block size-3.5 align-[-0.15em]"
-                          />
-                          Account
-                        </button>
-                      </li>
-                    )}
                   </ul>
                 </div>
               ))}
