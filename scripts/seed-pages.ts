@@ -266,6 +266,7 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     title: string,
     body: string,
     imageFile: string,
+    heroImageFile: string,
   ): Promise<void> => {
     const existing = await payload.find({
       collection: 'posts',
@@ -276,16 +277,18 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     // An image keeps post cards off the "No image" placeholder, whose
     // muted-foreground-on-muted (#83807f on #f2f2f2 = 3.5:1) fails AA contrast
     // and trips the a11y e2e on any page that lists these posts (home strip).
-    // The Card reads meta.image. heroImage is left unset — it's the PostHero
-    // flyer slot and must be square (1:1), which these source photos aren't;
-    // PostHero renders fine without one (masthead-only, no flyer column).
+    // The Card reads meta.image; PostHero's flyer slot reads heroImage and
+    // requires a square (1:1) source, so it's a separate — already-square —
+    // tracked asset rather than reusing the (non-square) card photo.
     const img = await postMedia(imageFile)
+    const heroImg = await postMedia(heroImageFile)
     const data = {
       slug,
       title,
       _status: 'published',
       publishedAt: '2025-01-01T00:00:00.000Z',
       content: richText(paragraph(body)),
+      heroImage: heroImg,
       ...(img ? { meta: { image: img } } : {}),
     } as never
     if (existing.docs[0]) {
@@ -304,12 +307,14 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     'MAPS Academy: Climbing the Federal Ladder',
     'A MAPS Academy session on advancing within federal service, covering promotion timelines, the senior pathways, and how members have moved from entry roles into leadership.',
     '4_1.webp',
+    '4_2.webp',
   )
   await upsertPost(
     'breaking-into-public-service',
     'Breaking into Public Service: Where to Start',
     'The entry points, timelines, and first moves for a public-service career, drawn from the MAPS Academy onboarding session.',
     '5_1.webp',
+    '8.webp',
   )
 
   // The /phase-4-blocks showcase page was migration scaffolding to satisfy the
