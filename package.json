@@ -21,6 +21,8 @@
     "backup:prod": "node scripts/backup-prod.mjs",
     "refresh:staging": "node scripts/refresh-staging.mjs",
     "refresh:staging:check": "node scripts/refresh-lock.check.mjs",
+    "refresh:local": "node scripts/refresh-local.mjs",
+    "refresh:local:check": "node scripts/refresh-lock.check.mjs",
     "ensure:admin": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/ensure-admin.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",

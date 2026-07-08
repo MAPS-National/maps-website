@@ -20,3 +20,21 @@ export function assertRefreshDirection(r) {
   if (host(r.stageDb).includes(host(r.prodDb)))
     throw new Error('LOCK: staging DB URL points at the prod host.')
 }
+
+// A local target host must be loopback. Because prod and staging both live on
+// rlwy.net, requiring loopback here inherently refuses either as the target —
+// there's no way a write reaches a remote env.
+const LOOPBACK = /^(localhost|127\.0\.0\.1|host\.docker\.internal)(:\d+)?$/
+
+/**
+ * Throw if the prod -> LOCAL refresh could write anywhere but the local stack.
+ * @param {{ prodDb: string, localDb: string, prodBucket: string, localBucket: string }} r
+ */
+export function assertLocalTarget(r) {
+  if (!r.prodDb || !r.localDb) throw new Error('LOCK: could not resolve both DB URLs.')
+  if (!LOOPBACK.test(host(r.localDb)))
+    throw new Error(`LOCK: local DB host is not loopback (${host(r.localDb)}).`)
+  if (r.prodDb === r.localDb) throw new Error('LOCK: prod and local DB URLs are identical.')
+  if (!r.localBucket) throw new Error('LOCK: local bucket empty.')
+  if (r.prodBucket === r.localBucket) throw new Error('LOCK: prod and local buckets identical.')
+}
