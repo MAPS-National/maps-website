@@ -83,7 +83,7 @@ async function hasValidToken(req: NextRequest): Promise<boolean> {
   return false
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // Expose the current path to server components (the root layout reads it to
@@ -114,12 +114,13 @@ export async function middleware(req: NextRequest) {
   if (PUBLIC_MEMBER_PATHS.has(pathname)) return pass()
   if (await hasValidToken(req)) return pass()
 
-  // On localhost the hosted Outseta login can't redirect back (its post-login URL
-  // is the prod domain), so sending devs there sets the cookie on the wrong origin
-  // and loops. Bounce to home instead — log in via the embedded top-bar widget,
-  // which writes the cookie same-origin on localhost. Prod keeps the hosted gate.
-  const host = req.nextUrl.hostname
-  if (host === 'localhost' || host === '127.0.0.1') {
+  // In dev the hosted Outseta login can't redirect back (its post-login URL is the
+  // prod domain), so sending devs there sets the cookie on the wrong origin and
+  // loops. Bounce to home instead — log in via the embedded top-bar widget, which
+  // writes the cookie same-origin on localhost. Prod keeps the hosted gate.
+  // Decided by NODE_ENV, not hostname: behind Railway's proxy the container sees a
+  // localhost hostname, so a host sniff sent prod/staging visitors home too.
+  if (process.env.NODE_ENV === 'development') {
     return NextResponse.redirect(new URL('/', req.url))
   }
   return NextResponse.redirect(new URL(LOGIN_URL))
