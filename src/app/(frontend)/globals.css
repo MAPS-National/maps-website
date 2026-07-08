@@ -396,7 +396,16 @@ html[data-theme='light'] {
  * Unlayered so it overrides shadcn's low-opacity focus utilities; uses the
  * brand ring colour at full opacity for a clearly visible ring in both themes.
  */
-:where(a, button, input, select, textarea, summary, [role='button'], [tabindex]:not([tabindex='-1'])):focus-visible {
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role='button'],
+  [tabindex]:not([tabindex='-1'])
+):focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
@@ -437,7 +446,7 @@ html[data-theme='light'] {
 
 /* G9: Outseta's nocode module injects `a[href^="/members" i]{display:none!important}`
    to hide member links from anonymous visitors. The /members/* routes are already
-   gated server-side (src/middleware.ts redirects anyone without a valid token), so
+   gated server-side (src/proxy.ts redirects anyone without a valid token), so
    that client hiding only leaves an empty "Members" nav column. Show the nav links
    to everyone — a logged-out click just hits the gate and redirects to login. The
    #primary-menu id makes this rule (1,1,1) outweigh Outseta's (0,1,1) so it wins
