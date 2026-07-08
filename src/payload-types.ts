@@ -3272,23 +3272,37 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: number;
-  navItems?:
+  navGroups?:
     | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
+        label: string;
+        /**
+         * Optional. Makes the section title itself a link to a hub/landing page.
+         */
+        href?: string | null;
+        /**
+         * Members-only: shows a lock icon on links and the account control.
+         */
+        gated?: boolean | null;
+        items?:
+          | {
+              label: string;
+              /**
+               * Path or URL, e.g. /about-us/mission or https://external.org
+               */
+              href: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  flatLinks?:
+    | {
+        label: string;
+        /**
+         * Path or URL, e.g. /about-us/mission or https://external.org
+         */
+        href: string;
         id?: string | null;
       }[]
     | null;
@@ -3329,18 +3343,26 @@ export interface Footer {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
-  navItems?:
+  navGroups?:
     | T
     | {
-        link?:
+        label?: T;
+        href?: T;
+        gated?: T;
+        items?:
           | T
           | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
               label?: T;
+              href?: T;
+              id?: T;
             };
+        id?: T;
+      };
+  flatLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
         id?: T;
       };
   updatedAt?: T;

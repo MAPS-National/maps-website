@@ -126,6 +126,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
       # Deterministic content for the specs; also pushes the schema.
       - run: npm run seed:pages
+      # navGroups start empty on a fresh-pushed DB; specs need the default nav.
+      - run: npm run seed:header
       # CI=true makes playwright.config use `npm run dev:ci` (no Windows predev),
       # enable retries, and forbid test.only.
       - run: npm run test:e2e

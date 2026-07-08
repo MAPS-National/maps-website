@@ -26,6 +26,7 @@
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
+    "seed:header": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/seed-header.ts",
     "seed:pages": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx/esm scripts/seed-pages.ts",
     "seed:about": "npm run seed:pages",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",

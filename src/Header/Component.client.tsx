@@ -6,8 +6,12 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import { Logo } from '@/components/Logo/Logo'
 import { NavMenu } from './NavMenu'
+import type { Header as HeaderType } from '@/payload-types'
 
-export const HeaderClient: React.FC = () => {
+export const HeaderClient: React.FC<{
+  navGroups: NonNullable<HeaderType['navGroups']>
+  flatLinks: NonNullable<HeaderType['flatLinks']>
+}> = ({ navGroups, flatLinks }) => {
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   /* Seed from the server-resolved per-page theme (HeaderThemeProvider) so the
      first paint matches SSR — no flash of the wrong header theme. */
@@ -41,7 +45,7 @@ export const HeaderClient: React.FC = () => {
         <Link href="/">
           <Logo variant="primary" loading="eager" priority="high" />
         </Link>
-        <NavMenu />
+        <NavMenu navGroups={navGroups} flatLinks={flatLinks} />
       </div>
     </header>
   )

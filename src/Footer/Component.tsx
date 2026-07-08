@@ -7,8 +7,9 @@ import { Logo } from '@/components/Logo/Logo'
 import { PortalLogin } from './PortalLogin'
 
 // Site footer — ported from the live MAPS site (migration/_extracted/index.html).
-// The structure is fixed brand IA, hardcoded like the header nav (NavMenu), so the
-// footer no longer reads the `footer` CMS global.
+// The structure is a fixed, hand-picked brand IA, so the footer does not read the
+// `footer` CMS global. (The header nav, by contrast, is now managed in the `header`
+// global — see src/Header/config.ts.)
 
 type FooterLink = { label: string; href: string }
 
