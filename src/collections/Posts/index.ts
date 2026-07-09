@@ -85,7 +85,7 @@ export const Posts: CollectionConfig<'posts'> = {
               required: true,
               admin: {
                 description:
-                  'Must be a square (1:1) image, at least 1080×1080, e.g. an event flyer.',
+                  'Must be square (1:1) sized, at least 1080x1080 px. Adjust focal point as needed.',
               },
               validate: async (value: unknown, { req }: { req: PayloadRequest }) => {
                 // A custom validate replaces Payload's default one, which is what
