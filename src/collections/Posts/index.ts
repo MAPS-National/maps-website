@@ -11,7 +11,6 @@ import {
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { legacyItemId } from '../../fields/legacyItemId'
 import { Banner } from '../../blocks/Banner/config'
 import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
@@ -84,27 +83,26 @@ export const Posts: CollectionConfig<'posts'> = {
               admin: {
                 description: 'Must be a square (1:1) image, e.g. an event flyer.',
               },
-              validate: async (value: unknown, { req }: { req: PayloadRequest }) => {
+              validate: async (
+                value: unknown,
+                { req, previousValue }: { req: PayloadRequest; previousValue?: unknown },
+              ) => {
                 if (!value) return true
-                const id =
-                  typeof value === 'object' && value !== null ? (value as { id: number }).id : value
+                const toId = (v: unknown) =>
+                  typeof v === 'object' && v !== null ? (v as { id: number }).id : v
+                // Grandfather an unchanged hero: only enforce square when the image is
+                // being set or changed. Otherwise a post with a legacy non-square hero
+                // can't be saved at all (e.g. to toggle sticky) without swapping the image.
+                if (previousValue != null && toId(value) === toId(previousValue)) return true
                 const media = await req.payload.findByID({
                   collection: 'media',
-                  id: id as number,
+                  id: toId(value) as number,
                   req,
                 })
                 if (media?.width && media?.height && media.width !== media.height) {
                   return 'Hero image must be square (1:1 aspect ratio).'
                 }
                 return true
-              },
-            },
-            {
-              name: 'postSummary',
-              type: 'textarea',
-              label: 'Summary',
-              admin: {
-                description: 'Short excerpt shown on the listing card (Webflow "Post Summary").',
               },
             },
             {
@@ -272,8 +270,6 @@ export const Posts: CollectionConfig<'posts'> = {
       ],
     },
     slugField(),
-    // Webflow Item ID — idempotency key for the Latest Updates import (#75).
-    legacyItemId(),
   ],
   hooks: {
     afterChange: [revalidatePost],
