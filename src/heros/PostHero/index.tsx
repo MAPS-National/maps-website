@@ -6,7 +6,6 @@ import type { Category, Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
-import { formatAuthors } from '@/utilities/formatAuthors'
 
 // Which section a post hangs off, by its category slug. Event categories each
 // have their own landing page under /events; press categories all roll up to the
@@ -23,10 +22,8 @@ const PRESS_CATEGORIES = new Set(['press-releases', 'statements', 'staff-announc
 export const PostHero: React.FC<{
   post: Post
 }> = ({ post }) => {
-  const { categories, heroImage, populatedAuthors, publishedAt, title } = post
+  const { categories, heroImage, publishedAt, title } = post
 
-  const hasAuthors =
-    populatedAuthors && populatedAuthors.length > 0 && formatAuthors(populatedAuthors) !== ''
   const hasImage = heroImage && typeof heroImage !== 'string'
 
   // Breadcrumb derived from the post's first category, mirroring the interior-page
@@ -105,17 +102,9 @@ export const PostHero: React.FC<{
               {section.label}
             </p>
 
-            <h1 className="type-display text-white">
-              {title}
-            </h1>
+            <h1 className="type-display text-white">{title}</h1>
 
             <div className="mt-8 flex flex-wrap gap-x-10 gap-y-3 border-t border-white/15 pt-5 text-sm">
-              {hasAuthors && (
-                <div className="flex flex-col gap-1">
-                  <p className="text-xs uppercase tracking-wide text-white/70">Author</p>
-                  <p className="text-white">{formatAuthors(populatedAuthors)}</p>
-                </div>
-              )}
               {publishedAt && (
                 <div className="flex flex-col gap-1">
                   <p className="text-xs uppercase tracking-wide text-white/70">Published</p>
