@@ -6,6 +6,13 @@ import { headers } from 'next/headers'
 export const maxDuration = 60 // This function can run for a maximum of 60 seconds
 
 export async function POST(): Promise<Response> {
+  // Destructive: seed() drops every collection + globals, so one call would wipe
+  // the live site. Never allow it where NODE_ENV=production (prod AND staging);
+  // local dev only. Defense in depth — the admin seed button is also removed.
+  if (process.env.NODE_ENV === 'production') {
+    return new Response('Seeding is disabled in production.', { status: 403 })
+  }
+
   const payload = await getPayload({ config })
   const requestHeaders = await headers()
 
