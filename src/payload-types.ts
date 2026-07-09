@@ -283,9 +283,9 @@ export interface Post {
   id: number;
   title: string;
   /**
-   * Must be a square (1:1) image, e.g. an event flyer.
+   * Must be square (1:1) sized, at least 1080x1080 px. Adjust focal point as needed.
    */
-  heroImage?: (number | null) | Media;
+  heroImage: number | Media;
   /**
    * Photo gallery re-hosted from the Webflow "Photos" field.
    */

@@ -10,7 +10,8 @@ import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { collectionHref } from '@/utilities/collectionHref'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'membersOnlyUrl'>
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'membersOnlyUrl'> &
+  Partial<Pick<Post, 'heroImage'>>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -24,8 +25,13 @@ export const Card: React.FC<{
   const { card, link } = useClickableCard({})
   const { className, doc, relationTo, showCategories, showRegister, title: titleFromProps } = props
 
-  const { slug, categories, meta, title, membersOnlyUrl } = doc || {}
+  const { slug, categories, heroImage, meta, title, membersOnlyUrl } = doc || {}
   const { image: metaImage } = meta || {}
+  // Prefer the square-enforced heroImage; meta.image (also the OG image, often
+  // wide) is the fallback for docs without one (e.g. search results).
+  const cardImage =
+    (heroImage && typeof heroImage === 'object' ? heroImage : null) ??
+    (metaImage && typeof metaImage === 'object' ? metaImage : null)
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
@@ -42,14 +48,14 @@ export const Card: React.FC<{
       ref={card.ref}
     >
       <div className="relative aspect-square w-full overflow-hidden bg-muted">
-        {!metaImage && (
+        {!cardImage && (
           <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
             No image
           </div>
         )}
-        {metaImage && typeof metaImage !== 'string' && (
+        {cardImage && (
           <Media
-            resource={metaImage}
+            resource={cardImage}
             size="33vw"
             fill
             imgClassName="object-cover"

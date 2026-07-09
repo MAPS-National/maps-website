@@ -42,6 +42,7 @@ export const Posts: CollectionConfig<'posts'> = {
     title: true,
     slug: true,
     categories: true,
+    heroImage: true,
     meta: {
       image: true,
       description: true,
@@ -80,27 +81,38 @@ export const Posts: CollectionConfig<'posts'> = {
               name: 'heroImage',
               type: 'upload',
               relationTo: 'media',
+              required: true,
               admin: {
-                description: 'Must be a square (1:1) image, e.g. an event flyer.',
+                description:
+                  'Must be square (1:1) sized, at least 1080x1080 px. Adjust focal point as needed.',
               },
               validate: async (
                 value: unknown,
                 { req, previousValue }: { req: PayloadRequest; previousValue?: unknown },
               ) => {
-                if (!value) return true
+                // A custom validate replaces Payload's default one, which is what
+                // enforces `required` — so re-check emptiness here. Draft saves skip
+                // validation, so this only blocks publishing without a hero.
+                if (!value) return 'Hero image is required.'
                 const toId = (v: unknown) =>
                   typeof v === 'object' && v !== null ? (v as { id: number }).id : v
-                // Grandfather an unchanged hero: only enforce square when the image is
-                // being set or changed. Otherwise a post with a legacy non-square hero
-                // can't be saved at all (e.g. to toggle sticky) without swapping the image.
+                // Grandfather an unchanged hero: only enforce dimensions when the image
+                // is being set or changed. Otherwise a post with a legacy non-square or
+                // sub-1080 hero can't be saved at all (e.g. to toggle sticky) without
+                // swapping the image.
                 if (previousValue != null && toId(value) === toId(previousValue)) return true
                 const media = await req.payload.findByID({
                   collection: 'media',
                   id: toId(value) as number,
                   req,
                 })
-                if (media?.width && media?.height && media.width !== media.height) {
-                  return 'Hero image must be square (1:1 aspect ratio).'
+                if (media?.width && media?.height) {
+                  if (media.width !== media.height) {
+                    return 'Hero image must be square (1:1 aspect ratio).'
+                  }
+                  if (media.width < 1080) {
+                    return 'Hero image must be at least 1080×1080 pixels.'
+                  }
                 }
                 return true
               },
