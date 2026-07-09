@@ -43,6 +43,7 @@ export const Posts: CollectionConfig<'posts'> = {
     title: true,
     slug: true,
     categories: true,
+    heroImage: true,
     meta: {
       image: true,
       description: true,
@@ -81,11 +82,16 @@ export const Posts: CollectionConfig<'posts'> = {
               name: 'heroImage',
               type: 'upload',
               relationTo: 'media',
+              required: true,
               admin: {
-                description: 'Must be a square (1:1) image, e.g. an event flyer.',
+                description:
+                  'Must be a square (1:1) image, at least 1080×1080, e.g. an event flyer.',
               },
               validate: async (value: unknown, { req }: { req: PayloadRequest }) => {
-                if (!value) return true
+                // A custom validate replaces Payload's default one, which is what
+                // enforces `required` — so re-check emptiness here. Draft saves skip
+                // validation, so this only blocks publishing without a hero.
+                if (!value) return 'Hero image is required.'
                 const id =
                   typeof value === 'object' && value !== null ? (value as { id: number }).id : value
                 const media = await req.payload.findByID({
@@ -93,8 +99,13 @@ export const Posts: CollectionConfig<'posts'> = {
                   id: id as number,
                   req,
                 })
-                if (media?.width && media?.height && media.width !== media.height) {
-                  return 'Hero image must be square (1:1 aspect ratio).'
+                if (media?.width && media?.height) {
+                  if (media.width !== media.height) {
+                    return 'Hero image must be square (1:1 aspect ratio).'
+                  }
+                  if (media.width < 1080) {
+                    return 'Hero image must be at least 1080×1080 pixels.'
+                  }
                 }
                 return true
               },

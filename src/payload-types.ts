@@ -283,9 +283,9 @@ export interface Post {
   id: number;
   title: string;
   /**
-   * Must be a square (1:1) image, e.g. an event flyer.
+   * Must be a square (1:1) image, at least 1080×1080, e.g. an event flyer.
    */
-  heroImage?: (number | null) | Media;
+  heroImage: number | Media;
   /**
    * Short excerpt shown on the listing card (Webflow "Post Summary").
    */

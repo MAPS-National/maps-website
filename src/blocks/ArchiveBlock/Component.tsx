@@ -52,6 +52,7 @@ export const ArchiveBlock: React.FC<
       select: {
         slug: true,
         categories: true,
+        heroImage: true,
         meta: true,
         title: true,
         ...(showRegisterLinks ? { membersOnlyUrl: true } : {}),
