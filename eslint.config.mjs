@@ -35,8 +35,15 @@ const eslintConfig = [
   },
   {
     // migration/ is the gitignored Webflow export — vendored, not part of the
-    // build, and not ours to lint.
-    ignores: ['.next/', 'migration/', 'src/payload-types.ts', 'src/payload-generated-schema.ts'],
+    // build, and not ours to lint. .claude/ holds session worktrees (full repo
+    // copies) that would otherwise get linted twice.
+    ignores: [
+      '.next/',
+      '.claude/',
+      'migration/',
+      'src/payload-types.ts',
+      'src/payload-generated-schema.ts',
+    ],
   },
 ]
 
