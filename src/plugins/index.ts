@@ -5,8 +5,14 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { APIError, Plugin, type CollectionBeforeValidateHook } from 'payload'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
-import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
+import {
+  GenerateDescription,
+  GenerateImage,
+  GenerateTitle,
+  GenerateURL,
+} from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
@@ -22,6 +28,20 @@ const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
   const url = getServerSideURL()
 
   return doc?.slug ? `${url}/${doc.slug}` : url
+}
+
+// Only Posts have `heroImage`/`content`; Pages fall through to '' (no change).
+const generateImage: GenerateImage<Post | Page> = ({ doc }) => {
+  const hero = (doc as Post)?.heroImage
+  if (!hero) return ''
+  return typeof hero === 'object' ? hero.id : hero
+}
+
+const generateDescription: GenerateDescription<Post | Page> = ({ doc }) => {
+  const content = (doc as Post)?.content
+  if (!content) return ''
+  const text = convertLexicalToPlaintext({ data: content }).replace(/\s+/g, ' ').trim()
+  return text.slice(0, 150)
 }
 
 // Server-side reCAPTCHA v3 verification for public form submissions. Env-gated:
@@ -41,8 +61,7 @@ const verifyRecaptcha: CollectionBeforeValidateHook = async ({ data, operation, 
   const token = typeof raw?.recaptchaToken === 'string' ? raw.recaptchaToken : undefined
   if (raw && 'recaptchaToken' in raw) delete raw.recaptchaToken
 
-  const reject = () =>
-    new APIError('Spam check failed. Please reload the page and try again.', 403)
+  const reject = () => new APIError('Spam check failed. Please reload the page and try again.', 403)
   if (!token) throw reject()
 
   const params = new URLSearchParams({ secret: RECAPTCHA_SECRET, response: token })
@@ -100,6 +119,8 @@ export const plugins: Plugin[] = [
   seoPlugin({
     generateTitle,
     generateURL,
+    generateImage,
+    generateDescription,
   }),
   formBuilderPlugin({
     fields: {
