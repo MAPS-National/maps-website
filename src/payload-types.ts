@@ -287,7 +287,7 @@ export interface Post {
    */
   heroImage: number | Media;
   /**
-   * Photo gallery re-hosted from the Webflow "Photos" field.
+   * Optional. Extra photos shown in a gallery on the post.
    */
   gallery?: (number | Media)[] | null;
   content: {
@@ -305,8 +305,14 @@ export interface Post {
     };
     [k: string]: unknown;
   };
+  /**
+   * Optional. Hand-pick posts to feature as related.
+   */
   relatedPosts?: (number | Post)[] | null;
-  categories?: (number | Category)[] | null;
+  /**
+   * Required. Choose one category. Controls where the post appears in listings and filters.
+   */
+  categories: (number | Category)[];
   meta?: {
     title?: string | null;
     /**
@@ -315,15 +321,21 @@ export interface Post {
     image?: (number | null) | Media;
     description?: string | null;
   };
+  /**
+   * Leave blank or set to future.
+   */
   publishedAt?: string | null;
   /**
-   * Pin to the top of the listing (Webflow "Sticky").
+   * Pin this post to the top of the listing.
    */
   sticky?: boolean | null;
   /**
-   * Optional gated link from the Webflow "Members Only URL" field.
+   * Only shown to members.
    */
   membersOnlyUrl?: string | null;
+  /**
+   * Internal only. Not shown on the website.
+   */
   authors?: (number | User)[] | null;
   populatedAuthors?:
     | {

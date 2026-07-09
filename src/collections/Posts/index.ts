@@ -80,6 +80,7 @@ export const Posts: CollectionConfig<'posts'> = {
             {
               name: 'heroImage',
               type: 'upload',
+              label: 'Image',
               relationTo: 'media',
               required: true,
               admin: {
@@ -123,7 +124,7 @@ export const Posts: CollectionConfig<'posts'> = {
               relationTo: 'media',
               hasMany: true,
               admin: {
-                description: 'Photo gallery re-hosted from the Webflow "Photos" field.',
+                description: 'Optional. Extra photos shown in a gallery on the post.',
               },
             },
             {
@@ -141,7 +142,7 @@ export const Posts: CollectionConfig<'posts'> = {
                   ]
                 },
               }),
-              label: false,
+              label: 'Body',
               required: true,
             },
           ],
@@ -154,6 +155,7 @@ export const Posts: CollectionConfig<'posts'> = {
               type: 'relationship',
               admin: {
                 position: 'sidebar',
+                description: 'Optional. Hand-pick posts to feature as related.',
               },
               filterOptions: ({ id }) => {
                 return {
@@ -168,10 +170,16 @@ export const Posts: CollectionConfig<'posts'> = {
             {
               name: 'categories',
               type: 'relationship',
+              required: true,
               admin: {
                 position: 'sidebar',
+                description:
+                  'Required. Choose one category. Controls where the post appears in listings and filters.',
               },
               hasMany: true,
+              // Cap at one: keeps the array type (no schema/consumer changes) while
+              // the admin UI + validation allow only a single category.
+              maxRows: 1,
               relationTo: 'categories',
             },
           ],
@@ -213,6 +221,7 @@ export const Posts: CollectionConfig<'posts'> = {
         date: {
           pickerAppearance: 'dayAndTime',
         },
+        description: 'Leave blank or set to future.',
         position: 'sidebar',
       },
       hooks: {
@@ -232,7 +241,7 @@ export const Posts: CollectionConfig<'posts'> = {
       defaultValue: false,
       admin: {
         position: 'sidebar',
-        description: 'Pin to the top of the listing (Webflow "Sticky").',
+        description: 'Pin this post to the top of the listing.',
       },
     },
     {
@@ -245,14 +254,17 @@ export const Posts: CollectionConfig<'posts'> = {
       access: { read: ({ req: { user } }) => Boolean(user) },
       admin: {
         position: 'sidebar',
-        description: 'Optional gated link from the Webflow "Members Only URL" field.',
+        description: 'Only shown to members.',
       },
     },
     {
       name: 'authors',
       type: 'relationship',
+      // Pre-fill the current user on create; still editable (add/remove bylines).
+      defaultValue: ({ user }) => (user ? [user.id] : undefined),
       admin: {
         position: 'sidebar',
+        description: 'Internal only. Not shown on the website.',
       },
       hasMany: true,
       relationTo: 'users',
