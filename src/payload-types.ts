@@ -287,10 +287,6 @@ export interface Post {
    */
   heroImage: number | Media;
   /**
-   * Short excerpt shown on the listing card (Webflow "Post Summary").
-   */
-  postSummary?: string | null;
-  /**
    * Photo gallery re-hosted from the Webflow "Photos" field.
    */
   gallery?: (number | Media)[] | null;
@@ -340,10 +336,6 @@ export interface Post {
    */
   generateSlug?: boolean | null;
   slug: string;
-  /**
-   * Source CMS Item ID — import idempotency key. Do not edit.
-   */
-  legacyItemId?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -2736,7 +2728,6 @@ export interface MemberPortalHeroBlockSelect<T extends boolean = true> {
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   heroImage?: T;
-  postSummary?: T;
   gallery?: T;
   content?: T;
   relatedPosts?: T;
@@ -2760,7 +2751,6 @@ export interface PostsSelect<T extends boolean = true> {
       };
   generateSlug?: T;
   slug?: T;
-  legacyItemId?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

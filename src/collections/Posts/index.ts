@@ -11,7 +11,6 @@ import {
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { legacyItemId } from '../../fields/legacyItemId'
 import { Banner } from '../../blocks/Banner/config'
 import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
@@ -87,16 +86,24 @@ export const Posts: CollectionConfig<'posts'> = {
                 description:
                   'Must be square (1:1) sized, at least 1080x1080 px. Adjust focal point as needed.',
               },
-              validate: async (value: unknown, { req }: { req: PayloadRequest }) => {
+              validate: async (
+                value: unknown,
+                { req, previousValue }: { req: PayloadRequest; previousValue?: unknown },
+              ) => {
                 // A custom validate replaces Payload's default one, which is what
                 // enforces `required` — so re-check emptiness here. Draft saves skip
                 // validation, so this only blocks publishing without a hero.
                 if (!value) return 'Hero image is required.'
-                const id =
-                  typeof value === 'object' && value !== null ? (value as { id: number }).id : value
+                const toId = (v: unknown) =>
+                  typeof v === 'object' && v !== null ? (v as { id: number }).id : v
+                // Grandfather an unchanged hero: only enforce dimensions when the image
+                // is being set or changed. Otherwise a post with a legacy non-square or
+                // sub-1080 hero can't be saved at all (e.g. to toggle sticky) without
+                // swapping the image.
+                if (previousValue != null && toId(value) === toId(previousValue)) return true
                 const media = await req.payload.findByID({
                   collection: 'media',
-                  id: id as number,
+                  id: toId(value) as number,
                   req,
                 })
                 if (media?.width && media?.height) {
@@ -108,14 +115,6 @@ export const Posts: CollectionConfig<'posts'> = {
                   }
                 }
                 return true
-              },
-            },
-            {
-              name: 'postSummary',
-              type: 'textarea',
-              label: 'Summary',
-              admin: {
-                description: 'Short excerpt shown on the listing card (Webflow "Post Summary").',
               },
             },
             {
@@ -283,8 +282,6 @@ export const Posts: CollectionConfig<'posts'> = {
       ],
     },
     slugField(),
-    // Webflow Item ID — idempotency key for the Latest Updates import (#75).
-    legacyItemId(),
   ],
   hooks: {
     afterChange: [revalidatePost],
