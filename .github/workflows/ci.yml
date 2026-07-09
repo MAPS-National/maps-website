@@ -6,6 +6,22 @@ on:
     branches: [master, staging]
 
 jobs:
+  branch-flow:
+    name: branch flow guard
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      # ADR 0002: every change lands on `staging` first; `master` only ever
+      # receives `staging` (the promotion merge that deploys prod). Block any PR
+      # that targets master from a branch other than staging so a feature branch
+      # can never merge straight to prod. Skipped (job succeeds) for every
+      # allowed PR, so it is safe to require as a status check.
+      - name: Enforce PRs target staging, not master
+        if: github.base_ref == 'master' && github.head_ref != 'staging'
+        run: |
+          echo "::error::PRs must target 'staging', not 'master'. Only 'staging' -> 'master' promotion PRs may target master (ADR 0002). Re-target this PR's base branch to 'staging'."
+          exit 1
+
   quality:
     name: lint · build · int
     runs-on: ubuntu-latest
