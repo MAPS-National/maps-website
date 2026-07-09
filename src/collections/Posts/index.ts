@@ -11,7 +11,6 @@ import {
 
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { legacyItemId } from '../../fields/legacyItemId'
 import { Banner } from '../../blocks/Banner/config'
 import { Code } from '../../blocks/Code/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
@@ -97,14 +96,6 @@ export const Posts: CollectionConfig<'posts'> = {
                   return 'Hero image must be square (1:1 aspect ratio).'
                 }
                 return true
-              },
-            },
-            {
-              name: 'postSummary',
-              type: 'textarea',
-              label: 'Summary',
-              admin: {
-                description: 'Short excerpt shown on the listing card (Webflow "Post Summary").',
               },
             },
             {
@@ -272,8 +263,6 @@ export const Posts: CollectionConfig<'posts'> = {
       ],
     },
     slugField(),
-    // Webflow Item ID — idempotency key for the Latest Updates import (#75).
-    legacyItemId(),
   ],
   hooks: {
     afterChange: [revalidatePost],
