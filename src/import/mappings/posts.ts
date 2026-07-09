@@ -46,7 +46,6 @@ export const latestUpdatesImport: CollectionImport = {
       transform: 'externalImage',
       options: { publicDir: 'public/import/updates' },
     },
-    { column: 'Post Summary', field: 'postSummary' },
     { column: 'Post', field: 'content', transform: 'html', required: true },
     {
       column: 'Photos',
@@ -57,14 +56,12 @@ export const latestUpdatesImport: CollectionImport = {
     { column: 'Members Only URL', field: 'membersOnlyUrl' },
     { column: 'Sticky', field: 'sticky', transform: 'bool' },
   ],
-  // The posts listing card (src/components/Card) renders the SEO `meta.image`
-  // and `meta.description`, not heroImage/postSummary — so without this a
-  // migrated post shows a "No image" card. Mirror the imported hero + summary
-  // into meta so the archive view matches the detail page.
+  // The posts listing card (src/components/Card) renders the SEO `meta.image`,
+  // not `heroImage` — so without this a migrated post shows a "No image" card.
+  // Mirror the imported hero into meta so the archive view matches the detail page.
   finalize: (doc) => {
     const meta = { ...(doc.meta as Record<string, unknown> | undefined) }
     if (doc.heroImage != null && meta.image == null) meta.image = doc.heroImage
-    if (doc.postSummary && meta.description == null) meta.description = doc.postSummary
     return { ...doc, meta }
   },
 }
