@@ -283,7 +283,7 @@ export interface Post {
   id: number;
   title: string;
   /**
-   * Must be a square (1:1) image, at least 1080×1080, e.g. an event flyer.
+   * Must be square (1:1) sized, at least 1080x1080 px. Adjust focal point as needed.
    */
   heroImage: number | Media;
   /**
