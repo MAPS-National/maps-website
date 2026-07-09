@@ -43,9 +43,14 @@ export const ArchiveBlock: React.FC<
       collection: 'posts',
       depth: 1,
       limit,
-      // Newest-first; without an explicit sort Payload falls back to creation
-      // order, which surfaced stale 2022 posts in "Latest Updates".
-      sort: '-publishedAt',
+      // Sticky posts pinned to the top, then newest-first. Without an explicit
+      // sort Payload falls back to creation order, which surfaced stale 2022
+      // posts in "Latest Updates". `sticky` is boolean DEFAULT false, so the
+      // descending sort floats pinned posts above the rest (no NULLS-first trap);
+      // it isn't in `select` because cards don't render it — sort reads the column
+      // regardless. Only affects the limited window, so a pinned post beats a
+      // newer one for the top slots even when the list is capped.
+      sort: ['-sticky', '-publishedAt'],
       // Fetch only what the cards render. membersOnlyUrl (the gated event
       // sign-up link) is pulled in solely when this listing shows Register
       // buttons, so it never ends up in public archive HTML otherwise.
