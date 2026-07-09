@@ -83,13 +83,20 @@ export const Posts: CollectionConfig<'posts'> = {
               admin: {
                 description: 'Must be a square (1:1) image, e.g. an event flyer.',
               },
-              validate: async (value: unknown, { req }: { req: PayloadRequest }) => {
+              validate: async (
+                value: unknown,
+                { req, previousValue }: { req: PayloadRequest; previousValue?: unknown },
+              ) => {
                 if (!value) return true
-                const id =
-                  typeof value === 'object' && value !== null ? (value as { id: number }).id : value
+                const toId = (v: unknown) =>
+                  typeof v === 'object' && v !== null ? (v as { id: number }).id : v
+                // Grandfather an unchanged hero: only enforce square when the image is
+                // being set or changed. Otherwise a post with a legacy non-square hero
+                // can't be saved at all (e.g. to toggle sticky) without swapping the image.
+                if (previousValue != null && toId(value) === toId(previousValue)) return true
                 const media = await req.payload.findByID({
                   collection: 'media',
-                  id: id as number,
+                  id: toId(value) as number,
                   req,
                 })
                 if (media?.width && media?.height && media.width !== media.height) {
