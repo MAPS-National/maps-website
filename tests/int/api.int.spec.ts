@@ -61,6 +61,15 @@ describe('API', () => {
       filePath: heroPath,
     })
 
+    // Posts require exactly one category on publish; mint one to attach.
+    // `as never` on data for the same drafts-create overload reason as below.
+    const category = await payload.create({
+      collection: 'categories',
+      overrideAccess: true,
+      context: { ...context },
+      data: { title: 'sticky sort test category' } as never,
+    })
+
     // `as never` on data: Payload's create overload for a drafts-enabled
     // collection otherwise demands `draft: true`; the restore migration casts
     // the same way. content is still shape-checked via the typed body() helper.
@@ -74,6 +83,7 @@ describe('API', () => {
         publishedAt: '2020-01-01T00:00:00.000Z',
         sticky: true,
         heroImage: hero.id,
+        categories: [category.id],
         content: body('pinned'),
       } as never,
     })
@@ -87,6 +97,7 @@ describe('API', () => {
         publishedAt: '2025-01-01T00:00:00.000Z',
         sticky: false,
         heroImage: hero.id,
+        categories: [category.id],
         content: body('fresh'),
       } as never,
     })
@@ -106,6 +117,12 @@ describe('API', () => {
       await payload.delete({ collection: 'posts', id: stickyOld.id, overrideAccess: true, context })
       await payload.delete({ collection: 'posts', id: freshNew.id, overrideAccess: true, context })
       await payload.delete({ collection: 'media', id: hero.id, overrideAccess: true, context })
+      await payload.delete({
+        collection: 'categories',
+        id: category.id,
+        overrideAccess: true,
+        context,
+      })
     }
   })
 })
