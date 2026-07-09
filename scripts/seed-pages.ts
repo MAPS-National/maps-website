@@ -261,6 +261,26 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     const id = r.docs[0]?.id
     return typeof id === 'number' ? id : null
   }
+  // Posts now require exactly one category, and a fresh/CI DB has none (Post
+  // categories come from the gitignored `updates` import). Ensure a general one
+  // exists so the seeded fixtures satisfy the requirement. Idempotent by slug.
+  const ensureCategory = async (catSlug: string, title: string): Promise<number> => {
+    const found = await payload.find({
+      collection: 'categories',
+      where: { slug: { equals: catSlug } },
+      limit: 1,
+      depth: 0,
+    })
+    if (found.docs[0]) return found.docs[0].id as number
+    const created = await payload.create({
+      collection: 'categories',
+      data: { title } as never,
+      context: { disableRevalidate: true },
+    })
+    return created.id as number
+  }
+  const updatesCategory = await ensureCategory('latest-updates', 'Latest Updates')
+
   const upsertPost = async (
     slug: string,
     title: string,
@@ -289,6 +309,7 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
       publishedAt: '2025-01-01T00:00:00.000Z',
       content: richText(paragraph(body)),
       heroImage: heroImg,
+      categories: [updatesCategory],
       ...(img ? { meta: { image: img } } : {}),
     } as never
     if (existing.docs[0]) {
