@@ -1,3 +1,8 @@
+// @vitest-environment node
+// Node env (not the config's jsdom default): this suite only drives the Payload
+// API, and media uploads run sharp, which rejects Node buffers across jsdom's realm.
+import path from 'path'
+
 import { getPayload, Payload } from 'payload'
 import config from '@/payload.config'
 
@@ -44,6 +49,18 @@ describe('API', () => {
       },
     })
 
+    // Posts require a square, >=1080px heroImage on publish, so mint one to
+    // attach. Use a tracked 1200x1200 asset via filePath (Payload reads it in
+    // its own realm — passing a Buffer breaks under the jsdom test env).
+    const heroPath = path.resolve(process.cwd(), 'public/import/prose/1.webp')
+    const hero = await payload.create({
+      collection: 'media',
+      overrideAccess: true,
+      context: { ...context },
+      data: { alt: 'sticky sort test hero' },
+      filePath: heroPath,
+    })
+
     // `as never` on data: Payload's create overload for a drafts-enabled
     // collection otherwise demands `draft: true`; the restore migration casts
     // the same way. content is still shape-checked via the typed body() helper.
@@ -56,6 +73,7 @@ describe('API', () => {
         _status: 'published',
         publishedAt: '2020-01-01T00:00:00.000Z',
         sticky: true,
+        heroImage: hero.id,
         content: body('pinned'),
       } as never,
     })
@@ -68,6 +86,7 @@ describe('API', () => {
         _status: 'published',
         publishedAt: '2025-01-01T00:00:00.000Z',
         sticky: false,
+        heroImage: hero.id,
         content: body('fresh'),
       } as never,
     })
@@ -86,6 +105,7 @@ describe('API', () => {
     } finally {
       await payload.delete({ collection: 'posts', id: stickyOld.id, overrideAccess: true, context })
       await payload.delete({ collection: 'posts', id: freshNew.id, overrideAccess: true, context })
+      await payload.delete({ collection: 'media', id: hero.id, overrideAccess: true, context })
     }
   })
 })
