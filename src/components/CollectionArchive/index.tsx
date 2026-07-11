@@ -5,9 +5,13 @@ import { Card, CardPostData } from '@/components/Card'
 
 import { CollectionArchiveSlider } from './CollectionArchiveSlider'
 
+// Search results mix collections, so each item may carry the collection it
+// came from; plain post archives omit it and fall back to 'posts'.
+export type ArchiveItem = CardPostData & { relationTo?: 'pages' | 'posts' }
+
 export type Props = {
   display?: 'grid' | 'slider'
-  posts: CardPostData[]
+  posts: ArchiveItem[]
   showRegister?: boolean
 }
 
@@ -26,7 +30,13 @@ export const CollectionArchive: React.FC<Props> = (props) => {
             if (typeof result === 'object' && result !== null) {
               return (
                 <div className="col-span-4" key={index}>
-                  <Card className="h-full" doc={result} relationTo="posts" showCategories showRegister={showRegister} />
+                  <Card
+                    className="h-full"
+                    doc={result}
+                    relationTo={result.relationTo ?? 'posts'}
+                    showCategories
+                    showRegister={showRegister}
+                  />
                 </div>
               )
             }

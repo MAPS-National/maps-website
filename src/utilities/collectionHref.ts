@@ -8,5 +8,7 @@ export const collectionPrefix: Record<'pages' | 'posts', string> = {
   posts: '/latest-updates',
 }
 
+// The home page is stored with slug 'home' but served at the site root (the
+// catch-all route defaults empty segments to 'home'), so it maps to '/'.
 export const collectionHref = (relationTo: 'pages' | 'posts', slug: string): string =>
-  `${collectionPrefix[relationTo]}/${slug}`
+  relationTo === 'pages' && slug === 'home' ? '/' : `${collectionPrefix[relationTo]}/${slug}`
