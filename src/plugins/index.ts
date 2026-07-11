@@ -154,7 +154,13 @@ export const plugins: Plugin[] = [
     },
   }),
   searchPlugin({
-    collections: ['posts'],
+    collections: ['pages', 'posts'],
+    // Deterministic ordering for the /search page's `sort: '-priority'`:
+    // pages (evergreen site content) rank above posts (dated updates).
+    defaultPriorities: {
+      pages: 20,
+      posts: 10,
+    },
     beforeSync: beforeSyncWithSearch,
     searchOverrides: {
       fields: ({ defaultFields }) => {

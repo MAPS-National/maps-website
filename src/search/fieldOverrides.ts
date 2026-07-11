@@ -10,6 +10,17 @@ export const searchFields: Field[] = [
     },
   },
   {
+    // Extracted body plaintext (post content / page block text) so search
+    // matches what's on the page, not just title + meta. Deliberately not
+    // indexed: ILIKE substring matching can't use a btree, and long text
+    // would blow past index row-size limits.
+    name: 'content',
+    type: 'textarea',
+    admin: {
+      readOnly: true,
+    },
+  },
+  {
     name: 'meta',
     label: 'Meta',
     type: 'group',

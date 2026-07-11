@@ -1,35 +1,40 @@
 import type { Metadata } from 'next/types'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
+import type { ArchiveItem } from '@/components/CollectionArchive'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import { Search } from '@/search/Component'
+import { SearchPagination } from '@/search/Pagination'
 import PageClient from './page.client'
-import { CardPostData } from '@/components/Card'
 import { SITE_NAME } from '@/utilities/brand'
 
 type Args = {
   searchParams: Promise<{
-    q: string
+    q?: string
+    page?: string
   }>
 }
 export default async function Page({ searchParams: searchParamsPromise }: Args) {
-  const { q: query } = await searchParamsPromise
+  const { q: query, page } = await searchParamsPromise
+  const currentPage = Math.max(1, Number(page) || 1)
   const payload = await getPayload({ config: configPromise })
 
-  const posts = await payload.find({
+  const results = await payload.find({
     collection: 'search',
     depth: 1,
     limit: 12,
+    page: currentPage,
+    // Pages (priority 20) rank above posts (10) — see the search plugin config.
+    sort: '-priority',
     select: {
       title: true,
       slug: true,
+      doc: true,
       categories: true,
       meta: true,
     },
-    // pagination: false reduces overhead if you don't need totalDocs
-    pagination: false,
     ...(query
       ? {
           where: {
@@ -50,6 +55,11 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
                 },
               },
               {
+                content: {
+                  like: query,
+                },
+              },
+              {
                 slug: {
                   like: query,
                 },
@@ -59,6 +69,12 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
         }
       : {}),
   })
+
+  // Results span collections; carry each doc's source collection through so
+  // cards link pages to their root URL and posts to /latest-updates.
+  const items = results.docs.map(
+    (doc) => ({ ...doc, relationTo: doc.doc?.relationTo }) as unknown as ArchiveItem,
+  )
 
   return (
     <div className="pt-24 pb-24">
@@ -73,8 +89,15 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
         </div>
       </div>
 
-      {posts.totalDocs > 0 ? (
-        <CollectionArchive posts={posts.docs as unknown as CardPostData[]} />
+      {results.totalDocs > 0 ? (
+        <>
+          <CollectionArchive posts={items} />
+          <SearchPagination
+            page={results.page ?? currentPage}
+            query={query}
+            totalPages={results.totalPages}
+          />
+        </>
       ) : (
         <div className="container">No results found.</div>
       )}

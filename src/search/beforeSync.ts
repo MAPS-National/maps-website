@@ -1,5 +1,7 @@
 import { BeforeSync, DocToSync } from '@payloadcms/plugin-search/types'
 
+import { extractText } from './extractText'
+
 export const beforeSyncWithSearch: BeforeSync = async ({ req, originalDoc, searchDoc }) => {
   const {
     doc: { relationTo: collection },
@@ -7,9 +9,17 @@ export const beforeSyncWithSearch: BeforeSync = async ({ req, originalDoc, searc
 
   const { slug, id, categories, title, meta } = originalDoc
 
+  // Body text: a post's copy is its single Lexical `content` field; a page's
+  // lives across its hero + layout blocks, so walk both.
+  const content =
+    collection === 'pages'
+      ? extractText({ hero: originalDoc.hero, layout: originalDoc.layout })
+      : extractText(originalDoc.content)
+
   const modifiedDoc: DocToSync = {
     ...searchDoc,
     slug,
+    content: content || null,
     meta: {
       ...meta,
       title: meta?.title || title,
