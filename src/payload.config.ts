@@ -112,6 +112,18 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     user: Users.slug,
+    // Local dev convenience: prefill the admin login form so you don't retype
+    // creds. Guarded to development — prod/staging run NODE_ENV=production, where
+    // this is `false` and never renders. Override the creds via env; set
+    // `prefillOnly: false` to skip the login screen and auto-authenticate.
+    autoLogin:
+      process.env.NODE_ENV === 'development'
+        ? {
+            email: process.env.PAYLOAD_AUTOLOGIN_EMAIL || 'dev@payloadcms.com',
+            password: process.env.PAYLOAD_AUTOLOGIN_PASSWORD || 'test',
+            prefillOnly: true,
+          }
+        : false,
     livePreview: {
       breakpoints: [
         {

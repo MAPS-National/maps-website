@@ -15,6 +15,11 @@ const buttonVariants = cva(
         secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
+        // Inverting outline for header CTAs that overlay a themed (light/dark)
+        // header: foreground-tracking text/border so contrast holds on either
+        // theme, filling to the foreground on hover.
+        headerOutline:
+          'border border-foreground/40 text-foreground hover:bg-foreground hover:text-background',
       },
       size: {
         clear: '',
@@ -32,8 +37,7 @@ const buttonVariants = cva(
 )
 
 export interface ButtonProps
-  extends React.ComponentProps<'button'>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ComponentProps<'button'>, VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 

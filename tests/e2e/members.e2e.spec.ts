@@ -12,10 +12,11 @@ test('a gated members route redirects an anonymous visitor to home', async ({ pa
   await expect(page).toHaveURL('http://localhost:3000/')
 })
 
-test('the Members nav link is still shown to anonymous visitors', async ({ page }) => {
+// The members door is the header Login control (Outseta), shown to anonymous
+// visitors. The dedicated Members nav section was retired when the IA was
+// simplified to About Us / Programs / Press, so the entry point is the Login
+// button rather than a "Member Portal" nav link. (#128, updated)
+test('anonymous visitors see the header Login control', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('button', { name: 'Open menu' }).click()
-  await expect(
-    page.locator('#primary-menu').getByRole('link', { name: 'Member Portal' }),
-  ).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Login' }).first()).toBeVisible()
 })
