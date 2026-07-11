@@ -17,21 +17,17 @@ export const defaultNavGroups: NonNullable<Header['navGroups']> = [
       { label: 'State Committees', href: '/about-us/state-committees' },
       { label: 'Partners', href: '/about-us/partners' },
       { label: 'FAQ', href: '/about-us/faq' },
-    ],
-  },
-  {
-    label: 'Events',
-    items: [
-      { label: 'Upcoming Events', href: '/events/upcoming' },
-      { label: 'MAPS Events', href: '/events/maps' },
-      { label: 'Partner Events', href: '/events/partner' },
-      { label: 'All Events', href: '/events' },
+      { label: 'Press', href: '/press' },
+      // Contact folded into About Us (no longer a standalone bottom-row link).
+      { label: 'Contact', href: '/contact' },
     ],
   },
   {
     label: 'Programs',
     href: '/programs',
     items: [
+      // MAPS Events folded in at the top (the old Events section is retired).
+      { label: 'MAPS Events', href: '/events/maps' },
       { label: 'Career Support', href: '/programs/career-support' },
       { label: 'Community Building', href: '/programs/community-building' },
       { label: 'Legal Advocacy', href: '/programs/legal-advocacy' },
@@ -39,35 +35,11 @@ export const defaultNavGroups: NonNullable<Header['navGroups']> = [
       { label: 'Private Sector Engagement', href: '/programs/private-sector-engagement' },
     ],
   },
-  {
-    label: 'Resources',
-    items: [
-      { label: 'Federal Employment', href: '/resources/federal-employment' },
-      { label: 'Jumuah Services', href: '/resources/jumuah-services' },
-      {
-        label: 'Fellowships (Young Professionals)',
-        href: '/resources/public-service-fellowships-young-professionals',
-      },
-      {
-        label: 'Fellowships (Mid-Career to Senior)',
-        href: '/resources/public-service-fellowships-mid-career-to-senior-professionals',
-      },
-    ],
-  },
-  {
-    label: 'Members',
-    gated: true,
-    // Only the portal entry point is exposed publicly; the member-only sub-pages
-    // are reached from inside after sign-in.
-    items: [{ label: 'Member Portal', href: '/members/portal' }],
-  },
 ]
 
-export const defaultFlatLinks: NonNullable<Header['flatLinks']> = [
-  { label: 'Press', href: '/press' },
-  { label: 'Latest Updates', href: '/latest-updates' },
-  { label: 'Contact', href: '/contact' },
-]
+// Press now lives inside the About Us section (before Contact), so the bottom-row
+// flat links are empty. Kept as an (empty) array so admins can still add links.
+export const defaultFlatLinks: NonNullable<Header['flatLinks']> = []
 
 /**
  * Idempotent: seeds the default nav only when the header global has no groups yet,

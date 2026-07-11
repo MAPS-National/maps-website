@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Lock, SearchIcon } from 'lucide-react'
+import { Lock, LogIn, LogOut, SearchIcon } from 'lucide-react'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { cn } from '@/utilities/ui'
+import { DesktopNav } from './DesktopNav'
 import type { Header } from '@/payload-types'
 
 // window.Outseta is typed centrally in src/types/outseta.d.ts.
@@ -19,13 +20,16 @@ type NavGroup = NonNullable<Header['navGroups']>[number]
 type NavLink = NonNullable<Header['flatLinks']>[number]
 
 /**
- * Header navigation — a hamburger that opens a full-screen overlay menu at every
- * breakpoint (G1). The overlay lays the IA out in grouped columns, with the flat
- * links, the Donate/Join CTAs, and search. The Outseta login/logout control sits
- * in the always-visible top bar: the nocode module (monitorDom) shows exactly one
- * by auth state via the `data-o-anonymous` / `data-o-authenticated` attributes, and
- * each click calls the Outseta SDK directly (#115). Closes on Esc, backdrop, route
- * change, or a link.
+ * Header navigation. On desktop (lg+) DesktopNav renders a complete horizontal
+ * bar (nav groups, flat links, search, and the prominent Login/Logout + Donate
+ * CTAs); below lg a hamburger opens a full-screen overlay menu. The overlay lays
+ * the IA out in grouped columns, with the flat links and the Donate CTA. The
+ * mobile top bar carries its own Outseta login/logout icon and a search icon
+ * (all `lg:hidden`, since DesktopNav supplies the desktop copies): the
+ * nocode module (monitorDom) shows exactly one auth anchor by auth state via the
+ * `data-o-anonymous` / `data-o-authenticated` attributes, and each click calls
+ * the Outseta SDK directly (#115). Closes on Esc, backdrop, route change, or a
+ * link.
  */
 export const NavMenu: React.FC<{ navGroups: NavGroup[]; flatLinks: NavLink[] }> = ({
   navGroups,
@@ -95,52 +99,55 @@ export const NavMenu: React.FC<{ navGroups: NavGroup[]; flatLinks: NavLink[] }> 
 
   return (
     <div className="flex items-center gap-2">
-      {/* Outseta auth control. The nocode module (monitorDom) toggles visibility
-          via data-o-anonymous / data-o-authenticated (verified: shows exactly one
-          by auth state). The click is the SDK directly — auth.open() pops the login
-          modal in-page (no hosted-page redirect, so the cookie is written
-          same-origin and it works on localhost); logout() clears the session. Top
-          bar, before search, so login is prominent. Account (profile modal) lives
-          in the Members menu group instead. text-foreground tracks the header's
-          per-page data-theme. */}
-      <a
-        className="text-sm font-medium uppercase tracking-wide text-foreground hover:text-primary"
+      {/* Desktop horizontal nav (lg+). Below lg it is hidden and the hamburger
+          overlay below takes over. */}
+      <div className="hidden lg:flex">
+        <DesktopNav navGroups={navGroups} flatLinks={flatLinks} />
+      </div>
+
+      {/* Outseta auth control (mobile top bar, lg:hidden — DesktopNav carries the
+          lg+ copies). The nocode module (monitorDom) toggles visibility via
+          data-o-anonymous / data-o-authenticated (verified: shows exactly one by
+          auth state), across every matching element regardless of breakpoint. The
+          click is the SDK directly — auth.open() pops the login modal in-page (no
+          hosted-page redirect, so the cookie is written same-origin and it works on
+          localhost); logout() clears the session. text-foreground tracks the
+          header's per-page data-theme. */}
+      <button
+        aria-label="Log in"
+        className="p-2 text-foreground hover:text-primary lg:hidden"
         data-o-anonymous="true"
-        href="#"
-        onClick={(e) => {
-          e.preventDefault()
-          window.Outseta?.auth?.open({ widgetMode: 'login' })
-        }}
-        role="button"
+        onClick={() => window.Outseta?.auth?.open({ widgetMode: 'login' })}
+        type="button"
       >
-        Login
-      </a>
-      <a
-        className="text-sm font-medium uppercase tracking-wide text-foreground hover:text-primary"
+        <LogIn className="size-5" />
+      </button>
+      <button
+        aria-label="Log out"
+        className="p-2 text-foreground hover:text-primary lg:hidden"
         data-o-authenticated="true"
-        href="#"
-        onClick={(e) => {
-          e.preventDefault()
-          window.Outseta?.logout?.()
-        }}
-        role="button"
+        onClick={() => window.Outseta?.logout?.()}
+        type="button"
       >
-        Logout
-      </a>
-      <Link aria-label="Search" className="p-2 text-foreground hover:text-primary" href="/search">
+        <LogOut className="size-5" />
+      </button>
+      <Link
+        aria-label="Search"
+        className="p-2 text-foreground hover:text-primary lg:hidden"
+        href="/search"
+      >
         <SearchIcon className="size-5" />
       </Link>
       <button
         aria-controls="primary-menu"
         aria-expanded={open}
         aria-label="Open menu"
-        className="inline-flex items-center gap-2 rounded-md p-2 text-foreground hover:text-primary"
+        className="inline-flex items-center rounded-md p-2 text-foreground hover:text-primary lg:hidden"
         onClick={() => setOpen(true)}
         ref={triggerRef}
         type="button"
       >
         <MenuIcon />
-        <span className="text-sm font-medium uppercase tracking-wide">Menu</span>
       </button>
 
       {open &&
@@ -149,25 +156,30 @@ export const NavMenu: React.FC<{ navGroups: NavGroup[]; flatLinks: NavLink[] }> 
           <div
             aria-label="Site menu"
             aria-modal="true"
-            className="fixed inset-0 z-[200] overflow-y-auto bg-background text-content"
+            className="fixed inset-0 z-[200] overflow-y-auto bg-background text-content lg:hidden"
             id="primary-menu"
             ref={dialogRef}
             role="dialog"
           >
-            <div className="container flex items-center justify-between py-8">
-              <span className="font-serif text-lg font-semibold">Menu</span>
-              <button
-                aria-label="Close menu"
-                className="rounded-md p-2 text-content hover:text-primary"
-                onClick={close}
-                ref={closeRef}
-                type="button"
-              >
-                <CloseIcon />
-              </button>
+            {/* Close button shares the top row with the first section heading:
+                absolutely positioned and container-aligned to the top-right, and
+                click-through (pointer-events-none wrapper, pointer-events-auto
+                button) so the nav links beneath it stay tappable. */}
+            <div className="pointer-events-none absolute inset-x-0 top-4 z-10">
+              <div className="container flex justify-end">
+                <button
+                  aria-label="Close menu"
+                  className="pointer-events-auto rounded-md p-2 text-content hover:text-primary"
+                  onClick={close}
+                  ref={closeRef}
+                  type="button"
+                >
+                  <CloseIcon />
+                </button>
+              </div>
             </div>
 
-            <nav className="container grid gap-x-10 gap-y-10 pb-20 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <nav className="container grid gap-x-10 gap-y-8 pt-6 pb-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {navGroups.map((group) => (
                 <div key={group.label}>
                   <p className="mb-4 border-b border-border pb-2 font-serif text-lg font-semibold text-content">
@@ -201,33 +213,29 @@ export const NavMenu: React.FC<{ navGroups: NavGroup[]; flatLinks: NavLink[] }> 
               ))}
             </nav>
 
-            <div className="container flex flex-col gap-8 border-t border-border py-10 lg:flex-row lg:items-center lg:justify-between">
-              <ul className="flex flex-wrap gap-x-8 gap-y-3">
-                {flatLinks.map((item) => (
-                  <li key={item.href}>
-                    <MenuLink active={pathname === item.href} href={item.href} onClick={close}>
-                      {item.label}
-                    </MenuLink>
-                  </li>
-                ))}
-              </ul>
+            <div className="container flex flex-col gap-6 border-t border-border py-6 lg:flex-row lg:items-center lg:justify-between">
+              {flatLinks.length > 0 && (
+                <ul className="flex flex-wrap gap-x-8 gap-y-3">
+                  {flatLinks.map((item) => (
+                    <li key={item.href}>
+                      <MenuLink active={pathname === item.href} href={item.href} onClick={close}>
+                        {item.label}
+                      </MenuLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               <div className="flex flex-wrap items-center gap-3">
                 {/* Member login/logout live in the always-visible header top bar
-                  (see the NavMenu top row), wired to the Outseta SDK. */}
+                  (see the NavMenu top row), wired to the Outseta SDK. Donate is
+                  the single prominent CTA here (filled primary). */}
                 <Link
-                  className="rounded-md border border-primary px-5 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+                  className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                   href="/donate"
                   onClick={close}
                 >
                   Donate
-                </Link>
-                <Link
-                  className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-                  href="/join"
-                  onClick={close}
-                >
-                  Join MAPS
                 </Link>
               </div>
             </div>

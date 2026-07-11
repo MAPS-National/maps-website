@@ -13,8 +13,10 @@ import { PortalLogin } from './PortalLogin'
 
 type FooterLink = { label: string; href: string }
 
-// Curated key-link set, not a nav replica: a short hand-picked list of the
-// destinations worth a footer slot. All routes mirror the header NavMenu.
+// Curated key-link set, independent of the header nav: a short hand-picked list
+// of destinations worth a footer slot. It is intentionally broader than the
+// simplified header IA — e.g. Events and Updates are footer-only now (their
+// routes still resolve), so this is not a header mirror.
 const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Explore',
