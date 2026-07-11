@@ -13,6 +13,10 @@ import { describe, it, beforeAll, expect } from 'vitest'
 
 let payload: Payload
 
+// Captured by the page/post tests below; the ranking test reads their search docs.
+let pageId: number
+let postId: number
+
 // revalidatePath throws outside a request; the collections' revalidate hooks skip on this.
 const context = { disableRevalidate: true }
 
@@ -81,6 +85,7 @@ describe('search indexing (issues #244/#245)', () => {
         ],
       } as never,
     })
+    pageId = page.id
 
     const res = await payload.find({
       collection: 'search',
@@ -132,6 +137,7 @@ describe('search indexing (issues #244/#245)', () => {
         content: lex(marker),
       } as never,
     })
+    postId = post.id
 
     const res = await payload.find({
       collection: 'search',
@@ -153,5 +159,25 @@ describe('search indexing (issues #244/#245)', () => {
     expect(res.page).toBe(1)
     expect(res.limit).toBe(1)
     expect(typeof res.totalPages).toBe('number')
+  })
+
+  // #244: defaultPriorities (posts 20 > pages 10) + the /search `-priority` sort put
+  // posts above pages. Reads the search docs written by the two tests above.
+  it('ranks posts above pages via priority', async () => {
+    const res = await payload.find({ collection: 'search', depth: 0, limit: 0 })
+    const priorityOf = (relationTo: string, value: number) =>
+      (
+        res.docs.find(
+          (d) =>
+            (d.doc as { relationTo?: string })?.relationTo === relationTo &&
+            (d.doc as { value?: number })?.value === value,
+        ) as { priority?: number } | undefined
+      )?.priority
+
+    const postPriority = priorityOf('posts', postId)
+    const pagePriority = priorityOf('pages', pageId)
+    expect(postPriority).toBeDefined()
+    expect(pagePriority).toBeDefined()
+    expect(postPriority!).toBeGreaterThan(pagePriority!)
   })
 })
