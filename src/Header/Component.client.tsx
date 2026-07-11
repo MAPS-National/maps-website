@@ -43,7 +43,7 @@ export const HeaderClient: React.FC<{
     <header className="container relative z-20   " {...(theme ? { 'data-theme': theme } : {})}>
       <div className="h-[var(--header-height)] flex items-center justify-between">
         <Link href="/">
-          <Logo variant="primary" loading="eager" priority="high" />
+          <Logo className="h-11" variant="primary" loading="eager" priority="high" />
         </Link>
         <NavMenu navGroups={navGroups} flatLinks={flatLinks} />
       </div>

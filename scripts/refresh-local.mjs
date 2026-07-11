@@ -228,6 +228,29 @@ docker(
   { env: { SRC: withssl(PROD_DB), DST: toDockerHost(LOCAL_DB) } },
 )
 
+// --- 3. re-seed the default local admin (so a refresh never locks you out) ----
+// The prod dump replaced the users table, so any local-only admin is gone and the
+// restored prod accounts carry their PROD passwords (which you may not have on the
+// laptop). Re-create a known local admin via ensure-admin (Payload Local API, so
+// the password is hashed correctly; idempotent — matches by email, resets the
+// password). Defaults to the dev test login; override with LOCAL_ADMIN_EMAIL /
+// LOCAL_ADMIN_PASSWORD. Best-effort: a failure here warns but doesn't fail the
+// refresh (the prod accounts still work if you know their passwords).
+const ADMIN_EMAIL = process.env.LOCAL_ADMIN_EMAIL || 'dev@payloadcms.com'
+const ADMIN_PASSWORD = process.env.LOCAL_ADMIN_PASSWORD || 'test'
+console.log(`>> re-seeding local admin (${ADMIN_EMAIL})...`)
+const admin = spawnSync('npm', ['run', 'ensure:admin'], {
+  stdio: 'inherit',
+  shell: true,
+  env: { ...process.env, ADMIN_EMAIL, ADMIN_PASSWORD },
+})
+if (admin.status !== 0) {
+  console.warn(
+    `!! could not auto-seed the local admin. Set it yourself with:\n` +
+      `   ADMIN_EMAIL=${ADMIN_EMAIL} ADMIN_PASSWORD=${ADMIN_PASSWORD} npm run ensure:admin`,
+  )
+}
+
 console.log('\nOK. Local now mirrors prod as of now.')
 console.log("   Run 'npm run dev' — the site serves prod content with media resolving.")
-console.log('   Log into local admin with your PROD credentials (users came over in the dump).')
+console.log(`   Log into local admin as ${ADMIN_EMAIL} (re-seeded above), or with a prod account.`)

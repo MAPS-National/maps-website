@@ -4,6 +4,7 @@ import * as migration_20260707_000000_cleanup_orphan_summer_media from './202607
 import * as migration_20260707_010000_cleanup_orphan_summer_media_retry from './20260707_010000_cleanup_orphan_summer_media_retry'
 import * as migration_20260707_020000_nav_global from './20260707_020000_nav_global'
 import * as migration_20260708_000000_drop_posts_legacy_fields from './20260708_000000_drop_posts_legacy_fields'
+import * as migration_20260710_000000_simplify_nav from './20260710_000000_simplify_nav'
 
 export const migrations = [
   {
@@ -35,5 +36,10 @@ export const migrations = [
     up: migration_20260708_000000_drop_posts_legacy_fields.up,
     down: migration_20260708_000000_drop_posts_legacy_fields.down,
     name: '20260708_000000_drop_posts_legacy_fields',
+  },
+  {
+    up: migration_20260710_000000_simplify_nav.up,
+    down: migration_20260710_000000_simplify_nav.down,
+    name: '20260710_000000_simplify_nav',
   },
 ]

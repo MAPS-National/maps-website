@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import React from 'react'
 
+import { cn } from '@/utilities/ui'
+
 type Variant = 'primary' | 'secondary'
 
 interface Props {
@@ -30,7 +32,9 @@ export const Logo = ({
   priority = 'low',
 }: Props) => {
   const { width, height } = dims[variant]
-  const base = clsx('h-[34px] w-auto', className)
+  // cn (twMerge) so a caller-passed height (e.g. the header's h-11) overrides the
+  // 34px default instead of colliding with it; surfaces that pass nothing stay 34px.
+  const base = cn('h-[34px] w-auto', className)
   // alt lives on each <img> directly (not in the spread) so jsx-a11y can see it.
   const alt = 'MAPS National'
   const common = {

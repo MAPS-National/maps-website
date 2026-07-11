@@ -104,7 +104,7 @@ export default function StyleGuidePage() {
         </div>
       </Section>
 
-      <Section title="shadcn atoms (semantic mapping)">
+      <Section title="Buttons">
         <div className="flex flex-wrap gap-s">
           <Button>Primary</Button>
           <Button variant="secondary">Secondary</Button>
