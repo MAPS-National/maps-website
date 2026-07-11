@@ -37,6 +37,15 @@ export const searchFields: Field[] = [
     ],
   },
   {
+    // Plaintext of the source doc's body (post richText / page block text),
+    // populated in beforeSync and matched with ILIKE on /search. See beforeSync.ts.
+    name: 'content',
+    type: 'textarea',
+    admin: {
+      readOnly: true,
+    },
+  },
+  {
     label: 'Categories',
     name: 'categories',
     type: 'array',

@@ -154,7 +154,10 @@ export const plugins: Plugin[] = [
     },
   }),
   searchPlugin({
-    collections: ['posts'],
+    collections: ['posts', 'pages'],
+    // Rank posts above pages so news/updates surface first. Only takes effect
+    // because the /search query sorts by `-priority`.
+    defaultPriorities: { posts: 20, pages: 10 },
     beforeSync: beforeSyncWithSearch,
     searchOverrides: {
       fields: ({ defaultFields }) => {
