@@ -63,6 +63,10 @@ describe('search indexing (issues #244/#245)', () => {
       body: `faqBodyMarker${uniq}`,
       question: `faqQuestionMarker${uniq}`,
       answer: `faqAnswerMarker${uniq}`,
+      // hero group: richText + the plain-string eyebrow. Exercises the separate
+      // `collectText(originalDoc.hero, ...)` branch (pages index hero text too).
+      hero: `heroRichMarker${uniq}`,
+      eyebrow: `heroEyebrowMarker${uniq}`,
     }
     const page = await payload.create({
       collection: 'pages',
@@ -71,6 +75,7 @@ describe('search indexing (issues #244/#245)', () => {
         title: `Search Verify Page ${uniq}`,
         slug: `verify-page-${uniq}`,
         _status: 'published',
+        hero: { type: 'lowImpact', richText: lex(markers.hero), eyebrow: markers.eyebrow },
         layout: [
           {
             blockType: 'faq',
@@ -98,8 +103,9 @@ describe('search indexing (issues #244/#245)', () => {
 
     expect(hit).toBeDefined()
     expect(hit!.doc.relationTo).toBe('pages')
-    // Every text-bearing FAQ field (group heading, group richText, array item
-    // question + answer) must reach `content` — proves the recursive walker.
+    // Every text-bearing field must reach `content` — the FAQ block (group heading,
+    // group richText, array item question + answer) AND the hero group (richText +
+    // eyebrow string). Proves the recursive walker across both page branches.
     for (const marker of Object.values(markers)) {
       expect(hit!.content).toContain(marker)
     }
