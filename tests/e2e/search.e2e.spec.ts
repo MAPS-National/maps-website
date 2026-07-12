@@ -9,5 +9,6 @@ test('search page renders with a query input', async ({ page }) => {
 
 test('a no-match query shows the empty state', async ({ page }) => {
   await page.goto('/search?q=zzqxqzznomatch')
-  await expect(page.getByText('No results found.')).toBeVisible()
+  // Google-style empty state echoes the query: `No results found for "…".`
+  await expect(page.getByText(/No results found for/)).toBeVisible()
 })
