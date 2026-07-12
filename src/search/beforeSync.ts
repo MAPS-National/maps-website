@@ -1,6 +1,7 @@
 import { BeforeSync, DocToSync } from '@payloadcms/plugin-search/types'
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import type { PayloadRequest, Where } from 'payload'
 
 // Max plaintext stored per search doc. Keeps search rows sane; ILIKE over ~15k
 // chars is still cheap at this content volume.
@@ -46,6 +47,57 @@ const collectText = (value: unknown, key: string, out: string[]): void => {
   }
 }
 
+// Team members live in their own collection and are placed on a page by a `team`
+// block via relationship/category, so their names never appear in the page's own
+// text. Resolve them so a search for a member surfaces the page that lists them.
+// (Team blocks are top-level layout blocks, so no recursion is needed.)
+type TeamRef = number | { id?: number }
+const refId = (v: TeamRef): number | undefined => (typeof v === 'object' ? v?.id : v)
+
+const collectTeamNames = async (layout: unknown, req: PayloadRequest): Promise<string[]> => {
+  if (!Array.isArray(layout)) return []
+  const names: string[] = []
+  for (const block of layout) {
+    const b = block as {
+      blockType?: string
+      populateBy?: string
+      categories?: TeamRef[]
+      limit?: number
+      selectedMembers?: TeamRef[]
+    }
+    if (b?.blockType !== 'team') continue
+
+    let where: Where
+    let limit = 1000
+    if (b.populateBy === 'selection') {
+      const ids = (b.selectedMembers ?? []).map(refId).filter((n): n is number => !!n)
+      if (!ids.length) continue
+      where = { id: { in: ids } }
+    } else {
+      const catIds = (b.categories ?? []).map(refId).filter((n): n is number => !!n)
+      // Skip inactive members — the block hides them, so they shouldn't match.
+      where = catIds.length
+        ? { and: [{ inactive: { not_equals: true } }, { categories: { in: catIds } }] }
+        : { inactive: { not_equals: true } }
+      if (b.limit && b.limit > 0) limit = b.limit
+    }
+
+    const res = await req.payload.find({
+      collection: 'team',
+      where,
+      depth: 0,
+      limit,
+      req,
+      select: { name: true, jobTitle: true },
+    })
+    for (const m of res.docs as { name?: string; jobTitle?: string }[]) {
+      const line = [m.name, m.jobTitle].filter(Boolean).join(' ')
+      if (line) names.push(line)
+    }
+  }
+  return names
+}
+
 export const beforeSyncWithSearch: BeforeSync = async ({ req, originalDoc, searchDoc }) => {
   const {
     doc: { relationTo: collection },
@@ -61,6 +113,7 @@ export const beforeSyncWithSearch: BeforeSync = async ({ req, originalDoc, searc
   } else {
     collectText(originalDoc.layout, 'layout', parts)
     collectText(originalDoc.hero, 'hero', parts)
+    parts.push(...(await collectTeamNames(originalDoc.layout, req)))
   }
   const content = parts.join(' ').replace(/\s+/g, ' ').trim().slice(0, CONTENT_CAP)
 
