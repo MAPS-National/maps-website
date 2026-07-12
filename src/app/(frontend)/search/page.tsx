@@ -9,6 +9,7 @@ import PageClient from './page.client'
 import { SITE_NAME } from '@/utilities/brand'
 import { collectionHref } from '@/utilities/collectionHref'
 import { getServerSideURL } from '@/utilities/getURL'
+import { rankSearchResults, type RankableDoc } from '@/search/rank'
 
 type Args = {
   searchParams: Promise<{
@@ -65,22 +66,24 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
   const page = Math.max(1, Number(pageParam) || 1)
   const payload = await getPayload({ config: configPromise })
 
+  const PAGE_SIZE = 10
+
   // Only hit the index once the visitor has actually searched — a bare /search
-  // shows the input and a prompt, never the whole catalog.
-  const results = query
+  // shows the input and a prompt, never the whole catalog. The plugin stores
+  // flat, unscored text, so fetch the whole match set and rank in JS (rank.ts),
+  // then paginate — a title/name hit outranks a body mention.
+  const matches = query
     ? await payload.find({
         collection: 'search',
         depth: 0,
-        limit: 10,
-        page,
-        // Posts rank above pages (see searchPlugin defaultPriorities).
-        sort: '-priority',
+        pagination: false,
         select: {
           title: true,
           slug: true,
           meta: true,
           content: true,
           doc: true,
+          priority: true,
         },
         where: {
           or: [
@@ -94,28 +97,40 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       })
     : null
 
+  // A "person query" = the term matches a team member's name. Members have no
+  // page of their own; their name is folded into the containing page's `content`
+  // (see search/beforeSync.ts), so that page matches like any body text. Detect
+  // the case so rank.ts can lift the roster page above posts that only mention
+  // them. Guard on length so a 1-2 char query doesn't match half the roster.
+  let isPersonQuery = false
+  if (query.length >= 3) {
+    const people = await payload.count({ collection: 'team', where: { name: { like: query } } })
+    isPersonQuery = people.totalDocs > 0
+  }
+
+  const ranked = matches
+    ? rankSearchResults(matches.docs as RankableDoc[], query, isPersonQuery)
+    : []
+  const totalDocs = ranked.length
+  const totalPages = Math.max(1, Math.ceil(totalDocs / PAGE_SIZE))
+  const current = Math.min(page, totalPages)
+  const hasPrevPage = current > 1
+  const hasNextPage = current < totalPages
+
   // The search doc carries slug/title/meta/content synced onto it (see
   // search/fieldOverrides.ts); `doc.relationTo` is the source collection, which
   // decides the link target (pages → root, posts → /latest-updates).
-  const docs =
-    results?.docs.map((doc) => {
-      const d = doc as {
-        id: number
-        title?: string | null
-        slug?: string | null
-        content?: string | null
-        meta?: { description?: string | null } | null
-        doc?: { relationTo?: 'pages' | 'posts' } | null
-      }
-      return {
-        id: d.id,
-        title: d.title ?? '',
-        slug: d.slug ?? '',
-        content: d.content ?? undefined,
-        description: d.meta?.description ?? undefined,
-        relationTo: (d.doc?.relationTo ?? 'posts') as 'pages' | 'posts',
-      }
-    }) ?? []
+  const docs = ranked.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE).map((doc) => {
+    const d = doc as RankableDoc & { id: number }
+    return {
+      id: d.id,
+      title: d.title ?? '',
+      slug: d.slug ?? '',
+      content: d.content ?? undefined,
+      description: d.meta?.description ?? undefined,
+      relationTo: (d.doc?.relationTo ?? 'posts') as 'pages' | 'posts',
+    }
+  })
 
   // Breadcrumb-style display URL (no scheme), e.g. mapsnational.org/latest-updates/x.
   const host = getServerSideURL()
@@ -136,10 +151,10 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
         <div className="mt-8">
           {!query ? (
             <p className="text-muted-foreground">Enter a search term to see results.</p>
-          ) : results && results.totalDocs > 0 ? (
+          ) : totalDocs > 0 ? (
             <>
               <p className="mb-6 text-sm text-muted-foreground">
-                {results.totalDocs} result{results.totalDocs === 1 ? '' : 's'} for “{query}”
+                {totalDocs} result{totalDocs === 1 ? '' : 's'} for “{query}”
               </p>
 
               <div className="flex flex-col gap-7">
@@ -166,20 +181,20 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
                 })}
               </div>
 
-              {results.totalPages > 1 && (
+              {totalPages > 1 && (
                 <nav className="mt-10 flex items-center gap-6" aria-label="Search results pages">
-                  {results.hasPrevPage ? (
-                    <Link href={buildHref(page - 1)} className="hover:underline">
+                  {hasPrevPage ? (
+                    <Link href={buildHref(current - 1)} className="hover:underline">
                       ← Previous
                     </Link>
                   ) : (
                     <span className="text-muted-foreground">← Previous</span>
                   )}
                   <span className="text-sm text-muted-foreground">
-                    Page {results.page} of {results.totalPages}
+                    Page {current} of {totalPages}
                   </span>
-                  {results.hasNextPage ? (
-                    <Link href={buildHref(page + 1)} className="hover:underline">
+                  {hasNextPage ? (
+                    <Link href={buildHref(current + 1)} className="hover:underline">
                       Next →
                     </Link>
                   ) : (
