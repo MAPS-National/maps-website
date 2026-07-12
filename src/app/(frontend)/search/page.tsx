@@ -16,48 +16,50 @@ type Args = {
   }>
 }
 export default async function Page({ searchParams: searchParamsPromise }: Args) {
-  const { q: query, page: pageParam } = await searchParamsPromise
+  const { q: rawQuery, page: pageParam } = await searchParamsPromise
+  const query = (rawQuery ?? '').trim()
   const page = Math.max(1, Number(pageParam) || 1)
   const payload = await getPayload({ config: configPromise })
 
-  const results = await payload.find({
-    collection: 'search',
-    depth: 1,
-    limit: 12,
-    page,
-    // Posts rank above pages (see searchPlugin defaultPriorities).
-    sort: '-priority',
-    select: {
-      title: true,
-      slug: true,
-      categories: true,
-      meta: true,
-      doc: true,
-    },
-    ...(query
-      ? {
-          where: {
-            or: [
-              { title: { like: query } },
-              { 'meta.description': { like: query } },
-              { 'meta.title': { like: query } },
-              { slug: { like: query } },
-              { content: { like: query } },
-            ],
-          },
-        }
-      : {}),
-  })
+  // Only hit the index once the visitor has actually searched — a bare /search
+  // shows the input and a prompt, never the whole catalog.
+  const results = query
+    ? await payload.find({
+        collection: 'search',
+        depth: 1,
+        limit: 12,
+        page,
+        // Posts rank above pages (see searchPlugin defaultPriorities).
+        sort: '-priority',
+        select: {
+          title: true,
+          slug: true,
+          categories: true,
+          meta: true,
+          doc: true,
+        },
+        where: {
+          or: [
+            { title: { like: query } },
+            { 'meta.description': { like: query } },
+            { 'meta.title': { like: query } },
+            { slug: { like: query } },
+            { content: { like: query } },
+          ],
+        },
+      })
+    : null
 
   // Carry each hit's source collection so pages link to '/', posts to
   // '/latest-updates'. The search doc already has slug/title/meta/categories
   // synced onto it (see search/fieldOverrides.ts), so no `doc.value` populate.
-  const docs = results.docs.map(
-    (doc): ArchiveResult => ({
-      ...(doc as unknown as ArchiveResult),
-      relationTo: doc.doc?.relationTo ?? 'posts',
-    }),
-  )
+  const docs =
+    results?.docs.map(
+      (doc): ArchiveResult => ({
+        ...(doc as unknown as ArchiveResult),
+        relationTo: doc.doc?.relationTo ?? 'posts',
+      }),
+    ) ?? []
 
   const buildHref = (n: number) =>
     query ? `/search?q=${encodeURIComponent(query)}&page=${n}` : `/search?page=${n}`
@@ -70,12 +72,16 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
           <h1 className="mb-8 lg:mb-16">Search</h1>
 
           <div className="max-w-[50rem] mx-auto">
-            <Search />
+            <Search initialValue={query} />
           </div>
         </div>
       </div>
 
-      {results.totalDocs > 0 ? (
+      {!query ? (
+        <div className="container text-center text-muted-foreground">
+          Enter a search term to see results.
+        </div>
+      ) : results && results.totalDocs > 0 ? (
         <>
           <CollectionArchive posts={docs} />
           {results.totalPages > 1 && (
@@ -104,7 +110,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
           )}
         </>
       ) : (
-        <div className="container">No results found.</div>
+        <div className="container">No results found for “{query}”.</div>
       )}
     </div>
   )
