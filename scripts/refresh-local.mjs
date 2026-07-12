@@ -251,6 +251,16 @@ if (admin.status !== 0) {
   )
 }
 
+// --- 4. rebuild the search index ---------------------------------------------
+// The restore loaded prod's search index verbatim (built by prod's code). Re-run
+// this code's indexing over every published doc so local search matches what
+// `npm run dev` serves. In-process, same DB as .env — best-effort, warns only.
+console.log('>> rebuilding search index...')
+const reindex = spawnSync('npm', ['run', 'reindex:search'], { stdio: 'inherit', shell: true })
+if (reindex.status !== 0) {
+  console.warn('!! could not rebuild the search index. Run it yourself: npm run reindex:search')
+}
+
 console.log('\nOK. Local now mirrors prod as of now.')
 console.log("   Run 'npm run dev' — the site serves prod content with media resolving.")
 console.log(`   Log into local admin as ${ADMIN_EMAIL} (re-seeded above), or with a prod account.`)
