@@ -5,15 +5,19 @@ import React, { useState, useEffect } from 'react'
 import { useDebounce } from '@/utilities/useDebounce'
 import { useRouter } from 'next/navigation'
 
-export const Search: React.FC = () => {
-  const [value, setValue] = useState('')
+export const Search: React.FC<{ initialValue?: string }> = ({ initialValue = '' }) => {
+  const [value, setValue] = useState(initialValue)
   const router = useRouter()
 
   const debouncedValue = useDebounce(value)
 
   useEffect(() => {
-    router.push(`/search${debouncedValue ? `?q=${debouncedValue}` : ''}`)
-  }, [debouncedValue, router])
+    // Skip the push when the box already matches the URL — otherwise the empty
+    // initial input would wipe a direct /search?q=… link (and the pager's
+    // ?q=…&page=N links) on mount.
+    if (debouncedValue === initialValue) return
+    router.push(`/search${debouncedValue ? `?q=${encodeURIComponent(debouncedValue)}` : ''}`)
+  }, [debouncedValue, initialValue, router])
 
   return (
     <div>
@@ -27,6 +31,7 @@ export const Search: React.FC = () => {
         </Label>
         <Input
           id="search"
+          defaultValue={initialValue}
           onChange={(event) => {
             setValue(event.target.value)
           }}

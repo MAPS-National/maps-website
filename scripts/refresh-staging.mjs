@@ -214,6 +214,57 @@ docker(['run', '--rm', '-e', 'SRC', '-e', 'DST', 'postgres:18', 'sh', '-lc', sql
   env: { SRC: withssl(PROD_DB), DST: withssl(STAGE_DB) },
 })
 
+// --- 3. rebuild the search index (over HTTP, against DEPLOYED staging) --------
+// The restore loaded prod's search index verbatim (built by prod's code). Rebuild
+// it with STAGING's deployed code — which may index more than prod does — by
+// calling the search plugin's reindex endpoint. /api is not behind the staging
+// Basic gate (see proxy.ts matcher), so this needs only a Payload admin login:
+// your PROD account, which came over in the dump. Best-effort: skipped with a
+// hint when STAGING_ADMIN_EMAIL / STAGING_ADMIN_PASSWORD aren't set. Idempotent.
+let STAGE_URL = stage.NEXT_PUBLIC_SERVER_URL || ''
+if (!/^https?:\/\//.test(STAGE_URL) || STAGE_URL.includes('.railway.internal')) {
+  STAGE_URL = 'https://stage.mapsnational.org' // internal host won't resolve off-platform
+}
+STAGE_URL = STAGE_URL.replace(/\/$/, '')
+const S_ADMIN_EMAIL = process.env.STAGING_ADMIN_EMAIL
+const S_ADMIN_PASSWORD = process.env.STAGING_ADMIN_PASSWORD
+
+if (!S_ADMIN_EMAIL || !S_ADMIN_PASSWORD) {
+  console.log(
+    '\n>> skipping search reindex: set STAGING_ADMIN_EMAIL / STAGING_ADMIN_PASSWORD (your prod\n' +
+      '   admin login) to auto-rebuild, or click Reindex on the Search collection in staging admin.',
+  )
+} else {
+  console.log('>> rebuilding staging search index...')
+  try {
+    const login = await fetch(`${STAGE_URL}/api/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: S_ADMIN_EMAIL, password: S_ADMIN_PASSWORD }),
+    })
+    if (!login.ok) throw new Error(`login ${login.status}`)
+    const { token } = await login.json()
+    if (!token) throw new Error('no token in login response')
+    const res = await fetch(`${STAGE_URL}/api/search/reindex`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `JWT ${token}`,
+        Cookie: `payload-token=${token}`,
+      },
+      body: JSON.stringify({ collections: ['posts', 'pages'] }),
+    })
+    const body = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(`reindex ${res.status}: ${body?.message ?? ''}`)
+    console.log(`   ${body?.message ?? 'reindexed.'}`)
+  } catch (e) {
+    console.warn(
+      `!! search reindex failed (${e.message}). Click Reindex on the Search collection in\n` +
+        `   staging admin (it is idempotent), or retry.`,
+    )
+  }
+}
+
 console.log('\nOK. Staging now mirrors prod as of now.')
 console.log('   Log into staging admin with your PROD credentials (users came over in the dump;')
 console.log('   password hashes are salt-based, independent of PAYLOAD_SECRET). Sessions stay')
