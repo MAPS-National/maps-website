@@ -9,4 +9,6 @@ export const collectionPrefix: Record<'pages' | 'posts', string> = {
 }
 
 export const collectionHref = (relationTo: 'pages' | 'posts', slug: string): string =>
-  `${collectionPrefix[relationTo]}/${slug}`
+  // The home page is stored with slug 'home' but served at the site root, not
+  // '/home' (which would be a duplicate). Same mapping as revalidatePage.ts.
+  relationTo === 'pages' && slug === 'home' ? '/' : `${collectionPrefix[relationTo]}/${slug}`

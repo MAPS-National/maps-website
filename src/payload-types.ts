@@ -1926,16 +1926,22 @@ export interface Search {
   id: number;
   title?: string | null;
   priority?: number | null;
-  doc: {
-    relationTo: 'posts';
-    value: number | Post;
-  };
+  doc:
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      }
+    | {
+        relationTo: 'pages';
+        value: number | Page;
+      };
   slug?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
     image?: (number | null) | Media;
   };
+  content?: string | null;
   categories?:
     | {
         relationTo?: string | null;
@@ -3177,6 +3183,7 @@ export interface SearchSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  content?: T;
   categories?:
     | T
     | {
