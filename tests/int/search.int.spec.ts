@@ -186,4 +186,58 @@ describe('search indexing (issues #244/#245)', () => {
     expect(pagePriority).toBeDefined()
     expect(postPriority!).toBeGreaterThan(pagePriority!)
   })
+
+  // Page-based member search: a team block's members' names are folded into the
+  // page's search content, so searching a member surfaces the page that lists
+  // them (e.g. "azeem" → Board & Leadership).
+  it('indexes team-block member names into the page content', async () => {
+    const marker = `zatateammembermarker${uniq}`
+    const cat = await payload.create({
+      collection: 'team-categories',
+      context: { ...context },
+      data: { title: `Verify Team Cat ${uniq}`, slug: `verify-team-cat-${uniq}` } as never,
+    })
+    await payload.create({
+      collection: 'team',
+      context: { ...context },
+      data: {
+        name: `${marker} Verifyperson`,
+        slug: `verify-member-${uniq}`,
+        jobTitle: 'Verify Chief',
+        categories: [cat.id],
+      } as never,
+    })
+    const page = await payload.create({
+      collection: 'pages',
+      context: { ...context },
+      data: {
+        title: `Team Verify Page ${uniq}`,
+        slug: `verify-team-page-${uniq}`,
+        _status: 'published',
+        layout: [
+          {
+            blockType: 'team',
+            layout: 'grouped',
+            density: 'medium',
+            populateBy: 'collection',
+            categories: [cat.id],
+            limit: 0,
+          },
+        ],
+      } as never,
+    })
+
+    const res = await payload.find({
+      collection: 'search',
+      where: { content: { like: marker } },
+      depth: 0,
+    })
+    const hit = res.docs.find((d) => (d.doc as { value?: number })?.value === page.id) as
+      | { doc: { relationTo: string }; content?: string }
+      | undefined
+
+    expect(hit).toBeDefined()
+    expect(hit!.doc.relationTo).toBe('pages')
+    expect(hit!.content).toContain(marker)
+  })
 })
