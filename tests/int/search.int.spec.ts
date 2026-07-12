@@ -8,6 +8,7 @@ import path from 'path'
 import { getPayload, Payload } from 'payload'
 import config from '@/payload.config'
 import { collectionHref } from '@/utilities/collectionHref'
+import { rankSearchResults, type RankableDoc } from '@/search/rank'
 
 import { describe, it, beforeAll, expect } from 'vitest'
 
@@ -241,5 +242,53 @@ describe('search indexing (issues #244/#245)', () => {
     expect(hit).toBeDefined()
     expect(hit!.doc.relationTo).toBe('pages')
     expect(hit!.content).toContain(marker)
+  })
+})
+
+// Relevance sort (rank.ts) is pure, so exercise it directly — no DB needed.
+describe('search relevance ranking', () => {
+  // The maaty case: a member's name lands in a page's `content`, tied with posts
+  // that mention them in the body. Both are body matches, so priority alone would
+  // bury the page (pages 10 < posts 20). A person query must lift the page.
+  const page: RankableDoc = {
+    title: 'Board & Leadership',
+    slug: 'about-us/board-leadership',
+    content: 'Ahmad Maaty Chair',
+    priority: 10,
+    doc: { relationTo: 'pages' },
+  }
+  const post: RankableDoc = {
+    title: 'Iftar recap',
+    slug: 'iftar-recap',
+    content: 'guests included Ahmad Maaty and others',
+    priority: 20,
+    doc: { relationTo: 'posts' },
+  }
+
+  it('a person query lifts the roster page above posts that only mention them', () => {
+    const ranked = rankSearchResults([post, page], 'maaty', true)
+    expect(ranked[0]).toBe(page)
+  })
+
+  it('without a person query, priority (news-first) still orders body matches', () => {
+    const ranked = rankSearchResults([page, post], 'maaty', false)
+    expect(ranked[0]).toBe(post)
+  })
+
+  it('a title match outranks a body-only match regardless of collection', () => {
+    const titlePage: RankableDoc = {
+      title: 'Programs',
+      content: '',
+      priority: 10,
+      doc: { relationTo: 'pages' },
+    }
+    const bodyPost: RankableDoc = {
+      title: 'News',
+      content: 'our programs are great',
+      priority: 20,
+      doc: { relationTo: 'posts' },
+    }
+    const ranked = rankSearchResults([bodyPost, titlePage], 'programs', false)
+    expect(ranked[0]).toBe(titlePage)
   })
 })
