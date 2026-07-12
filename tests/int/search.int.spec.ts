@@ -160,11 +160,13 @@ describe('search indexing (issues #244/#245)', () => {
   })
 
   // #244: the results query paginates (real page metadata, not pagination:false).
-  it('search results paginate', async () => {
-    const res = await payload.find({ collection: 'search', limit: 1, page: 1, depth: 0 })
+  // 10 per page mirrors `limit` in search/page.tsx — keep the two in sync.
+  it('search results paginate 10 per page', async () => {
+    const res = await payload.find({ collection: 'search', limit: 10, page: 1, depth: 0 })
+    expect(res.limit).toBe(10)
     expect(res.page).toBe(1)
-    expect(res.limit).toBe(1)
-    expect(typeof res.totalPages).toBe('number')
+    // Non-trivial: ties the page size to the reported page count.
+    expect(res.totalPages).toBe(Math.ceil(res.totalDocs / 10))
   })
 
   // #244: defaultPriorities (posts 20 > pages 10) + the /search `-priority` sort put

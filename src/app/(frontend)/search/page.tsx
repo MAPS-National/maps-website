@@ -71,7 +71,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
     ? await payload.find({
         collection: 'search',
         depth: 0,
-        limit: 12,
+        limit: 10,
         page,
         // Posts rank above pages (see searchPlugin defaultPriorities).
         sort: '-priority',
