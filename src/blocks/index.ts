@@ -10,6 +10,7 @@ import { Content } from './Content/config'
 import { FAQ } from './FAQ/config'
 import { FeatureSplit } from './FeatureSplit/config'
 import { FormBlock } from './Form/config'
+import { GalleryHighlights } from './GalleryHighlights/config'
 import { LogoStrip } from './LogoStrip/config'
 import { MapLocationCards } from './MapLocationCards/config'
 import { MediaBlock } from './MediaBlock/config'
@@ -38,6 +39,7 @@ export const layoutBlocks: Block[] = [
   Archive,
   FormBlock,
   CardGrid,
+  GalleryHighlights,
   FAQ,
   FeatureSplit,
   LogoStrip,
