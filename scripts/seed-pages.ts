@@ -287,6 +287,7 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     body: string,
     imageFile: string,
     heroImageFile: string,
+    extraNodes: unknown[] = [],
   ): Promise<void> => {
     const existing = await payload.find({
       collection: 'posts',
@@ -307,7 +308,7 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
       title,
       _status: 'published',
       publishedAt: '2025-01-01T00:00:00.000Z',
-      content: richText(paragraph(body)),
+      content: richText(paragraph(body), ...extraNodes),
       heroImage: heroImg,
       categories: [updatesCategory],
       ...(img ? { meta: { image: img } } : {}),
@@ -329,6 +330,18 @@ const phase4ShowcaseSlice: PageSlice = async (payload) => {
     'A MAPS Academy session on advancing within federal service, covering promotion timelines, the senior pathways, and how members have moved from entry roles into leadership.',
     '4_1.webp',
     '4_2.webp',
+    // Inline member-gated links so the #250 e2e has body content to assert against:
+    // anonymous readers get the placeholder, members get the real link. One /members
+    // portal link and one Luma event link (both gated).
+    [
+      node('paragraph', {}, [
+        text('RSVP via the '),
+        linkNode('event link', '/members/portal'),
+        text(' in the MAPS Member Portal, or on '),
+        linkNode('Luma', 'https://luma.com/maps-networking'),
+        text('.'),
+      ]),
+    ],
   )
   await upsertPost(
     'breaking-into-public-service',
