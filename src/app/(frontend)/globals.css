@@ -456,13 +456,12 @@ html[data-theme='light'] {
   display: revert !important;
 }
 
-/* G10: Post/page RichText body can contain inline /members links. The link
-   converter (src/components/RichText) renders a placeholder for anonymous
-   visitors and the real link (inside a data-o-authenticated wrapper) for members.
-   That real link is still an a[href^="/members"], so Outseta's global hide rule
-   would strip it even for members — un-hide it inside the authenticated wrapper.
-   Scoped to .payload-richtext so nav (#primary-menu, G9) and everything else is
-   untouched; specificity (0,3,1) beats Outseta's (0,1,1) for the !important tie. (#250) */
-.payload-richtext [data-o-authenticated] a[href^='/members' i] {
+/* G10: Post/page RichText body can contain inline /members links (e.g. a Member
+   Portal link mid-sentence). Same story as G9: the route is gated server-side, so
+   Outseta's global hide rule only breaks the sentence for anonymous readers. Show
+   the link to everyone — a logged-out click hits the gate and redirects to login.
+   Scoped to .payload-richtext; specificity (0,2,1) beats Outseta's (0,1,1) for the
+   !important tie. (#250) */
+.payload-richtext a[href^='/members' i] {
   display: revert !important;
 }
