@@ -2,7 +2,6 @@ import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import {
   DefaultNodeTypes,
   SerializedBlockNode,
-  SerializedLinkNode,
   type DefaultTypedEditorState,
 } from '@payloadcms/richtext-lexical'
 import {
@@ -20,21 +19,14 @@ import type {
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { Lock } from 'lucide-react'
+
 import { cn } from '@/utilities/ui'
-import { collectionHref } from '@/utilities/collectionHref'
+import { internalDocToHref, resolveMemberHref } from './memberLinks'
 
 type NodeTypes =
   | DefaultNodeTypes
   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
-
-const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
-  const { value, relationTo } = linkNode.fields.doc!
-  if (typeof value !== 'object') {
-    throw new Error('Expected value to be an object')
-  }
-  const slug = value.slug
-  return collectionHref(relationTo as 'pages' | 'posts', String(slug))
-}
 
 const linkConverters = LinkJSXConverter({ internalDocToHref })
 
@@ -47,37 +39,29 @@ const linkConverters = LinkJSXConverter({ internalDocToHref })
 //     raw member link silently vanishes for anonymous readers, leaving a broken
 //     sentence; the real <a> is un-hidden for members by globals.css G10.
 //   Luma: not Outseta-hidden — the data-o-authenticated wrapper alone gates it.
-// (#250)
-const isMemberHref = (href: string) => {
-  if (/^\/members(\/|$|\?|#)/i.test(href)) return true
-  try {
-    // ponytail: matches full URLs (https://luma.com/…); a bare "luma.com/…" with no
-    // scheme won't match, but authored links carry one. Base handles relative hrefs.
-    return /(^|\.)(luma\.com|lu\.ma)$/i.test(new URL(href, 'http://_').hostname)
-  } catch {
-    return false
-  }
-}
-
+// resolveMemberHref gates BOTH custom URLs and internal doc links to a /members
+// page (the 5th-annual post links the Member Portal as an internal link). (#250)
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...linkConverters,
-  // Internal links resolve to pages/posts, never /members, so only custom URLs
-  // can be member links — checking node.fields.url avoids internalDocToHref throws.
   link: (args) => {
     const { node, nodesToJSX } = args
-    if (node.fields.linkType !== 'internal' && isMemberHref(node.fields.url ?? '')) {
+    const memberHref = resolveMemberHref(node)
+    if (memberHref) {
       const rel = node.fields.newTab ? 'noopener noreferrer' : undefined
       const target = node.fields.newTab ? '_blank' : undefined
       return (
         <>
-          {/* Inherit the prose body color (AAA in both themes); italic alone marks
-              it as a note. text-muted-foreground would fail AA on the white body. */}
+          {/* Lock icon marks it as members-only, matching the nav's gated-item
+              treatment (NavMenu). Inherits the prose body color (AAA in both
+              themes) via currentColor; italic marks it as a note. text-muted-
+              foreground would fail AA on the white body. */}
           <span className="italic" data-o-anonymous="true">
+            <Lock aria-hidden="true" className="mr-1.5 inline-block size-3.5 align-[-0.15em]" />
             Members-only link. Log in to view.
           </span>
           <span data-o-authenticated="true">
-            <a href={node.fields.url ?? '#'} rel={rel} target={target}>
+            <a href={memberHref} rel={rel} target={target}>
               {nodesToJSX({ nodes: node.children })}
             </a>
           </span>
