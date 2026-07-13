@@ -33,11 +33,13 @@ test('a members link in post body renders a placeholder and the real member link
 }) => {
   await page.goto('/latest-updates/maps-academy-climbing-the-federal-ladder')
 
-  // Placeholder: shown to anonymous visitors, and NOT an a[href^="/members"] (or
-  // Outseta would hide it too).
-  const placeholder = page.locator('.payload-richtext [data-o-anonymous="true"]')
-  await expect(placeholder).toContainText('Members-only link. Log in to view.')
-  await expect(placeholder.locator('a[href^="/members" i]')).toHaveCount(0)
+  // Placeholders: one per gated link (the /members portal + the Luma link), each
+  // shown to anonymous visitors and NOT an a[href^="/members"] (or Outseta would
+  // hide it too).
+  const placeholders = page.locator('.payload-richtext [data-o-anonymous="true"]')
+  await expect(placeholders).toHaveCount(2)
+  await expect(placeholders.first()).toContainText('Members-only link. Log in to view.')
+  await expect(placeholders.locator('a[href^="/members" i]')).toHaveCount(0)
 
   // Real link: shown to members, inside the authenticated wrapper.
   const realLink = page.locator(
@@ -51,5 +53,4 @@ test('a members link in post body renders a placeholder and the real member link
     '.payload-richtext [data-o-authenticated="true"] a[href*="luma.com" i]',
   )
   await expect(lumaLink).toHaveText('Luma')
-  await expect(page.locator('.payload-richtext [data-o-anonymous="true"]')).toHaveCount(2)
 })
