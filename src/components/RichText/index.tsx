@@ -2,6 +2,7 @@ import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import {
   DefaultNodeTypes,
   SerializedBlockNode,
+  SerializedLinkNode,
   type DefaultTypedEditorState,
 } from '@payloadcms/richtext-lexical'
 import {
@@ -19,58 +20,30 @@ import type {
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
-import { Lock } from 'lucide-react'
-
 import { cn } from '@/utilities/ui'
-import { internalDocToHref, resolveMemberHref } from './memberLinks'
+import { collectionHref } from '@/utilities/collectionHref'
 
 type NodeTypes =
   | DefaultNodeTypes
   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
 
+const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
+  const { value, relationTo } = linkNode.fields.doc!
+  if (typeof value !== 'object') {
+    throw new Error('Expected value to be an object')
+  }
+  return collectionHref(relationTo as 'pages' | 'posts', String(value.slug))
+}
+
 const linkConverters = LinkJSXConverter({ internalDocToHref })
 
-// Member-gated links inside body prose: the /members portal, and Luma event RSVP
-// links (members-only). Both render a placeholder for anonymous visitors and the
-// real link for members, toggled by Outseta's data-o-anonymous / data-o-authenticated
-// body attributes (the same mechanism the nav uses). The placeholder is a <span>,
-// not an a[href^="/members"], so Outseta's own global hide rule can't touch it.
-//   /members: Outseta injects `a[href^="/members" i]{display:none!important}`, so a
-//     raw member link silently vanishes for anonymous readers, leaving a broken
-//     sentence; the real <a> is un-hidden for members by globals.css G10.
-//   Luma: not Outseta-hidden — the data-o-authenticated wrapper alone gates it.
-// resolveMemberHref gates BOTH custom URLs and internal doc links to a /members
-// page (the 5th-annual post links the Member Portal as an internal link). (#250)
+// Inline /members links in body prose render as normal links for everyone. The
+// route is gated server-side (src/proxy.ts), so a logged-out click just hits the
+// login gate — no need for a placeholder. Outseta's global hide rule is countered
+// by globals.css G10. (#250)
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...linkConverters,
-  link: (args) => {
-    const { node, nodesToJSX } = args
-    const memberHref = resolveMemberHref(node)
-    if (memberHref) {
-      const rel = node.fields.newTab ? 'noopener noreferrer' : undefined
-      const target = node.fields.newTab ? '_blank' : undefined
-      return (
-        <>
-          {/* Lock icon marks it as members-only, matching the nav's gated-item
-              treatment (NavMenu). Inherits the prose body color (AAA in both
-              themes) via currentColor; italic marks it as a note. text-muted-
-              foreground would fail AA on the white body. */}
-          <span className="italic" data-o-anonymous="true">
-            <Lock aria-hidden="true" className="mr-1.5 inline-block size-3.5 align-[-0.15em]" />
-            Members-only link. Log in to view.
-          </span>
-          <span data-o-authenticated="true">
-            <a href={memberHref} rel={rel} target={target}>
-              {nodesToJSX({ nodes: node.children })}
-            </a>
-          </span>
-        </>
-      )
-    }
-    const stockLink = linkConverters.link
-    return typeof stockLink === 'function' ? stockLink(args) : stockLink
-  },
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => (
