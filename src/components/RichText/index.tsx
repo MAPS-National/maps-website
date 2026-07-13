@@ -32,13 +32,18 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   if (typeof value !== 'object') {
     throw new Error('Expected value to be an object')
   }
-  const slug = value.slug
-  return collectionHref(relationTo as 'pages' | 'posts', String(slug))
+  return collectionHref(relationTo as 'pages' | 'posts', String(value.slug))
 }
 
+const linkConverters = LinkJSXConverter({ internalDocToHref })
+
+// Inline /members links in body prose render as normal links for everyone. The
+// route is gated server-side (src/proxy.ts), so a logged-out click just hits the
+// login gate — no need for a placeholder. Outseta's global hide rule is countered
+// by globals.css G10. (#250)
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
-  ...LinkJSXConverter({ internalDocToHref }),
+  ...linkConverters,
   blocks: {
     banner: ({ node }) => <BannerBlock className="col-start-2 mb-4" {...node.fields} />,
     mediaBlock: ({ node }) => (

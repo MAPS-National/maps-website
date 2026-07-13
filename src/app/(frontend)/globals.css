@@ -455,3 +455,13 @@ html[data-theme='light'] {
 #primary-menu a[href^='/members' i] {
   display: revert !important;
 }
+
+/* G10: Post/page RichText body can contain inline /members links (e.g. a Member
+   Portal link mid-sentence). Same story as G9: the route is gated server-side, so
+   Outseta's global hide rule only breaks the sentence for anonymous readers. Show
+   the link to everyone — a logged-out click hits the gate and redirects to login.
+   Scoped to .payload-richtext; specificity (0,2,1) beats Outseta's (0,1,1) for the
+   !important tie. (#250) */
+.payload-richtext a[href^='/members' i] {
+  display: revert !important;
+}

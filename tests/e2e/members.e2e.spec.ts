@@ -20,3 +20,16 @@ test('anonymous visitors see the header Login control', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('button', { name: 'Login' }).first()).toBeVisible()
 })
+
+// A /members link inside post body renders as a normal, visible link for everyone.
+// The route is gated server-side (proxy.ts), so a logged-out click just hits the
+// login gate — no placeholder needed. globals.css G10 keeps the link visible against
+// Outseta's global a[href^="/members"] hide rule. The seed (#250) gives this post an
+// inline /members link. (Outseta's script isn't loaded here; G10 alone is asserted.)
+test('a members link in post body renders as a visible link', async ({ page }) => {
+  await page.goto('/latest-updates/maps-academy-climbing-the-federal-ladder')
+
+  const memberLink = page.locator('.payload-richtext a[href="/members/portal"]')
+  await expect(memberLink).toHaveText('event link')
+  await expect(memberLink).toBeVisible()
+})
