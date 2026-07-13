@@ -71,7 +71,9 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
       const target = node.fields.newTab ? '_blank' : undefined
       return (
         <>
-          <span className="italic text-muted-foreground" data-o-anonymous="true">
+          {/* Inherit the prose body color (AAA in both themes); italic alone marks
+              it as a note. text-muted-foreground would fail AA on the white body. */}
+          <span className="italic" data-o-anonymous="true">
             Members-only link. Log in to view.
           </span>
           <span data-o-authenticated="true">
