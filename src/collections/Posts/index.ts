@@ -17,6 +17,7 @@ import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
+import { stampGalleryUpdatedAt } from './hooks/stampGalleryUpdatedAt'
 
 import {
   MetaDescriptionField,
@@ -125,6 +126,27 @@ export const Posts: CollectionConfig<'posts'> = {
               hasMany: true,
               admin: {
                 description: 'Optional. Extra photos shown in a gallery on the post.',
+              },
+            },
+            {
+              name: 'galleryCover',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Gallery cover',
+              admin: {
+                description:
+                  'Optional. Which gallery photo represents this gallery in the Featured Galleries section. Defaults to the first gallery photo.',
+                // Only relevant once there are gallery photos to choose from.
+                condition: (_, siblingData) =>
+                  Array.isArray(siblingData?.gallery) && siblingData.gallery.length > 0,
+              },
+              // Restrict the picker to photos already in THIS post's gallery, so the
+              // cover is always "one of the children" (not any Media doc).
+              filterOptions: ({ data }) => {
+                const ids = ((data?.gallery as unknown[]) ?? [])
+                  .map((g) => (g && typeof g === 'object' ? (g as { id: number }).id : g))
+                  .filter((id): id is number => typeof id === 'number')
+                return ids.length ? { id: { in: ids } } : false
               },
             },
             {
@@ -248,6 +270,18 @@ export const Posts: CollectionConfig<'posts'> = {
       },
     },
     {
+      name: 'galleryUpdatedAt',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        date: { pickerAppearance: 'dayAndTime' },
+        description:
+          'Auto-set when the photo gallery changes. Drives ordering in the Featured Galleries block.',
+      },
+      // Written by the stampGalleryUpdatedAt beforeChange hook, never by hand.
+    },
+    {
       name: 'membersOnlyUrl',
       type: 'text',
       label: 'Members-only URL',
@@ -299,6 +333,7 @@ export const Posts: CollectionConfig<'posts'> = {
     slugField(),
   ],
   hooks: {
+    beforeChange: [stampGalleryUpdatedAt],
     afterChange: [revalidatePost],
     afterRead: [populateAuthors],
     afterDelete: [revalidateDelete],

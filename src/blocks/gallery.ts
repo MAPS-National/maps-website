@@ -10,6 +10,7 @@ import { contentGallery } from './Content/gallery'
 import { faqGallery } from './FAQ/gallery'
 import { featureSplitGallery } from './FeatureSplit/gallery'
 import { formGallery } from './Form/gallery'
+import { galleryHighlightsGallery } from './GalleryHighlights/gallery'
 import { logoStripGallery } from './LogoStrip/gallery'
 import { mapLocationCardsGallery } from './MapLocationCards/gallery'
 import { mediaBlockGallery } from './MediaBlock/gallery'
@@ -43,6 +44,7 @@ export const galleryBlocks: GalleryBlock<any>[] = [
   callToActionGallery,
   mediaBlockGallery,
   archiveGallery,
+  galleryHighlightsGallery,
   formGallery,
   faqGallery,
   featureSplitGallery,
