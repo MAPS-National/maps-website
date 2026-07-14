@@ -186,6 +186,17 @@ describe('getGalleryHighlights', () => {
     expect(ids.indexOf(B)).toBeLessThan(ids.indexOf(A))
   })
 
+  it('caps the result set at the requested limit, keeping the newest galleries', async () => {
+    // The block's `limit` field (default 6) is the only control an editor has over how
+    // many prints appear. Assert it actually reaches the query: with limit 1 we get one
+    // card, and it is the most recently updated gallery, not an arbitrary one.
+    const cards = await getGalleryHighlights(payload, 1)
+    expect(cards).toHaveLength(1)
+
+    const all = await getGalleryHighlights(payload, 100)
+    expect(cards[0].post.id).toBe(all[0].post.id)
+  })
+
   it('honors the custom cover and counts all gallery photos', async () => {
     const cards = await getGalleryHighlights(payload, 100)
     const cardA = cards.find((c) => c.post.id === A)!

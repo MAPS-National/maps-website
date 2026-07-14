@@ -39,6 +39,20 @@ export const GalleryHighlights: Block = {
       label: 'Intro text',
     },
     {
+      name: 'variant',
+      type: 'select',
+      defaultValue: 'compact',
+      label: 'Style',
+      options: [
+        { label: 'Compact (straight cards)', value: 'compact' },
+        { label: 'Polaroid (tilted prints with tape)', value: 'polaroid' },
+      ],
+      admin: {
+        description:
+          'Compact is the restrained default. Polaroid tilts and staggers the prints and adds a strip of tape.',
+      },
+    },
+    {
       name: 'limit',
       type: 'number',
       defaultValue: 6,
