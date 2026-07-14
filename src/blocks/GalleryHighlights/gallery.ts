@@ -11,14 +11,27 @@ export const galleryHighlightsGallery: GalleryBlock<Props> = {
     'Auto-lists published posts that have a photo gallery, most-recently-updated first; each card shows a cover + photo count and deep-links into that post’s gallery. Queries live Posts — the cards below reflect real data in this environment.',
   variants: [
     {
-      name: 'With header',
-      description: 'Section header above the auto-generated gallery cards (live query).',
+      name: 'Compact',
+      description: 'Straight, restrained cards (default).',
       props: {
         blockType: 'galleryHighlights',
         eyebrow: 'From our events',
         heading: 'Recent photo galleries',
         body: prose('See the latest moments from MAPS gatherings across the country.'),
         limit: 6,
+        variant: 'compact',
+      } as Props,
+    },
+    {
+      name: 'Polaroid',
+      description: 'Tilted, staggered prints with a strip of tape.',
+      props: {
+        blockType: 'galleryHighlights',
+        eyebrow: 'From our events',
+        heading: 'Recent photo galleries',
+        body: prose('See the latest moments from MAPS gatherings across the country.'),
+        limit: 6,
+        variant: 'polaroid',
       } as Props,
     },
   ],

@@ -175,6 +175,13 @@ export default function StyleGuidePage() {
             sample="Program graduate"
           />
           <TypeSpec
+            as="h5"
+            className="type-h5"
+            token=".type-h5"
+            spec="Lora · 600 · 18px · compact card title"
+            sample="Recent photo gallery"
+          />
+          <TypeSpec
             as="p"
             className="type-lead"
             token=".type-lead"
