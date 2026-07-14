@@ -41,7 +41,11 @@ export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-14">
+      {/* One column on phones: two-up leaves the print too narrow and the title clamps on
+          nearly every card. The grid spans the container, but each print is capped (see
+          the Link below) and centered in its column, so the prints stay snapshot-sized
+          and the extra column width becomes breathing room rather than bigger cards. */}
+      <div className="grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 lg:gap-y-16">
         {cards.map(({ post, cover, count }, i) => {
           const updated = fmtDate(post.galleryUpdatedAt)
           return (
@@ -50,7 +54,7 @@ export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (
               href={`/latest-updates/${post.slug}#post-gallery`}
               // z-lift so a hovered photo scales over its neighbours rather than under.
               className={cn(
-                'group relative z-0 block transition-transform duration-300',
+                'group relative z-0 mx-auto block w-full max-w-64 transition-transform duration-300',
                 'hover:z-10 hover:rotate-0 hover:scale-105',
                 TILT[i % TILT.length],
                 STAGGER[i % STAGGER.length],
@@ -62,7 +66,7 @@ export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (
                   tint of either surface (a dark tint disappears on the dark theme). */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute -top-3 left-1/2 h-6 w-16 -translate-x-1/2 rotate-3 bg-[var(--neutral-light)]/85 shadow-sm ring-1 ring-[var(--neutral-darker)]/10"
+                className="pointer-events-none absolute -top-2.5 left-1/2 h-5 w-14 -translate-x-1/2 rotate-3 bg-[var(--neutral-light)]/85 shadow-sm ring-1 ring-[var(--neutral-darker)]/10"
               />
 
               {/* The print: uniform frame with a deeper chin under the photo, which is
@@ -78,7 +82,7 @@ export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (
                     imageSize="card"
                     imgClassName="object-cover"
                     resource={cover}
-                    size="(max-width: 1024px) 50vw, 33vw"
+                    size="(max-width: 640px) 90vw, 280px"
                   />
                 </div>
 
@@ -87,7 +91,7 @@ export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (
                       the dark theme maps `primary` to a light tint for dark surfaces,
                       which would be washed out on this always-white print. Pinning the
                       base navy keeps the hover identical in both themes. */}
-                  <h3 className="type-h4 line-clamp-2 text-center text-[var(--neutral-darker)] transition-colors group-hover:text-[var(--brand-primary-base)]">
+                  <h3 className="type-h4 line-clamp-3 text-center text-[var(--neutral-darker)] transition-colors group-hover:text-[var(--brand-primary-base)]">
                     {post.title}
                   </h3>
                   <div className="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--neutral-base)]">
