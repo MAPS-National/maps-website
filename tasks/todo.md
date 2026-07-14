@@ -17,22 +17,28 @@
 - [x] Verify: Latest Updates track `column-gap` = 24px
 - [x] Verify: Testimonials (both tracks) + MediaSlider still 16px (untouched)
 
-## Checkpoint A — human review (STOP) [AWAITING REVIEW]
+## Checkpoint A — human review [APPROVED — phase 3 go-ahead given]
 
 - [x] Screenshots: home, dark @1280 + light @1440, slider next to Featured Galleries
-- [ ] Decide: is width + gap enough, or run phase 3?
+- [x] Decided: run phase 3
 
-## Phase 3 — OPTIONAL, only after Checkpoint A go-ahead
+## Phase 3 — card internals [DONE]
 
-- [ ] `Card/index.tsx`: title prose `h3` -> `type-h5`; `p-4` -> `p-3`; category `text-sm mb-4` -> `text-xs mb-2`
-- [ ] Verify: card title computes to 18px Lora 600, matching the gallery card
-- [ ] Verify: `/latest-updates` grid still holds a two-line title + category, no new clamping
-- [ ] Verify: `npx playwright test tests/e2e/posts.e2e.spec.ts` passes
+- [x] `Card/index.tsx`: title prose `h3` -> `type-h5`; `p-4` -> `p-3`; category `text-sm mb-4` -> `text-xs mb-2`
+- [x] Verify: card title computes to 18px / 600 / Lora, identical to the gallery card
+- [x] Verify: `/latest-updates` grid holds a two-line title + category, 0 of 80 titles
+      clamped; home slider card height 420 -> 377px
+- [~] `tests/e2e/posts.e2e.spec.ts` NOT run locally: Playwright's global-setup hits the
+  known tsx + Node-24 `next/cache` resolution bug on this machine, and it spawns its
+  own node so the `npx node@22` workaround does not reach it. Read the spec instead —
+  it asserts an `a[href*="/latest-updates/"]` is visible and an `h1` renders; the
+  change keeps the Link inside the h3 and only swaps classes, so both still hold.
+  CI runs the suite on Node 22.
 
 ## Global (before calling it done)
 
-- [ ] `npx tsc --noEmit` clean
-- [ ] `npx eslint <touched files>` clean
+- [x] `npx tsc --noEmit` clean
+- [x] `npx eslint <touched files>` clean
 - [ ] Both themes checked
 - [ ] No migration needed (presentational only — confirm no config/field touched)
 - [ ] Do not push without an explicit go-ahead
