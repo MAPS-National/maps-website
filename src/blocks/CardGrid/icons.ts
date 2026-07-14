@@ -27,6 +27,7 @@ export const cardIconNames = [
   'network',
   'scale',
   'star',
+  'star-plus',
   'users',
   'video',
 ] as const

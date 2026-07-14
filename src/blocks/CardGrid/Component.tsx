@@ -25,6 +25,7 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
 
+import { StarPlus } from './StarPlus'
 import { type CardIconName } from './icons'
 
 const colsClasses: Record<string, string> = {
@@ -51,6 +52,8 @@ const cardIcons: Record<CardIconName, LucideIcon> = {
   network: Network,
   scale: Scale,
   star: Star,
+  // Not in lucide-react 0.563 — vendored from v1's icon node (see StarPlus.tsx).
+  'star-plus': StarPlus,
   users: Users,
   video: Video,
 }

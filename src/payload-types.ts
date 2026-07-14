@@ -956,6 +956,7 @@ export interface CardGridBlock {
               | 'network'
               | 'scale'
               | 'star'
+              | 'star-plus'
               | 'users'
               | 'video'
             )

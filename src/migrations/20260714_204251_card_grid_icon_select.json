@@ -19344,6 +19344,7 @@
         "network",
         "scale",
         "star",
+        "star-plus",
         "users",
         "video"
       ]
@@ -19569,6 +19570,7 @@
         "network",
         "scale",
         "star",
+        "star-plus",
         "users",
         "video"
       ]
@@ -19779,6 +19781,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "d9bf00d1-01d2-48cb-8d75-6fefb744e197",
+  "id": "a37c4643-8bb6-4cee-b008-0ae3288a35d4",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

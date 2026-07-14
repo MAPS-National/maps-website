@@ -134,7 +134,7 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
             lucideIcon: 'users',
           }),
           item('Membership benefits', 'Career support, community, and a voice in public service.', {
-            lucideIcon: 'star',
+            lucideIcon: 'star-plus',
           }),
           item('100% free to join', 'No dues: membership is free for eligible public servants.', {
             lucideIcon: 'badge-dollar-sign',
