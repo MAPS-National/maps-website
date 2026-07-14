@@ -1041,6 +1041,10 @@ export interface GalleryHighlightsBlock {
     [k: string]: unknown;
   } | null;
   /**
+   * Compact is the restrained default. Polaroid tilts and staggers the prints and adds a strip of tape.
+   */
+  variant?: ('compact' | 'polaroid') | null;
+  /**
    * Maximum number of recent galleries to display.
    */
   limit?: number | null;
@@ -2447,6 +2451,7 @@ export interface GalleryHighlightsBlockSelect<T extends boolean = true> {
   eyebrow?: T;
   heading?: T;
   body?: T;
+  variant?: T;
   limit?: T;
   anchorId?: T;
   id?: T;

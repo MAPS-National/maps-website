@@ -19,6 +19,8 @@ export const Carousel: React.FC<{
   children: React.ReactNode
   /** Width (and any extra) classes for each slide, e.g. 'w-[78%] sm:w-[46%] lg:w-[31%]'. */
   slideClassName?: string
+  /** Track gap between slides (default 'gap-4'). */
+  gapClassName?: string
   className?: string
   ariaLabel?: string
   autoPlay?: boolean
@@ -32,6 +34,7 @@ export const Carousel: React.FC<{
 }> = ({
   children,
   slideClassName,
+  gapClassName = 'gap-4',
   className,
   ariaLabel = 'Carousel',
   autoPlay = false,
@@ -107,7 +110,10 @@ export const Carousel: React.FC<{
         // some slides (e.g. the testimonials pull-quotes) carry no focusable child,
         // so the track itself must be tabbable to be reachable/scrollable by keyboard.
         aria-label={ariaLabel}
-        className="relative flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className={cn(
+          'relative flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          gapClassName,
+        )}
         tabIndex={0}
       >
         {slides.map((slide, i) => (

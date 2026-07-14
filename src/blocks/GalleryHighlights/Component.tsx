@@ -20,8 +20,9 @@ const TILT = ['-rotate-2', 'rotate-1', 'rotate-2', '-rotate-1', 'rotate-1', '-ro
 const STAGGER = ['mt-0', 'mt-6', 'mt-2', 'mt-5', 'mt-0', 'mt-6']
 
 export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (props) => {
-  const { eyebrow, heading, body, limit: limitFromProps, anchorId } = props
+  const { eyebrow, heading, body, limit: limitFromProps, anchorId, variant } = props
   const limit = limitFromProps ?? 6
+  const polaroid = variant === 'polaroid'
 
   const payload = await getPayload({ config: configPromise })
   const cards = await getGalleryHighlights(payload, limit)
@@ -32,9 +33,12 @@ export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (
   const showHeader = eyebrow || heading || body
 
   return (
-    <section className="container my-16 scroll-mt-24" id={anchorId || undefined}>
+    <section
+      className={cn('container scroll-mt-24', polaroid ? 'my-16' : 'my-12')}
+      id={anchorId || undefined}
+    >
       {showHeader && (
-        <div className="mb-12 max-w-2xl">
+        <div className={cn('max-w-2xl', polaroid ? 'mb-12' : 'mb-8')}>
           {eyebrow && <p className="mb-3 type-eyebrow text-primary">{eyebrow}</p>}
           {heading && <h2 className="type-h2">{heading}</h2>}
           {body && <RichText className="mt-4" data={body} enableGutter={false} />}
@@ -42,59 +46,92 @@ export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (
       )}
 
       {/* One column on phones: two-up leaves the print too narrow and the title clamps on
-          nearly every card. The grid spans the container, but each print is capped (see
-          the Link below) and centered in its column, so the prints stay snapshot-sized
-          and the extra column width becomes breathing room rather than bigger cards. */}
-      <div className="grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 lg:gap-y-16">
+          nearly every card. The grid spans the container, but each print is capped and
+          centered in its column, so the prints stay snapshot-sized and the extra column
+          width becomes breathing room rather than bigger cards. The polaroid variant needs
+          the taller row gap to clear the stagger and the tape. */}
+      <div
+        className={cn(
+          'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+          polaroid ? 'gap-x-8 gap-y-14 lg:gap-y-16' : 'gap-6',
+        )}
+      >
         {cards.map(({ post, cover, count }, i) => {
           const updated = fmtDate(post.galleryUpdatedAt)
           return (
             <Link
               key={post.slug}
               href={`/latest-updates/${post.slug}#post-gallery`}
-              // z-lift so a hovered photo scales over its neighbours rather than under.
               className={cn(
-                'group relative z-0 mx-auto block w-full max-w-64 transition-transform duration-300',
-                'hover:z-10 hover:rotate-0 hover:scale-105',
-                TILT[i % TILT.length],
-                STAGGER[i % STAGGER.length],
+                'group mx-auto block w-full max-w-64',
+                // z-lift so a hovered photo scales over its neighbours rather than under.
+                polaroid && [
+                  'relative z-0 transition-transform duration-300',
+                  'hover:z-10 hover:rotate-0 hover:scale-105',
+                  TILT[i % TILT.length],
+                  STAGGER[i % STAGGER.length],
+                ],
               )}
             >
               {/* Strip of tape holding the photo to the page. It straddles the print's
                   top edge, so it has to read against BOTH the white print and the dark
                   page behind it — hence a mid neutral at high opacity rather than a
                   tint of either surface (a dark tint disappears on the dark theme). */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute -top-2.5 left-1/2 h-5 w-14 -translate-x-1/2 rotate-3 bg-[var(--neutral-light)]/85 shadow-sm ring-1 ring-[var(--neutral-darker)]/10"
-              />
+              {polaroid && (
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -top-2.5 left-1/2 h-5 w-14 -translate-x-1/2 rotate-3 bg-[var(--neutral-light)]/85 shadow-sm ring-1 ring-[var(--neutral-darker)]/10"
+                />
+              )}
 
-              {/* The print: uniform frame with a deeper chin under the photo, which is
-                  what actually reads as "polaroid". The print stays WHITE in both themes
-                  (a photo print doesn't invert) — so it binds the theme-independent
-                  neutral primitives rather than the themed card/foreground slots, and
-                  carries its own dark text. On the dark theme it reads as prints laid on
-                  a dark surface, which is the whole effect. */}
-              <figure className="flex h-full flex-col rounded-md bg-[var(--neutral-white)] p-3 shadow-md ring-1 ring-[var(--neutral-darker)]/10 transition-shadow duration-300 group-hover:shadow-xl">
-                <div className="relative aspect-square w-full overflow-hidden bg-muted">
+              {/* The print stays WHITE in both themes (a photo print doesn't invert) — so it
+                  binds the theme-independent neutral primitives rather than the themed
+                  card/foreground slots, and carries its own dark text. On the dark theme it
+                  reads as prints laid on a dark surface, which is the whole polaroid effect. */}
+              <figure
+                className={cn(
+                  'flex h-full flex-col rounded-md bg-[var(--neutral-white)] ring-1 ring-[var(--neutral-darker)]/10',
+                  polaroid
+                    ? 'p-3 shadow-md transition-shadow duration-300 group-hover:shadow-xl'
+                    : 'p-2.5 shadow-sm transition-shadow duration-200 group-hover:shadow-md',
+                )}
+              >
+                <div
+                  className={cn(
+                    'relative w-full overflow-hidden bg-muted',
+                    polaroid ? 'aspect-square' : 'aspect-[4/3]',
+                  )}
+                >
                   <Media
                     fill
                     imageSize="card"
-                    imgClassName="object-cover"
+                    // scale-110: some sources come back letterboxed in the card variant, so
+                    // a slight zoom crops the bars off rather than printing them.
+                    imgClassName="object-cover scale-110"
                     resource={cover}
-                    size="(max-width: 640px) 90vw, 280px"
+                    size="(max-width: 640px) 90vw, 256px"
                   />
                 </div>
 
-                <figcaption className="mt-3 px-1 pb-2">
+                <figcaption className={cn(polaroid ? 'mt-3 px-1 pb-2' : 'mt-2.5 px-0.5 pb-1')}>
                   {/* Hover uses the brand-primary BASE, not the themed `primary` slot:
                       the dark theme maps `primary` to a light tint for dark surfaces,
                       which would be washed out on this always-white print. Pinning the
                       base navy keeps the hover identical in both themes. */}
-                  <h3 className="type-h4 line-clamp-3 text-center text-[var(--neutral-darker)] transition-colors group-hover:text-[var(--brand-primary-base)]">
+                  <h3
+                    className={cn(
+                      'type-h5 text-[var(--neutral-darker)] transition-colors group-hover:text-[var(--brand-primary-base)]',
+                      polaroid ? 'line-clamp-3 text-center' : 'line-clamp-2',
+                    )}
+                  >
                     {post.title}
                   </h3>
-                  <div className="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--neutral-base)]">
+                  <div
+                    className={cn(
+                      'flex items-center justify-between gap-2 text-xs text-[var(--neutral-base)]',
+                      polaroid ? 'mt-2' : 'mt-1.5',
+                    )}
+                  >
                     <span className="flex items-center gap-1">
                       <ImageIcon aria-hidden className="size-3 shrink-0" />
                       {count} {count === 1 ? 'photo' : 'photos'}
