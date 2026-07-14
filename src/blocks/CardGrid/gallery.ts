@@ -133,6 +133,12 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
           item('Chapter events', 'Local gatherings, panels, and receptions year-round.', {
             lucideIcon: 'users',
           }),
+          item('Membership benefits', 'Career support, community, and a voice in public service.', {
+            lucideIcon: 'star',
+          }),
+          item('100% free to join', 'No dues: membership is free for eligible public servants.', {
+            lucideIcon: 'badge-dollar-sign',
+          }),
         ],
       },
     },

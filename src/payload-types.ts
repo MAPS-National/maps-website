@@ -944,6 +944,8 @@ export interface CardGridBlock {
          */
         lucideIcon?:
           | (
+              | 'badge-dollar-sign'
+              | 'badge-plus'
               | 'briefcase'
               | 'circle-plus'
               | 'file-text'
@@ -953,6 +955,7 @@ export interface CardGridBlock {
               | 'mic'
               | 'network'
               | 'scale'
+              | 'star'
               | 'users'
               | 'video'
             )

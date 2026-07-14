@@ -19332,6 +19332,8 @@
       "name": "enum_pages_blocks_card_grid_items_lucide_icon",
       "schema": "public",
       "values": [
+        "badge-dollar-sign",
+        "badge-plus",
         "briefcase",
         "circle-plus",
         "file-text",
@@ -19341,6 +19343,7 @@
         "mic",
         "network",
         "scale",
+        "star",
         "users",
         "video"
       ]
@@ -19554,6 +19557,8 @@
       "name": "enum__pages_v_blocks_card_grid_items_lucide_icon",
       "schema": "public",
       "values": [
+        "badge-dollar-sign",
+        "badge-plus",
         "briefcase",
         "circle-plus",
         "file-text",
@@ -19563,6 +19568,7 @@
         "mic",
         "network",
         "scale",
+        "star",
         "users",
         "video"
       ]
@@ -19773,6 +19779,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "37778239-d9f7-4cb3-bf0d-4a4045d38473",
+  "id": "d9bf00d1-01d2-48cb-8d75-6fefb744e197",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

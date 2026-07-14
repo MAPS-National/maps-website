@@ -15,6 +15,8 @@
  * `Component.tsx`, then run `generate:types`.
  */
 export const cardIconNames = [
+  'badge-dollar-sign',
+  'badge-plus',
   'briefcase',
   'circle-plus',
   'file-text',
@@ -24,6 +26,7 @@ export const cardIconNames = [
   'mic',
   'network',
   'scale',
+  'star',
   'users',
   'video',
 ] as const

@@ -1,5 +1,7 @@
 import {
   ArrowRight,
+  BadgeDollarSign,
+  BadgePlus,
   Briefcase,
   CirclePlus,
   FileText,
@@ -9,6 +11,7 @@ import {
   Mic,
   Network,
   Scale,
+  Star,
   Users,
   Video,
   type LucideIcon,
@@ -36,6 +39,8 @@ const colsClasses: Record<string, string> = {
 // key type is the name union, so adding a name to icons.ts without adding it here is a
 // type error rather than a card that silently renders no icon.
 const cardIcons: Record<CardIconName, LucideIcon> = {
+  'badge-dollar-sign': BadgeDollarSign,
+  'badge-plus': BadgePlus,
   briefcase: Briefcase,
   'circle-plus': CirclePlus,
   'file-text': FileText,
@@ -45,6 +50,7 @@ const cardIcons: Record<CardIconName, LucideIcon> = {
   mic: Mic,
   network: Network,
   scale: Scale,
+  star: Star,
   users: Users,
   video: Video,
 }
