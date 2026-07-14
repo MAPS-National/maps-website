@@ -83,7 +83,11 @@ export const GalleryHighlightsBlock: React.FC<Props & { id?: string }> = async (
                 </div>
 
                 <figcaption className="mt-3 px-1 pb-2">
-                  <h3 className="type-h4 line-clamp-2 text-center text-[var(--neutral-darker)] group-hover:text-primary">
+                  {/* Hover uses the brand-primary BASE, not the themed `primary` slot:
+                      the dark theme maps `primary` to a light tint for dark surfaces,
+                      which would be washed out on this always-white print. Pinning the
+                      base navy keeps the hover identical in both themes. */}
+                  <h3 className="type-h4 line-clamp-2 text-center text-[var(--neutral-darker)] transition-colors group-hover:text-[var(--brand-primary-base)]">
                     {post.title}
                   </h3>
                   <div className="mt-2 flex items-center justify-between gap-2 text-xs text-[var(--neutral-base)]">
