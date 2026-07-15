@@ -17,12 +17,18 @@ type CardItem = NonNullable<CardGridBlockProps['items']>[number]
 const item = (
   heading: string,
   body: string,
-  opts: { withLink?: boolean; icon?: CardItem['icon']; image?: CardItem['image'] } = {},
+  opts: {
+    withLink?: boolean
+    icon?: CardItem['icon']
+    image?: CardItem['image']
+    lucideIcon?: CardItem['lucideIcon']
+  } = {},
 ): CardItem => ({
   heading,
   body: prose(body),
   icon: opts.icon,
   image: opts.image,
+  lucideIcon: opts.lucideIcon,
   links: opts.withLink
     ? [{ link: { type: 'custom', url: '#', label: 'Learn more', newTab: false } }]
     : [],
@@ -38,7 +44,8 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
   variants: [
     {
       name: 'Three columns, with header',
-      description: 'Section header (eyebrow + heading + body) above a 3-up grid; each card has a button.',
+      description:
+        'Section header (eyebrow + heading + body) above a 3-up grid; each card has a button.',
       props: {
         blockType: 'cardGrid',
         columns: '3',
@@ -52,9 +59,17 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
           ),
         },
         items: [
-          item('Community Building', 'Connect with a national network of public servants across government.', { withLink: true }),
-          item('Legal Advocacy', 'Know your rights, understand redress, and navigate processes.', { withLink: true }),
-          item('Policy & Advocacy', 'Initiatives that advance representation in public service.', { withLink: true }),
+          item(
+            'Community Building',
+            'Connect with a national network of public servants across government.',
+            { withLink: true },
+          ),
+          item('Legal Advocacy', 'Know your rights, understand redress, and navigate processes.', {
+            withLink: true,
+          }),
+          item('Policy & Advocacy', 'Initiatives that advance representation in public service.', {
+            withLink: true,
+          }),
         ],
       },
     },
@@ -67,9 +82,15 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         mediaType: 'image',
         header: { enableHeader: true, heading: 'Across the country' },
         items: [
-          item('Panels & forums', 'Conversations on public service at partner institutions.', { image: sampleGeorgetown }),
-          item('Agency visits', 'Members connect with colleagues across the federal government.', { image: sampleCia }),
-          item('Member receptions', 'Local chapters and federal ERGs gather year-round.', { image: sampleReception }),
+          item('Panels & forums', 'Conversations on public service at partner institutions.', {
+            image: sampleGeorgetown,
+          }),
+          item('Agency visits', 'Members connect with colleagues across the federal government.', {
+            image: sampleCia,
+          }),
+          item('Member receptions', 'Local chapters and federal ERGs gather year-round.', {
+            image: sampleReception,
+          }),
         ],
       },
     },
@@ -90,6 +111,38 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
       },
     },
     {
+      name: 'Decorative icons',
+      description:
+        'The per-card `lucideIcon` chip (distinct from uploaded icon media): a curated Lucide set, shown on imageless cards.',
+      props: {
+        blockType: 'cardGrid',
+        columns: '3',
+        mediaType: 'none',
+        header: { enableHeader: true, heading: 'Get involved' },
+        items: [
+          item(
+            'Advocacy alerts',
+            'Speak up on the issues facing Muslim American public servants.',
+            {
+              lucideIcon: 'megaphone',
+            },
+          ),
+          item('Join MAPS', 'Become a member and connect with the national network.', {
+            lucideIcon: 'circle-plus',
+          }),
+          item('Chapter events', 'Local gatherings, panels, and receptions year-round.', {
+            lucideIcon: 'users',
+          }),
+          item('Membership benefits', 'Career support, community, and a voice in public service.', {
+            lucideIcon: 'star-plus',
+          }),
+          item('100% free to join', 'No dues: membership is free for eligible public servants.', {
+            lucideIcon: 'badge-dollar-sign',
+          }),
+        ],
+      },
+    },
+    {
       name: 'Two columns, no header',
       description: 'Header disabled; wider two-up cards without buttons.',
       props: {
@@ -98,7 +151,10 @@ export const cardGridGallery: GalleryBlock<CardGridBlockProps> = {
         mediaType: 'none',
         header: { enableHeader: false },
         items: [
-          item('For federal staffers', 'Employee resource groups and peer support across agencies.'),
+          item(
+            'For federal staffers',
+            'Employee resource groups and peer support across agencies.',
+          ),
           item('For state & local', 'State committees connecting public servants in your region.'),
         ],
       },

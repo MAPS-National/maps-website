@@ -1,12 +1,17 @@
 import {
   ArrowRight,
+  BadgeDollarSign,
+  BadgePlus,
   Briefcase,
+  CirclePlus,
   FileText,
   FolderOpen,
   Landmark,
+  Megaphone,
   Mic,
   Network,
   Scale,
+  Star,
   Users,
   Video,
   type LucideIcon,
@@ -20,6 +25,9 @@ import { Media } from '@/components/Media'
 import RichText from '@/components/RichText'
 import { cn } from '@/utilities/ui'
 
+import { StarPlus } from './StarPlus'
+import { type CardIconName } from './icons'
+
 const colsClasses: Record<string, string> = {
   '2': 'sm:grid-cols-2',
   '3': 'sm:grid-cols-2 lg:grid-cols-3',
@@ -28,14 +36,24 @@ const colsClasses: Record<string, string> = {
 
 // Curated Lucide set the `lucideIcon` card field can name. Kept explicit (not the
 // full registry) so the bundle only ships the icons we use; extend as cards need them.
-const cardIcons: Record<string, LucideIcon> = {
+// Every name in `cardIconNames` must have an icon here (and vice versa): the Record's
+// key type is the name union, so adding a name to icons.ts without adding it here is a
+// type error rather than a card that silently renders no icon.
+const cardIcons: Record<CardIconName, LucideIcon> = {
+  'badge-dollar-sign': BadgeDollarSign,
+  'badge-plus': BadgePlus,
   briefcase: Briefcase,
+  'circle-plus': CirclePlus,
   'file-text': FileText,
   'folder-open': FolderOpen,
   landmark: Landmark,
+  megaphone: Megaphone,
   mic: Mic,
   network: Network,
   scale: Scale,
+  star: Star,
+  // Not in lucide-react 0.563 — vendored from v1's icon node (see StarPlus.tsx).
+  'star-plus': StarPlus,
   users: Users,
   video: Video,
 }
@@ -76,7 +94,8 @@ export const CardGridBlock: React.FC<CardGridBlockProps> = (props) => {
           const hasIcon = mediaType === 'icon' && media && typeof media === 'object'
           // Decorative topic icon for imageless cards: a tinted brand-navy chip that
           // anchors the eye per card. Aria-hidden — the heading carries the meaning.
-          const DecoIcon = !hasImage && lucideIcon ? cardIcons[lucideIcon] : undefined
+          const DecoIcon =
+            !hasImage && lucideIcon ? cardIcons[lucideIcon as CardIconName] : undefined
           // Whole-card link: an absolute overlay makes the entire surface (image
           // included) clickable; the button is suppressed when the card links.
           const isCardLink = Boolean(enableCardLink && cardLink)
