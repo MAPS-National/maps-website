@@ -1,9 +1,15 @@
 import type { Block } from 'payload'
 
-import { FixedToolbarFeature, InlineToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  FixedToolbarFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
 
 import { link } from '@/fields/link'
 import { linkGroup } from '@/fields/linkGroup'
+
+import { cardIconNames } from './icons'
 
 const introEditor = lexicalEditor({
   features: ({ rootFeatures }) => [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()],
@@ -91,7 +97,8 @@ export const CardGrid: Block = {
           required: true,
           admin: {
             width: '50%',
-            description: 'Media is uniform across the grid: every card shows an image, an icon, or none.',
+            description:
+              'Media is uniform across the grid: every card shows an image, an icon, or none.',
           },
           options: [
             { label: 'None', value: 'none' },
@@ -140,12 +147,18 @@ export const CardGrid: Block = {
           },
         },
         {
+          // A select, not free text: the renderer only knows the curated set in
+          // `icons.ts` (so the bundle doesn't ship all ~1,900 Lucide icons), and a text
+          // field invited any name — anything outside the set rendered a silently empty
+          // chip. The options ARE the renderable set, so an unrenderable name can no
+          // longer be entered.
           name: 'lucideIcon',
-          type: 'text',
+          type: 'select',
           label: 'Decorative icon',
+          options: cardIconNames.map((value) => ({ label: value, value })),
           admin: {
             description:
-              'Optional Lucide icon name shown in a tinted chip above the heading (e.g. "file-text", "users", "briefcase"). Best on imageless cards. Unknown or empty names render nothing.',
+              'Optional icon shown in a tinted chip above the heading. Best on imageless cards; it is suppressed on a card that has an image. Need one that is not listed? Add it to src/blocks/CardGrid/icons.ts.',
           },
         },
         {

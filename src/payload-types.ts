@@ -940,9 +940,27 @@ export interface CardGridBlock {
          */
         badge?: string | null;
         /**
-         * Optional Lucide icon name shown in a tinted chip above the heading (e.g. "file-text", "users", "briefcase"). Best on imageless cards. Unknown or empty names render nothing.
+         * Optional icon shown in a tinted chip above the heading. Best on imageless cards; it is suppressed on a card that has an image. Need one that is not listed? Add it to src/blocks/CardGrid/icons.ts.
          */
-        lucideIcon?: string | null;
+        lucideIcon?:
+          | (
+              | 'badge-dollar-sign'
+              | 'badge-plus'
+              | 'briefcase'
+              | 'circle-plus'
+              | 'file-text'
+              | 'folder-open'
+              | 'landmark'
+              | 'megaphone'
+              | 'mic'
+              | 'network'
+              | 'scale'
+              | 'star'
+              | 'star-plus'
+              | 'users'
+              | 'video'
+            )
+          | null;
         /**
          * Render this card filled with the navy primary color and light text (like the portal quick-action tile) to mark it as the primary/active card. Best on imageless cards.
          */
