@@ -24,14 +24,14 @@ stay identical throughout. Outseta stays (env-var'd, not removed).
 
 ## Phase 3: Asset slots
 
-- [ ] Task 3: Rename 4 logo SVGs `maps-logo-*` → `logo-*`; move alt + dims into brand.ts; Logo.tsx consumes
-- [ ] Verify: both variants, both themes, no distortion; `grep -rn maps-logo` = 0
-- [ ] Task 4: Rename `maps-OG.webp` → `og.webp`; single `OG_IMAGE` const consumed by layout.tsx + generateMeta + mergeOpenGraph
-- [ ] Verify: og:image in view-source (page + post); `grep -rn maps-OG` = 0
+- [x] Task 3: Rename 4 logo SVGs `maps-logo-*` → `logo-*`; move alt + dims into brand.ts (`LOGO`); Logo.tsx consumes
+- [x] Verify: both variants render 200, correct alt, aspect ratio preserved (no distortion); `grep -rn maps-logo` = 0
+- [x] Task 4: Rename `maps-OG.webp` → `og.webp`; single `OG_IMAGE` const consumed by layout.tsx + generateMeta + mergeOpenGraph
+- [x] Verify: `og:image` resolves to `/og.webp` live; `grep -rn maps-OG` = 0
 
 ### Checkpoint: Phase 3
 
-- [ ] og:image URL resolves (curl), logos correct both themes
+- [x] og:image URL resolves, logos correct (verified light+dark header variants live)
 
 ## Phase 4: Ops env vars + .env.example
 

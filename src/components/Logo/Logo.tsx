@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import React from 'react'
 
 import { cn } from '@/utilities/ui'
+import { LOGO } from '@/utilities/brand'
 
 type Variant = 'primary' | 'secondary'
 
@@ -18,12 +19,6 @@ interface Props {
   priority?: 'auto' | 'high' | 'low'
 }
 
-// Intrinsic aspect ratios from the source SVGs, scaled to a 34px tall mark.
-const dims: Record<Variant, { width: number; height: number }> = {
-  primary: { width: 156, height: 34 },
-  secondary: { width: 122, height: 34 },
-}
-
 export const Logo = ({
   className,
   variant = 'primary',
@@ -31,12 +26,12 @@ export const Logo = ({
   loading = 'lazy',
   priority = 'low',
 }: Props) => {
-  const { width, height } = dims[variant]
+  const { width, height } = LOGO.dims[variant]
   // cn (twMerge) so a caller-passed height (e.g. the header's h-11) overrides the
   // 34px default instead of colliding with it; surfaces that pass nothing stay 34px.
   const base = cn('h-[34px] w-auto', className)
   // alt lives on each <img> directly (not in the spread) so jsx-a11y can see it.
-  const alt = 'MAPS National'
+  const alt = LOGO.alt
   const common = {
     width,
     height,
@@ -49,7 +44,7 @@ export const Logo = ({
   if (theme) {
     return (
       /* eslint-disable-next-line @next/next/no-img-element */
-      <img {...common} alt={alt} className={base} src={`/maps-logo-${variant}-${theme}.svg`} />
+      <img {...common} alt={alt} className={base} src={`/logo-${variant}-${theme}.svg`} />
     )
   }
 
@@ -61,14 +56,14 @@ export const Logo = ({
         {...common}
         alt={alt}
         className={clsx(base, 'block dark:hidden')}
-        src={`/maps-logo-${variant}-light.svg`}
+        src={`/logo-${variant}-light.svg`}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         {...common}
         alt={alt}
         className={clsx(base, 'hidden dark:block')}
-        src={`/maps-logo-${variant}-dark.svg`}
+        src={`/logo-${variant}-dark.svg`}
       />
     </>
   )

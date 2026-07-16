@@ -27,7 +27,7 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { OutsetaScript } from '@/components/OutsetaScript'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { SITE_DESCRIPTION, SITE_NAME } from '@/utilities/brand'
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME } from '@/utilities/brand'
 import { resolveHeaderTheme } from '@/utilities/resolveHeaderTheme'
 import { draftMode, headers } from 'next/headers'
 
@@ -81,6 +81,6 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: SITE_NAME,
-    images: ['/maps-OG.webp'],
+    images: [OG_IMAGE],
   },
 }

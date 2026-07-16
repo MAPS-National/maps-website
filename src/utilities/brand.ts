@@ -44,3 +44,18 @@ export const MEMBERSHIP_CTA = { label: 'Become a member', href: '/join' }
 
 export const EMAIL_FROM_NAME = 'MAPS National'
 export const EMAIL_FROM_ADDRESS = 'no-reply@mapsnational.org'
+
+// Files live at public/logo-{primary,secondary}-{light,dark}.svg. dims are the
+// intrinsic aspect ratio scaled to a 34px tall mark (src/components/Logo/Logo.tsx
+// builds the <img> src from the variant/theme, not from this object).
+export const LOGO = {
+  alt: 'MAPS National',
+  dims: {
+    primary: { width: 156, height: 34 },
+    secondary: { width: 122, height: 34 },
+  },
+}
+
+// File lives at public/og.webp. Single source for the three meta surfaces
+// (layout.tsx, generateMeta.ts, mergeOpenGraph.ts) that used to each hardcode it.
+export const OG_IMAGE = '/og.webp'

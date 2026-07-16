@@ -4,12 +4,12 @@ import type { Media, Page, Post, Config } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
-import { SITE_DESCRIPTION, SITE_NAME } from './brand'
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME } from './brand'
 
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
 
-  let url = serverUrl + '/maps-OG.webp'
+  let url = serverUrl + OG_IMAGE
 
   if (image && typeof image === 'object' && 'url' in image) {
     const ogUrl = image.sizes?.og?.url
