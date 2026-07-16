@@ -1,13 +1,14 @@
 import { NextRequest } from 'next/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { proxy } from '@/proxy'
+import { LOGIN_URL, proxy } from '@/proxy'
 
 // Server-side members gate branch logic (src/proxy.ts). No server/DB: proxy() is a
 // pure function of the request. Anonymous requests never call jwtVerify (no cookie),
 // so these run offline. Covers the #202 fix the e2e suite can't reach — e2e runs in
 // dev (home bounce), so the production LOGIN_URL branch has no other coverage.
-const LOGIN_URL = 'https://mapsnational.outseta.com/auth?widgetMode=login#o-anonymous'
+// LOGIN_URL is imported (not re-typed here) so a tenant-domain env change can't
+// silently desync the test's expectation from proxy.ts's actual redirect target.
 const anon = (path: string) => new NextRequest(new URL(`http://localhost:3000${path}`))
 
 describe('members gate (proxy)', () => {

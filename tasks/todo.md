@@ -15,12 +15,12 @@ stay identical throughout. Outseta stays (env-var'd, not removed).
 
 ## Phase 2: Outseta domain → env var
 
-- [ ] Task 2: `NEXT_PUBLIC_OUTSETA_DOMAIN` (default `mapsnational.outseta.com`) in `OutsetaScript/index.tsx` + `proxy.ts`; derive login URL in `tests/int/proxy.int.spec.ts` from the same source
-- [ ] Verify: `npm run test:int`, manual /members bounce on dev
+- [x] Task 2: `OUTSETA_DOMAIN` env var (default `mapsnational.outseta.com`, unprefixed — both consumers are server-side, no client build-time inlining needed) in `OutsetaScript/index.tsx` + `proxy.ts`; `tests/int/proxy.int.spec.ts` now imports `LOGIN_URL` from `@/proxy` instead of a duplicated literal
+- [x] Verify: `npm run test:int` (48/48), manual /members bounce on dev, `window.o_options.domain` confirmed live
 
 ### Checkpoint: Phase 2
 
-- [ ] `grep -rn "mapsnational.outseta" src/ tests/` = single default only
+- [x] `grep -rn "mapsnational.outseta" src/ tests/` = two in-code defaults only (one per module, kept in sync via comment — no shared-constants module added for two lines)
 
 ## Phase 3: Asset slots
 

@@ -14,6 +14,9 @@ import React from 'react'
  * root layout, not this route-group layout, so the SDK could load first and throw
  * "[domain] is a required option".)
  */
+// Same var name/default as src/proxy.ts's OUTSETA_DOMAIN — keep in sync.
+const OUTSETA_DOMAIN = process.env.OUTSETA_DOMAIN ?? 'mapsnational.outseta.com'
+
 export const OutsetaScript: React.FC = () => {
   return (
     <Script
@@ -22,7 +25,7 @@ export const OutsetaScript: React.FC = () => {
       dangerouslySetInnerHTML={{
         __html: `
   window.o_options = {
-    domain: 'mapsnational.outseta.com',
+    domain: '${OUTSETA_DOMAIN}',
     load: 'auth,customForm,emailList,leadCapture,nocode,profile,support',
     monitorDom: true,
     tokenStorage: 'cookie',
