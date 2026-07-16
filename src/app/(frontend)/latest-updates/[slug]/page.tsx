@@ -93,7 +93,7 @@ export default async function Post({ params: paramsPromise }: Args) {
         <div className="container">
           <RichText className="max-w-[48rem] mx-auto" data={post.content} enableGutter={false} />
           {galleryImages.length > 0 && (
-            <div className="mt-12 max-w-[52rem] mx-auto">
+            <div id="post-gallery" className="mt-12 max-w-[52rem] mx-auto scroll-mt-24">
               <MediaGalleryClient images={galleryImages} layout="slider" lightbox />
             </div>
           )}

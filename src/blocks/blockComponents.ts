@@ -20,6 +20,8 @@ import { FeatureSplit } from './FeatureSplit/config'
 import { FeatureSplitBlock } from './FeatureSplit/Component'
 import { FormBlock as FormConfig } from './Form/config'
 import { FormBlock } from './Form/Component'
+import { GalleryHighlights } from './GalleryHighlights/config'
+import { GalleryHighlightsBlock } from './GalleryHighlights/Component'
 import { LogoStrip } from './LogoStrip/config'
 import { LogoStripBlock } from './LogoStrip/Component'
 import { MapLocationCards } from './MapLocationCards/config'
@@ -61,6 +63,7 @@ export const blockComponents: Record<string, BlockComponent> = {
   [Archive.slug]: ArchiveBlock,
   [FormConfig.slug]: FormBlock,
   [CardGrid.slug]: CardGridBlock,
+  [GalleryHighlights.slug]: GalleryHighlightsBlock,
   [FAQ.slug]: FAQBlock,
   [FeatureSplit.slug]: FeatureSplitBlock,
   [LogoStrip.slug]: LogoStripBlock,

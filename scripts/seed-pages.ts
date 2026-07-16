@@ -1347,6 +1347,16 @@ const homeSlice: PageSlice = async (payload) => {
             },
           ],
         },
+        // Featured Galleries — auto-surfaced photo galleries from recent posts
+        // (#266), newest gallery activity first, each deep-linking into the post's
+        // gallery. Renders nothing until gallery posts exist (empty-safe on a
+        // fresh DB), so it stays out of the way on CI/first-seed.
+        {
+          blockType: 'galleryHighlights',
+          eyebrow: 'From our events',
+          heading: 'Recent photo galleries',
+          limit: 6,
+        },
         // MAPS Programs — three program cards. Images flagged (need Media docs);
         // seeded mediaType 'none' so cards render text + button.
         {

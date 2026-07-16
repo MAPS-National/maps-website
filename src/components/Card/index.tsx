@@ -63,9 +63,9 @@ export const Card: React.FC<{
           />
         )}
       </div>
-      <div className="p-4">
+      <div className="p-3">
         {showCategories && hasCategories && (
-          <div className="uppercase text-sm mb-4">
+          <div className="uppercase text-xs mb-2">
             {categories?.map((category, index) => {
               if (typeof category === 'object') {
                 const { title: titleFromCategory } = category
@@ -86,15 +86,16 @@ export const Card: React.FC<{
             })}
           </div>
         )}
+        {/* type-h5 off the canonical ramp, not a prose h3: this card sits beside the
+            Featured Galleries prints on the home page, and the prose treatment gave it a
+            heavier title than theirs. Same ramp = one card system across both blocks. */}
         {titleToUse && (
-          <div className="prose">
-            <h3>
-              {/* eslint-disable-next-line react-hooks/refs */}
-              <Link className="not-prose" href={href} ref={link.ref}>
-                {titleToUse}
-              </Link>
-            </h3>
-          </div>
+          <h3 className="type-h5">
+            {/* eslint-disable-next-line react-hooks/refs */}
+            <Link href={href} ref={link.ref}>
+              {titleToUse}
+            </Link>
+          </h3>
         )}
         {/* Event sign-up: an inner <a> so useClickableCard defers to it (clicks
             here open the form; the rest of the card still opens the post). */}

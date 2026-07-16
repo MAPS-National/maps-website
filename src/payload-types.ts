@@ -242,6 +242,7 @@ export interface Page {
     | ArchiveBlock
     | FormBlock
     | CardGridBlock
+    | GalleryHighlightsBlock
     | FAQBlock
     | FeatureSplitBlock
     | LogoStripBlock
@@ -290,6 +291,10 @@ export interface Post {
    * Optional. Extra photos shown in a gallery on the post.
    */
   gallery?: (number | Media)[] | null;
+  /**
+   * Optional. Which gallery photo represents this gallery in the Featured Galleries section. Defaults to the first gallery photo.
+   */
+  galleryCover?: (number | null) | Media;
   content: {
     root: {
       type: string;
@@ -329,6 +334,10 @@ export interface Post {
    * Pin this post to the top of the listing.
    */
   sticky?: boolean | null;
+  /**
+   * Auto-set when the photo gallery changes. Drives ordering in the Featured Galleries block.
+   */
+  galleryUpdatedAt?: string | null;
   /**
    * Only shown to members.
    */
@@ -931,9 +940,27 @@ export interface CardGridBlock {
          */
         badge?: string | null;
         /**
-         * Optional Lucide icon name shown in a tinted chip above the heading (e.g. "file-text", "users", "briefcase"). Best on imageless cards. Unknown or empty names render nothing.
+         * Optional icon shown in a tinted chip above the heading. Best on imageless cards; it is suppressed on a card that has an image. Need one that is not listed? Add it to src/blocks/CardGrid/icons.ts.
          */
-        lucideIcon?: string | null;
+        lucideIcon?:
+          | (
+              | 'badge-dollar-sign'
+              | 'badge-plus'
+              | 'briefcase'
+              | 'circle-plus'
+              | 'file-text'
+              | 'folder-open'
+              | 'landmark'
+              | 'megaphone'
+              | 'mic'
+              | 'network'
+              | 'scale'
+              | 'star'
+              | 'star-plus'
+              | 'users'
+              | 'video'
+            )
+          | null;
         /**
          * Render this card filled with the navy primary color and light text (like the portal quick-action tile) to mark it as the primary/active card. Best on imageless cards.
          */
@@ -1002,6 +1029,50 @@ export interface CardGridBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'cardGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryHighlightsBlock".
+ */
+export interface GalleryHighlightsBlock {
+  /**
+   * Optional label above the heading.
+   */
+  eyebrow?: string | null;
+  /**
+   * Optional section heading.
+   */
+  heading?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Compact is the restrained default. Polaroid tilts and staggers the prints and adds a strip of tape.
+   */
+  variant?: ('compact' | 'polaroid') | null;
+  /**
+   * Maximum number of recent galleries to display.
+   */
+  limit?: number | null;
+  /**
+   * Optional in-page anchor target, e.g. "galleries" makes the section reachable at #galleries.
+   */
+  anchorId?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'galleryHighlights';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2217,6 +2288,7 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         cardGrid?: T | CardGridBlockSelect<T>;
+        galleryHighlights?: T | GalleryHighlightsBlockSelect<T>;
         faq?: T | FAQBlockSelect<T>;
         featureSplit?: T | FeatureSplitBlockSelect<T>;
         logoStrip?: T | LogoStripBlockSelect<T>;
@@ -2386,6 +2458,20 @@ export interface CardGridBlockSelect<T extends boolean = true> {
         requiredPlans?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryHighlightsBlock_select".
+ */
+export interface GalleryHighlightsBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  body?: T;
+  variant?: T;
+  limit?: T;
+  anchorId?: T;
   id?: T;
   blockName?: T;
 }
@@ -2747,6 +2833,7 @@ export interface PostsSelect<T extends boolean = true> {
   title?: T;
   heroImage?: T;
   gallery?: T;
+  galleryCover?: T;
   content?: T;
   relatedPosts?: T;
   categories?: T;
@@ -2759,6 +2846,7 @@ export interface PostsSelect<T extends boolean = true> {
       };
   publishedAt?: T;
   sticky?: T;
+  galleryUpdatedAt?: T;
   membersOnlyUrl?: T;
   authors?: T;
   populatedAuthors?:
