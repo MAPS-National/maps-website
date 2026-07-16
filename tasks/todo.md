@@ -44,14 +44,14 @@ stay identical throughout. Outseta stays (env-var'd, not removed).
 
 ## Phase 5: Sweep + checklist rewrite
 
-- [ ] Task 6: repo-wide grep sweep (`mapsnational|maps national|muslim americans`) — remaining hits only in brand.ts values, env defaults, seed/content, test fixtures, gallery data
-- [ ] Verify: lint, `tsc --noEmit`, build, test:int all green
-- [ ] Task 7: rewrite `docs/new-site-checklist.md` (fill brand.ts → env vars → asset files + dims → tokens.css → content replacement → Railway); note centralization in audit doc header
+- [x] Task 6: repo-wide grep sweep (`mapsnational|maps national|muslim americans`) — all hits confirmed in allowed buckets (brand.ts values, 2 env defaults, seed/content, gallery data, import pipeline). One incidental finding out of Task 5's scope noted for the checklist: `refresh-staging.mjs:227` has a `stage.mapsnational.org` fallback, only used if `NEXT_PUBLIC_SERVER_URL` is unset/internal
+- [x] Verify: lint (0 errors, 2 pre-existing unrelated warnings), `tsc --noEmit`, build, test:int (50/50) all green
+- [x] Task 7: rewrote `docs/new-site-checklist.md` (fill brand.ts → env vars → asset files + dims → tokens.css → content replacement → Railway); noted centralization in audit doc header
 
 ### Checkpoint: Phase 5 (FINAL)
 
-- [ ] Checklist swap section = 1 config file + env + assets + tokens
-- [ ] Human review before push (standing rule)
+- [x] Checklist swap section = 1 config file (brand.ts) + 2 env vars + asset files + tokens.css
+- [ ] Human review before push (standing rule) — NOT PUSHED
 
 ## Global (before calling any phase done)
 

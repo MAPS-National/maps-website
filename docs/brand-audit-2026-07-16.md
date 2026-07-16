@@ -3,8 +3,16 @@
 Full sweep for hardcoded MAPS-specific content, run via a 6-lens agent audit
 (names/domains, site chrome, contact/social, assets, sample/seed data,
 tests/config) with per-file verification and a completeness pass. 150
-confirmed items across ~90 files, grouped below by area. `docs/new-site-checklist.md`
-has the condensed strip/swap/keep summary — this is the backing detail.
+confirmed items across ~90 files, grouped below by area.
+
+**Update (2026-07-16, later):** most of the items below were centralized
+directly in this repo rather than left as fork-time find-and-replace — see
+`docs/new-site-checklist.md` for the current (post-centralization) bootstrap
+steps. Site strings, the Outseta domain, and the logo/OG assets now live
+behind `src/utilities/brand.ts` + two env vars + fixed asset filenames
+instead of scattered literals. What's below is the historical record of
+where those literals used to live; still accurate for what remains
+genuinely fork-time (content, tests, tokens, Railway setup).
 
 Legend: **swap** = replace value for the new org · **strip** = delete
 entirely · *(keep)* = looked brand-ish, verified as a false alarm or
