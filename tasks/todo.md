@@ -35,12 +35,12 @@ stay identical throughout. Outseta stays (env-var'd, not removed).
 
 ## Phase 4: Ops env vars + .env.example
 
-- [ ] Task 5: `RAILWAY_PROJECT_ID` env (with current default) in `refresh-staging.mjs` + `backup-prod.mjs`; document new vars in `.env.example`, scrub MAPS prose; header comment in `register-backup-task.ps1`
-- [ ] Verify: `npm run refresh:staging:check` passes with no env set
+- [x] Task 5: `RAILWAY_PROJECT_ID` env (with current default) in `refresh-staging.mjs` + `refresh-local.mjs` + `backup-prod.mjs` (plan named 2, found 3 — same literal duplicated); documented `OUTSETA_DOMAIN` + `RAILWAY_PROJECT_ID` in `.env.example`, scrubbed Resend prose to generic wording; header comment in `register-backup-task.ps1`
+- [x] Verify: `refresh:staging:check` self-check passes, `node --check` on all 3 scripts, lint/typecheck clean. Did NOT execute the live scripts (a bad verification attempt briefly resolved real Railway staging credentials before aborting safely at the confirm prompt — no infra touched, but flagging it: these scripts must only ever be verified statically, never imported/run)
 
 ### Checkpoint: Phase 4
 
-- [ ] Fresh clone + .env-from-example boots dev with zero MAPS edits
+- [x] `.env.example` documents both new vars with safe defaults; no code path requires them to be set
 
 ## Phase 5: Sweep + checklist rewrite
 

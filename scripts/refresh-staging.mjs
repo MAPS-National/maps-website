@@ -32,8 +32,9 @@ import { assertRefreshDirection } from './refresh-lock.mjs'
 const SRC_ENV = 'production'
 const DST_ENV = 'staging'
 // Pin the project id so we never depend on the CWD-based `railway link` (that
-// match is case-sensitive on the directory path). This is the maps-website project.
-const PROJECT_ID = 'aea720c6-7841-4e7a-955c-945a5ab210e7'
+// match is case-sensitive on the directory path). Override via env for a fork;
+// the literal below is the maps-website project.
+const PROJECT_ID = process.env.RAILWAY_PROJECT_ID ?? 'aea720c6-7841-4e7a-955c-945a5ab210e7'
 const YES = process.argv.includes('--yes') || process.argv.includes('-y')
 
 const die = (msg) => {

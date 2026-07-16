@@ -32,7 +32,7 @@ import { assertLocalTarget } from './refresh-lock.mjs'
 
 const SRC_ENV = 'production'
 // Pin the project id (see refresh-staging.mjs) so we never depend on `railway link`.
-const PROJECT_ID = 'aea720c6-7841-4e7a-955c-945a5ab210e7'
+const PROJECT_ID = process.env.RAILWAY_PROJECT_ID ?? 'aea720c6-7841-4e7a-955c-945a5ab210e7'
 const YES = process.argv.includes('--yes') || process.argv.includes('-y')
 
 const die = (msg) => {

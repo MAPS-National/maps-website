@@ -9,6 +9,8 @@
 
 $ErrorActionPreference = 'Stop'
 
+# Machine-local, not env-configurable: edit these four lines for a fork
+# (task name, repo checkout path, and the maintainer's offsite backup folder).
 $TaskName = 'MAPS prod backup'
 $RepoDir  = 'C:\dev\maps-website'
 $OutDir   = 'C:\Users\syedw\My Drive\05_Projects\MAPS\maps-website-backup'
