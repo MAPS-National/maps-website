@@ -20,6 +20,7 @@ import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
+import { EMAIL_FROM_ADDRESS, EMAIL_FROM_NAME } from '@/utilities/brand'
 import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
@@ -73,8 +74,8 @@ const splitRecipients = (v: unknown) =>
 
 const resendBase = process.env.RESEND_API_KEY
   ? resendAdapter({
-      defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'no-reply@mapsnational.org',
-      defaultFromName: process.env.EMAIL_FROM_NAME || 'MAPS National',
+      defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || EMAIL_FROM_ADDRESS,
+      defaultFromName: process.env.EMAIL_FROM_NAME || EMAIL_FROM_NAME,
       apiKey: process.env.RESEND_API_KEY,
     })
   : undefined

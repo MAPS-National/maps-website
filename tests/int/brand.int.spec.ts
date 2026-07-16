@@ -1,0 +1,56 @@
+import { describe, expect, it } from 'vitest'
+
+import {
+  COPYRIGHT_NAME,
+  EMAIL_FROM_ADDRESS,
+  EMAIL_FROM_NAME,
+  FOOTER_COLUMNS,
+  FOOTER_TAGLINE,
+  MEMBERSHIP_CTA,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SOCIAL,
+} from '@/utilities/brand'
+
+// Pure-data test: brand.ts must stay plain data (no React/client deps — it sits
+// in the Payload config graph via the SEO plugin), so this pins the shape every
+// consumer (Footer, BeforeDashboard, payload.config.ts) relies on.
+describe('brand.ts', () => {
+  it('exports site identity strings', () => {
+    expect(typeof SITE_NAME).toBe('string')
+    expect(typeof SITE_DESCRIPTION).toBe('string')
+    expect(typeof FOOTER_TAGLINE).toBe('string')
+    expect(typeof COPYRIGHT_NAME).toBe('string')
+  })
+
+  it('exports SOCIAL as platform+href pairs, no components', () => {
+    expect(SOCIAL.length).toBeGreaterThan(0)
+    for (const entry of SOCIAL) {
+      expect(typeof entry.platform).toBe('string')
+      expect(entry.href).toMatch(/^https:\/\//)
+      expect(entry).not.toHaveProperty('Icon')
+    }
+  })
+
+  it('exports FOOTER_COLUMNS as title+links groups', () => {
+    expect(FOOTER_COLUMNS.length).toBeGreaterThan(0)
+    for (const col of FOOTER_COLUMNS) {
+      expect(typeof col.title).toBe('string')
+      expect(col.links.length).toBeGreaterThan(0)
+      for (const link of col.links) {
+        expect(typeof link.label).toBe('string')
+        expect(link.href.startsWith('/')).toBe(true)
+      }
+    }
+  })
+
+  it('exports a membership CTA', () => {
+    expect(typeof MEMBERSHIP_CTA.label).toBe('string')
+    expect(typeof MEMBERSHIP_CTA.href).toBe('string')
+  })
+
+  it('exports email-from defaults', () => {
+    expect(typeof EMAIL_FROM_NAME).toBe('string')
+    expect(EMAIL_FROM_ADDRESS).toMatch(/^\S+@\S+\.\S+$/)
+  })
+})

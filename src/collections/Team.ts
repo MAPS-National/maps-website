@@ -46,7 +46,7 @@ export const Team: CollectionConfig<'team'> = {
           name: 'jobTitle',
           type: 'text',
           label: 'Job title',
-          admin: { width: '50%', description: 'Primary role, e.g. "President, MAPS Texas".' },
+          admin: { width: '50%', description: 'Primary role, e.g. "Executive Director".' },
         },
         {
           name: 'jobTitleSecondary',
