@@ -35,8 +35,14 @@ two-environment Railway deploy.
    migrate CLI (a `tsx` bug), which you'll need on day two. The dev server
    itself tolerates 24; the tooling doesn't.
 2. **Docker Desktop** — runs MinIO, the local S3-compatible media store.
+   `npm run dev` auto-starts it for you (a `predev` hook boots Docker Desktop
+   if it's closed, then brings the container up), so you rarely touch it
+   directly. If images 404, check `docker ps` before debugging app code.
 3. **PostgreSQL**, local instance.
 4. **Port 3000 specifically.** CORS and `NEXT_PUBLIC_SERVER_URL` assume it.
+
+This repo assumes a **Windows** dev environment (the `predev` Docker hook is a
+PowerShell script). A Git Bash shell is available if you want POSIX syntax.
 
 ```bash
 cp .env.example .env      # then fill DATABASE_URL, PAYLOAD_SECRET, S3_* (MinIO block)
@@ -47,13 +53,6 @@ npm run ensure:admin      # creates a local admin login
 
 Then open `/admin` and log in. In development the DB schema auto-syncs — no
 migrations needed locally.
-
-> **If you're not on Windows:** `npm run dev` runs a `predev` hook that shells
-> out to PowerShell (`scripts/ensure-docker.ps1`) to auto-start Docker. On
-> macOS/Linux without `pwsh` installed, that hook fails and takes `npm run dev`
-> with it. Either install PowerShell, replace the hook with a shell equivalent,
-> or drop `predev` and start Docker yourself (`docker compose up -d`). This is
-> the first thing to fix if the team isn't on Windows.
 
 ## How the site actually works
 
@@ -164,7 +163,7 @@ the migration guard, and end-to-end tests.
 | `CLAUDE.md` (repo root) | Deep architecture notes + gotchas (written for AI agents, but accurate and the most detailed thing here) |
 | [`adr/`](./adr/) | Why the big decisions were made |
 | [`brand-audit-2026-07-16.md`](./brand-audit-2026-07-16.md) | Historical record of where brand strings used to be hardcoded |
-| `README.md` | ⚠️ Still the stock Payload template readme — generic upstream docs, not about this project. Worth replacing with your own. |
+| `README.md` | Upstream Payload Website Template reference — how the underlying template's features work (draft preview, live preview, access control, revalidation). Generic, not about this project specifically. |
 
 ## Known deliberate limits
 
