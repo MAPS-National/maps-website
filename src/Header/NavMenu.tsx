@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { cn } from '@/utilities/ui'
+import { DONATE_CTA } from '@/utilities/brand'
 import { DesktopNav } from './DesktopNav'
 import type { Header } from '@/payload-types'
 
@@ -232,10 +233,10 @@ export const NavMenu: React.FC<{ navGroups: NavGroup[]; flatLinks: NavLink[] }> 
                   the single prominent CTA here (filled primary). */}
                 <Link
                   className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-                  href="/donate"
+                  href={DONATE_CTA.href}
                   onClick={close}
                 >
-                  Donate
+                  {DONATE_CTA.label}
                 </Link>
               </div>
             </div>

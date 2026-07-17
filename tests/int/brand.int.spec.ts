@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   COPYRIGHT_NAME,
+  DONATE_CTA,
   EMAIL_FROM_ADDRESS,
   EMAIL_FROM_NAME,
   FOOTER_COLUMNS,
@@ -46,9 +47,11 @@ describe('brand.ts', () => {
     }
   })
 
-  it('exports a membership CTA', () => {
-    expect(typeof MEMBERSHIP_CTA.label).toBe('string')
-    expect(typeof MEMBERSHIP_CTA.href).toBe('string')
+  it('exports the chrome CTAs (footer membership, header donate)', () => {
+    for (const cta of [MEMBERSHIP_CTA, DONATE_CTA]) {
+      expect(typeof cta.label).toBe('string')
+      expect(cta.href.startsWith('/')).toBe(true)
+    }
   })
 
   it('exports email-from defaults', () => {

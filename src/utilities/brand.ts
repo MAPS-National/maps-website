@@ -42,6 +42,10 @@ export const FOOTER_COLUMNS: { title: string; links: { label: string; href: stri
 
 export const MEMBERSHIP_CTA = { label: 'Become a member', href: '/join' }
 
+// Header's prominent CTA (desktop + mobile nav). A fork with no donation flow
+// removes the button from DesktopNav/NavMenu rather than blanking this.
+export const DONATE_CTA = { label: 'Donate', href: '/donate' }
+
 export const EMAIL_FROM_NAME = 'MAPS National'
 export const EMAIL_FROM_ADDRESS = 'no-reply@mapsnational.org'
 
