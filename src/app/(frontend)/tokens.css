@@ -65,7 +65,9 @@
   --space-xhuge: 7.5rem;
 
   /* === Typography families ===
-   * --font-montserrat / --font-lora are provided by next/font in layout.tsx. */
-  --font-body: var(--font-montserrat), Montserrat, ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-lora), Lora, ui-serif, Georgia, serif;
+   * --font-body-family / --font-heading-family come from next/font in
+   * layout.tsx. Role-named, so swapping typefaces touches only that file;
+   * fallbacks are generic (never name the brand's own fonts here). */
+  --font-body: var(--font-body-family), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-heading-family), ui-serif, Georgia, serif;
 }
