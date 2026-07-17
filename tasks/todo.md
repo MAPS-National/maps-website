@@ -53,6 +53,32 @@ stay identical throughout. Outseta stays (env-var'd, not removed).
 - [x] Checklist swap section = 1 config file (brand.ts) + 2 env vars + asset files + tokens.css
 - [ ] Human review before push (standing rule) — NOT PUSHED
 
+## Phase 6: Gaps found after the plan (audit re-check)
+
+- [x] Font vars role-named (`--font-body-family`/`--font-heading-family`) so a
+      typeface swap touches only layout.tsx, not tokens.css too. next/font needs
+      static imports, so the font name can't be env-driven — one block is the floor.
+- [x] `DONATE_CTA` in brand.ts — the audit flagged the header's hardcoded
+      `/donate` (DesktopNav:182 + NavMenu:235); the footer CTA had been
+      centralized but this one was missed. Verified both call sites live.
+
+### Deliberately NOT centralized (audit items left as-is, with reason)
+
+- Comments naming MAPS: `proxy.ts:9-11` (migration history), `tokens.css:4`
+  (migration source), `search/page.tsx:135` (example URL). Audit said "strip";
+  they're comments, zero functional impact on a fork.
+- `docker-compose.yml` `container_name` + volume `name` — cosmetic (`docker ps`
+  output only); volume rename has a real data-orphaning footgun documented in
+  CLAUDE.md, so leave it deliberate rather than clever.
+- `CLAUDE.md` domains, `docs/adr/*`, `docs/restore-drill.md`, `docs/migration/*`
+  — docs; checklist covers rewriting them at fork time.
+- `refresh-staging.mjs:227` `stage.mapsnational.org` fallback — only used when
+  `NEXT_PUBLIC_SERVER_URL` is unset/internal; noted in the checklist.
+- `design-system/page.tsx` samples + ~20 `gallery.ts` files — showroom sample
+  data, internal + noindexed, cosmetic only.
+- Seed content, nav IA, tests, migrations, import pipeline, `AcademyVideos` —
+  genuinely content/fork-time; a fork writes these, it doesn't configure them.
+
 ## Global (before calling any phase done)
 
 - [ ] `npx tsc --noEmit` clean after each phase
