@@ -51,7 +51,9 @@ stay identical throughout. Outseta stays (env-var'd, not removed).
 ### Checkpoint: Phase 5 (FINAL)
 
 - [x] Checklist swap section = 1 config file (brand.ts) + 2 env vars + asset files + tokens.css
-- [ ] Human review before push (standing rule) — NOT PUSHED
+- [x] Human review before push (standing rule) — pushed to `staging` on explicit
+      go-ahead, verified live 3 days later, promoted via PR #281 (auto-merge on
+      CI green), deployed to production, re-verified live on mapsnational.org
 
 ## Phase 6: Gaps found after the plan (audit re-check)
 
@@ -81,7 +83,17 @@ stay identical throughout. Outseta stays (env-var'd, not removed).
 
 ## Global (before calling any phase done)
 
-- [ ] `npx tsc --noEmit` clean after each phase
-- [ ] `npx eslint` clean on touched files
-- [ ] Both themes checked for any visual change
-- [ ] Do not push without an explicit go-ahead (per this repo's standing rule)
+- [x] `npx tsc --noEmit` clean after each phase
+- [x] `npx eslint` clean on touched files
+- [x] Both themes checked for any visual change (footer is fixed-dark by
+      design, so most checks were single-theme by nature; header logo/fonts
+      confirmed in both)
+- [x] Do not push without an explicit go-ahead (per this repo's standing
+      rule) — honored: staging push and the master promotion PR/auto-merge
+      both required and received explicit authorization in-session
+
+## Shipped
+
+All 6 phases done, pushed, and live in production (2026-07-20). See
+`docs/handoff.md` and `docs/new-site-checklist.md` for the docs a future
+fork actually uses; this plan/todo pair is now historical.
