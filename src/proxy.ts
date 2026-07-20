@@ -18,8 +18,11 @@ import { createRemoteJWKSet, jwtVerify } from 'jose'
  * without a cookie or the gate would loop) and carries no member-only content.
  */
 
-const OUTSETA_DOMAIN = 'mapsnational.outseta.com'
-const LOGIN_URL = `https://${OUTSETA_DOMAIN}/auth?widgetMode=login#o-anonymous`
+// Server component/module — reads at request time, so a plain (unprefixed) env
+// var works; no NEXT_PUBLIC_ build-time inlining needed. Same var name and
+// default as OutsetaScript/index.tsx (the client-side SDK init) — keep in sync.
+const OUTSETA_DOMAIN = process.env.OUTSETA_DOMAIN ?? 'mapsnational.outseta.com'
+export const LOGIN_URL = `https://${OUTSETA_DOMAIN}/auth?widgetMode=login#o-anonymous`
 
 // Lazily fetched + cached at module scope (Edge runtime). Verifies token signatures.
 const JWKS = createRemoteJWKSet(new URL(`https://${OUTSETA_DOMAIN}/.well-known/jwks`))

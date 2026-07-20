@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { getServerSideURL } from './getURL'
-import { SITE_DESCRIPTION, SITE_NAME } from './brand'
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME } from './brand'
 
 const defaultOpenGraph: Metadata['openGraph'] = {
   type: 'website',
@@ -8,7 +8,7 @@ const defaultOpenGraph: Metadata['openGraph'] = {
   description: SITE_DESCRIPTION,
   images: [
     {
-      url: `${getServerSideURL()}/maps-OG.webp`,
+      url: `${getServerSideURL()}${OG_IMAGE}`,
     },
   ],
   siteName: SITE_NAME,

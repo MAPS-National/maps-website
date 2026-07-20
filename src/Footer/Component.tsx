@@ -4,32 +4,20 @@ import { Facebook, Instagram, Linkedin, Youtube } from 'lucide-react'
 
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { Logo } from '@/components/Logo/Logo'
+import {
+  COPYRIGHT_NAME,
+  FOOTER_COLUMNS,
+  FOOTER_TAGLINE,
+  MEMBERSHIP_CTA,
+  SOCIAL,
+} from '@/utilities/brand'
 import { PortalLogin } from './PortalLogin'
 
 // Site footer — ported from the live MAPS site (migration/_extracted/index.html).
 // The structure is a fixed, hand-picked brand IA, so the footer does not read the
 // `footer` CMS global. (The header nav, by contrast, is now managed in the `header`
-// global — see src/Header/config.ts.)
-
-type FooterLink = { label: string; href: string }
-
-// Curated key-link set, independent of the header nav: a short hand-picked list
-// of destinations worth a footer slot. It is intentionally broader than the
-// simplified header IA — e.g. Events and Updates are footer-only now (their
-// routes still resolve), so this is not a header mirror.
-const COLUMNS: { title: string; links: FooterLink[] }[] = [
-  {
-    title: 'Explore',
-    links: [
-      { label: 'About', href: '/about-us' },
-      { label: 'Events', href: '/events' },
-      { label: 'Updates', href: '/latest-updates' },
-      { label: 'Programs', href: '/programs' },
-      { label: 'Press', href: '/press' },
-      { label: 'Contact', href: '/contact' },
-    ],
-  },
-]
+// global — see src/Header/config.ts.) Content (columns/social/CTA/copyright) lives
+// in src/utilities/brand.ts; this file owns markup + the icon lookup only.
 
 // lucide covers four of the five; X (formerly Twitter) keeps the twitter.com href
 // per the live site but uses the current X glyph.
@@ -39,21 +27,13 @@ const XIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 )
 
-const SOCIAL: { label: string; href: string; Icon: React.FC<{ className?: string }> }[] = [
-  { label: 'Facebook', href: 'https://www.facebook.com/MAPSNational', Icon: Facebook },
-  { label: 'Instagram', href: 'https://www.instagram.com/mapsnational/', Icon: Instagram },
-  { label: 'X', href: 'https://twitter.com/MAPSNational', Icon: XIcon },
-  {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/company/muslim-americans-in-public-service/',
-    Icon: Linkedin,
-  },
-  {
-    label: 'YouTube',
-    href: 'https://www.youtube.com/channel/UCb5T3l6hpKdWCFBltCmX-5g',
-    Icon: Youtube,
-  },
-]
+const SOCIAL_ICONS: Record<string, React.FC<{ className?: string }>> = {
+  Facebook,
+  Instagram,
+  X: XIcon,
+  LinkedIn: Linkedin,
+  YouTube: Youtube,
+}
 
 export function Footer() {
   return (
@@ -68,16 +48,13 @@ export function Footer() {
             <Link className="inline-flex items-center" href="/">
               <Logo variant="secondary" theme="dark" />
             </Link>
-            <p className="mt-6 text-sm text-[var(--neutral-light)]">
-              Join MAPS to unlock member-exclusive benefits: career support, community, and a voice
-              for Muslim Americans in public service.
-            </p>
+            <p className="mt-6 text-sm text-[var(--neutral-light)]">{FOOTER_TAGLINE}</p>
 
             <Link
               className="mt-4 inline-flex shrink-0 rounded-md bg-[var(--neutral-lightest)] px-5 py-2 text-sm font-semibold text-[var(--brand-primary-base)] transition-colors hover:bg-white"
-              href="/join"
+              href={MEMBERSHIP_CTA.href}
             >
-              Become a member
+              {MEMBERSHIP_CTA.label}
             </Link>
 
             {/* Separate from the wayfinding column: the member-portal login. */}
@@ -86,7 +63,7 @@ export function Footer() {
 
           {/* Link columns + social */}
           <div className="grid grid-cols-2 gap-8">
-            {COLUMNS.map((col) => (
+            {FOOTER_COLUMNS.map((col) => (
               <nav aria-label={col.title} key={col.title}>
                 <p className="mb-4 text-sm font-semibold">{col.title}</p>
                 <ul className="space-y-2.5">
@@ -106,19 +83,22 @@ export function Footer() {
             <div>
               <p className="mb-4 text-sm font-semibold">Follow us</p>
               <ul className="flex flex-wrap gap-3">
-                {SOCIAL.map(({ label, href, Icon }) => (
-                  <li key={label}>
-                    <a
-                      aria-label={label}
-                      className="inline-flex size-9 items-center justify-center rounded-md border border-[var(--neutral-dark)] text-[var(--neutral-lightest)] transition-colors hover:bg-[var(--neutral-dark)]"
-                      href={href}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      <Icon className="size-4" />
-                    </a>
-                  </li>
-                ))}
+                {SOCIAL.map(({ platform, href }) => {
+                  const Icon = SOCIAL_ICONS[platform]
+                  return (
+                    <li key={platform}>
+                      <a
+                        aria-label={platform}
+                        className="inline-flex size-9 items-center justify-center rounded-md border border-[var(--neutral-dark)] text-[var(--neutral-lightest)] transition-colors hover:bg-[var(--neutral-dark)]"
+                        href={href}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        {Icon && <Icon className="size-4" />}
+                      </a>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           </div>
@@ -127,7 +107,7 @@ export function Footer() {
         {/* Divider + bottom credit row */}
         <div className="mt-10 flex flex-col gap-4 border-t border-[var(--neutral-dark)] pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-[var(--neutral-light)]">
-            © {new Date().getFullYear()} MAPS. All rights reserved.
+            © {new Date().getFullYear()} {COPYRIGHT_NAME}. All rights reserved.
           </p>
           <ThemeSelector />
         </div>

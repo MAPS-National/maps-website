@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
+import { DONATE_CTA } from '@/utilities/brand'
 import type { Header } from '@/payload-types'
 
 // window.Outseta is typed centrally in src/types/outseta.d.ts.
@@ -179,7 +180,7 @@ export const DesktopNav: React.FC<{ navGroups: NavGroup[]; flatLinks: NavLink[] 
           Logout
         </Button>
         <Button asChild className="px-5 font-semibold" variant="default">
-          <Link href="/donate">Donate</Link>
+          <Link href={DONATE_CTA.href}>{DONATE_CTA.label}</Link>
         </Button>
       </div>
     </div>

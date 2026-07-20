@@ -25,7 +25,7 @@ import { mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const SRC_ENV = 'production'
-const PROJECT_ID = 'aea720c6-7841-4e7a-955c-945a5ab210e7' // maps-website (see refresh-staging.mjs)
+const PROJECT_ID = process.env.RAILWAY_PROJECT_ID ?? 'aea720c6-7841-4e7a-955c-945a5ab210e7' // maps-website (see refresh-staging.mjs)
 
 const argOut = (() => {
   const i = process.argv.indexOf('--out')

@@ -6,17 +6,21 @@ import { GeistSans } from 'geist/font/sans'
 import { Montserrat, Lora } from 'next/font/google'
 import React from 'react'
 
-const montserrat = Montserrat({
+// Brand fonts — the one place a fork picks its typefaces. next/font needs
+// statically-analyzable imports, so the font NAME can't come from env/config;
+// swap the two imports above and the `weight` lists below. The CSS vars are
+// role-named on purpose, so tokens.css never names a specific typeface.
+const bodyFont = Montserrat({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-montserrat',
+  variable: '--font-body-family',
   display: 'swap',
 })
 
-const lora = Lora({
+const headingFont = Lora({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-lora',
+  variable: '--font-heading-family',
   display: 'swap',
 })
 
@@ -27,7 +31,7 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { OutsetaScript } from '@/components/OutsetaScript'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-import { SITE_DESCRIPTION, SITE_NAME } from '@/utilities/brand'
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME } from '@/utilities/brand'
 import { resolveHeaderTheme } from '@/utilities/resolveHeaderTheme'
 import { draftMode, headers } from 'next/headers'
 
@@ -44,7 +48,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html
-      className={cn(GeistSans.variable, GeistMono.variable, montserrat.variable, lora.variable)}
+      className={cn(
+        GeistSans.variable,
+        GeistMono.variable,
+        bodyFont.variable,
+        headingFont.variable,
+      )}
       lang="en"
       suppressHydrationWarning
     >
@@ -81,6 +90,6 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: SITE_NAME,
-    images: ['/maps-OG.webp'],
+    images: [OG_IMAGE],
   },
 }

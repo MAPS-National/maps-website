@@ -1,137 +1,190 @@
-# Plan: size the Archive ("Latest Updates") cards consistently with Featured Galleries
+# Implementation Plan: Make this repo brand-agnostic
 
-## Problem
+## Overview
 
-The two blocks size their cards on different systems, so on the home page the
-Latest Updates cards visibly dwarf the Featured Galleries prints.
+Reframe of the fork plan: instead of forking first and find-and-replacing MAPS
+across ~90 files in the new repo, centralize every brand coupling **in this
+repo now** — strings into one config module, the Outseta domain into an env
+var, logos/OG into fixed file slots. MAPS becomes just the current _values_
+of those variables. The new repo then inherits agnosticism: fill in config +
+env + drop in asset files + replace content. No org inputs are needed to do
+this work; prod output must stay byte-identical throughout.
 
-|                          | width rule                                                 | measured @1127px viewport | photo        | title            |
-| ------------------------ | ---------------------------------------------------------- | ------------------------- | ------------ | ---------------- |
-| Archive slide            | `w-[78%] sm:w-[46%] lg:w-[31%]` — % of container, uncapped | 298 x 462                 | 296px square | prose `h3`, 24px |
-| Featured Galleries print | `max-w-64` — fixed 256px cap                               | 256 x ~390 (polaroid)     | 240px square | `type-h5`, 18px  |
+Backing reference: `docs/brand-audit-2026-07-16.md` (156 file:line findings),
+`docs/new-site-checklist.md` (to be rewritten at the end of this plan).
 
-Two separate defects:
+## Architecture decisions
 
-1. **Width divergence grows with the viewport.** The archive slide is a
-   percentage, the print is a fixed cap, so at 1440px the archive card is ~400px
-   while the print stays 256px.
-2. **Internal weight.** Even at equal width the archive card reads heavier:
-   24px prose title vs 18px, `p-4` vs `p-2.5`/`p-3`.
-
-Plus: the carousel track gap is `gap-4` (16px) where the Featured Galleries grid
-uses 24px (`gap-6` compact / `gap-x-8` polaroid), so the slider also feels tighter.
+- **One brand module: `src/utilities/brand.ts`** (already exists with
+  `SITE_NAME`/`SITE_DESCRIPTION`). Expand it. It sits in the Payload config
+  graph (SEO plugin imports it), so it must stay plain data — **no React, no
+  lucide, no client deps**. Social icons therefore stay in the Footer as a
+  platform-key → Icon map; brand.ts holds keys + hrefs only.
+- **Outseta stays** (user decision). Domain becomes `NEXT_PUBLIC_OUTSETA_DOMAIN`
+  with the current MAPS value as the in-code default, so this repo needs no
+  env change and the fork sets one var. Client script needs the
+  `NEXT_PUBLIC_` prefix (inlined at build); `proxy.ts` reads the same var
+  server-side.
+- **Asset slots, not asset constants.** Rename `public/maps-logo-*.svg` →
+  `public/logo-*.svg` and `public/maps-OG.webp` → `public/og.webp`. Logo alt +
+  per-variant dims move into brand.ts. Fork swaps files + one dims object, no
+  component edits. `favicon.ico`/`favicon.svg` already have generic names —
+  files-to-replace only.
+- **What stays fork-time (inherently content, not variables):** seed pages
+  (`seed-pages.ts`, `src/seed/prose/*.json`), nav IA (`seedNav.ts`, footer
+  COLUMNS values), showroom `gallery.ts` sample data, test fixtures pinned to
+  seeded content, migrations baseline, `package.json` name +
+  docker-compose names, CLAUDE.md narrative, `redirects.ts` legacy rules,
+  import pipeline. Parameterizing content is over-engineering; the rewritten
+  checklist covers these.
+- Footer COLUMNS (labels + hrefs, plain data) moves to brand.ts anyway — it is
+  content, but colocating it with SOCIAL/blurb makes the fork's "edit one
+  file" story complete for chrome strings.
 
 ## Dependency graph
 
+Phases 1–4 are independent of each other (different files). Phase 5 (sweep +
+checklist rewrite) needs all of them landed.
+
 ```
-Carousel (src/components/Carousel/index.tsx)      <- gap lives here (hardcoded gap-4)
-  |-- CollectionArchiveSlider  (slideClassName)   <- width lives here   [Latest Updates]
-  |-- Testimonials/Component
-  |-- MediaGallery/MediaGalleryClient
-
-Card (src/components/Card/index.tsx)              <- title size + padding live here
-  |-- CollectionArchiveSlider                     [home slider]
-  |-- CollectionArchive/index.tsx (grid)          [/latest-updates + 9 archive-block uses]
+Phase 1: brand.ts strings      Phase 2: Outseta env var
+Phase 3: asset slots           Phase 4: ops env vars + .env.example
+        └──────────────┬──────────────┘
+              Phase 5: grep sweep + rewrite new-site-checklist.md
 ```
 
-Confirmed by grep: `Card` is imported ONLY by the two CollectionArchive files, so
-a Card change cannot leak into search results, posts, or any other block. The
-`Carousel` gap, by contrast, is shared by three consumers — which is why phase 2
-adds a prop instead of editing the shared default.
+## Task List
 
-Phases are independent (no ordering constraint between 1, 2, 3), but they are
-sequenced so each can be judged visually on its own before the next lands.
+### Phase 1: Brand strings → brand.ts
 
-## Phase 1 — Slider width: 3-up to 4-up
+**Task 1: Expand brand.ts and rewire string consumers**
 
-**Change:** `CollectionArchiveSlider.tsx`, `slideClassName`
-`w-[78%] sm:w-[46%] lg:w-[31%]` -> `w-[78%] sm:w-[46%] lg:w-[23%]`.
-Mobile and tablet breakpoints untouched (there the archive card is the only card
-on screen, so it isn't competing with a print).
+- Add to `src/utilities/brand.ts`: `TAGLINE`/footer mission blurb,
+  `COPYRIGHT_NAME`, `SOCIAL` (array of `{ platform, href }`), `FOOTER_COLUMNS`,
+  `MEMBERSHIP_CTA` (label + `/join` href), email-from fallback
+  (`EMAIL_FROM_NAME`/`EMAIL_FROM_ADDRESS` defaults).
+- Rewire consumers: `src/Footer/Component.tsx` (SOCIAL hrefs, COLUMNS, blurb,
+  copyright, CTA — Icon map stays local, keyed by platform),
+  `src/components/BeforeDashboard/index.tsx` (welcome copy uses SITE_NAME),
+  `src/payload.config.ts` (Resend fallback reads brand.ts defaults),
+  `src/collections/Team.ts` (genericize the admin description example, then
+  `npm run generate:types`).
+- Acceptance: rendered footer/admin/meta output identical to before; no MAPS
+  string literal remains in those consumer files.
+- Verification: `npx tsc --noEmit`, `npm run generate:types` clean diff apart
+  from Team description, visual diff of footer both themes.
+- Scope: M (5 files + brand.ts).
 
-**Acceptance criteria**
+### Checkpoint: Phase 1
 
-- At >=1024px the slide computes to ~245-260px, i.e. within ~5% of the 256px print.
-- A fourth card peeks at the right edge of the track (carousel affordance preserved).
-- Mobile (375px) and tablet (768px) layouts are pixel-unchanged.
-- Prev/next arrows still advance exactly one slide.
+- Footer renders pixel-identical, `grep -i "mapsnational\|MAPS" src/Footer src/components/BeforeDashboard` only hits brand.ts imports.
 
-**Verification**
+### Phase 2: Outseta domain → env var
 
-1. Home page at 1127px and 1440px: measure `article` width in the slider and
-   `figure` width in Featured Galleries, assert the delta is under ~15px.
-2. Screenshot the home page at both widths.
-3. Click the next arrow, confirm the track advances one slide.
+**Task 2: `NEXT_PUBLIC_OUTSETA_DOMAIN`**
 
-## Phase 2 — Slider gap: 16px to 24px, without touching the other two sliders
+- `src/components/OutsetaScript/index.tsx` `o_options.domain` and
+  `src/proxy.ts` `OUTSETA_DOMAIN` both read
+  `process.env.NEXT_PUBLIC_OUTSETA_DOMAIN ?? 'mapsnational.outseta.com'`.
+- `tests/int/proxy.int.spec.ts` derives its expected login URL from the same
+  var/default instead of a duplicated literal.
+- Acceptance: login redirect + JWKS verification unchanged with no env set;
+  setting the var switches tenant everywhere at once.
+- Verification: `npm run test:int` (proxy spec), manual /members bounce on dev.
+- Scope: S (3 files).
 
-**Change:** add an optional `gapClassName` prop to `Carousel` (default `'gap-4'`,
-applied via `cn` on the track), and pass `gapClassName="gap-6"` from
-`CollectionArchiveSlider`.
+### Checkpoint: Phase 2
 
-Deliberately NOT editing the shared `gap-4` default: Testimonials and
-MediaGallery use the same primitive and neither was reported as too tight.
+- `grep -rn "mapsnational.outseta" src/ tests/` hits only the single default (and the test's shared derivation).
 
-**Acceptance criteria**
+### Phase 3: Asset slots
 
-- Latest Updates track gap is 24px; Testimonials and MediaGallery remain 16px.
-- Slide snapping still lands each card flush at the track's left edge.
+**Task 3: Logo slots + dims config**
 
-**Verification**
+- Rename `public/maps-logo-{primary,secondary}-{light,dark}.svg` →
+  `public/logo-...svg`. Move `alt` + the `dims` object from
+  `src/components/Logo/Logo.tsx` into brand.ts (`LOGO = { alt, dims }`);
+  Logo.tsx imports it and builds paths from the generic names.
+- Acceptance: header/footer logos render identically both themes, no
+  distortion.
+- Verification: visual check both themes; `grep -rn "maps-logo" src/ public/`
+  = nothing.
+- Scope: S (Logo.tsx + brand.ts + 4 file renames).
 
-1. Home page: read computed `column-gap` on the Latest Updates `ul` -> 24px.
-2. Read the same on a Testimonials slider page and the MediaGallery block -> 16px.
-3. Screenshot the home slider.
+**Task 4: OG image slot**
 
-## Checkpoint A — human review
+- Rename `public/maps-OG.webp` → `public/og.webp`. Add `OG_IMAGE = '/og.webp'`
+  to brand.ts; `src/app/(frontend)/layout.tsx`,
+  `src/utilities/generateMeta.ts`, `src/utilities/mergeOpenGraph.ts` all
+  import it (kills the 3-way duplication).
+- Acceptance: og:image URL resolves; all three surfaces emit the same path.
+- Verification: view-source on a page + a post; `grep -rn "maps-OG" src/` = 0.
+- Scope: S (3 files + brand.ts + rename).
 
-Stop after phase 2. Screenshots of the home page (light + dark, 1127px and
-1440px) showing Latest Updates next to Featured Galleries. Decide whether the
-width + gap fix is sufficient, or whether phase 3 is wanted. Phase 3 does NOT
-proceed without an explicit go-ahead: it changes `/latest-updates` and every
-other page carrying an archive block, which is a wider visual change than
-anything asked for so far.
+### Checkpoint: Phase 3
 
-## Phase 3 — OPTIONAL, gated on Checkpoint A: unify the card's internals
+- Social preview debugger (or curl of og:image URL) returns the image; both logo variants correct in both themes.
 
-**Change:** in `Card/index.tsx`, bring the card's type and padding onto the same
-ramp as the new gallery cards:
+### Phase 4: Ops env vars + env documentation
 
-- title: prose `h3` (24px) -> `type-h5` (18px), dropping the `prose` wrapper on the title
-- body padding: `p-4` -> `p-3`
-- category label: `text-sm mb-4` -> `text-xs mb-2`
+**Task 5: Railway project ID + .env.example**
 
-**Blast radius:** the archive _grid_ as well as the slider — `/latest-updates`
-and the nine pages using an archive block. That is the point (one card system),
-but it is a site-wide visual change, hence the gate.
+- `scripts/refresh-staging.mjs` and `scripts/backup-prod.mjs`: `PROJECT_ID`
+  becomes `process.env.RAILWAY_PROJECT_ID ?? '<current id>'`.
+- `.env.example`: document `NEXT_PUBLIC_OUTSETA_DOMAIN`, `RAILWAY_PROJECT_ID`,
+  and scrub MAPS-specific prose (Resend subdomain note) to generic wording.
+- `scripts/register-backup-task.ps1`: parameterize task name + paths or mark
+  clearly as machine-local (ponytail: a header comment saying "edit these two
+  lines" is enough).
+- Acceptance: `npm run refresh:staging:check` passes with no env set.
+- Verification: run the check script; read .env.example top to bottom.
+- Scope: S (3 scripts + .env.example).
 
-**Acceptance criteria**
+### Checkpoint: Phase 4
 
-- Archive card title renders Lora 600 at 18px, matching the gallery card exactly.
-- Card height drops proportionally; no title clamps that did not clamp before.
-- `/latest-updates` grid still reads as a grid (cards do not become too short to
-  hold a two-line title + category).
+- Fresh clone + `.env` from example boots dev with zero MAPS-specific edits.
 
-**Verification**
+### Phase 5: Sweep + checklist rewrite
 
-1. Home + `/latest-updates`, light and dark, at 1127px: computed font-size on a
-   card title is 18px, and matches the gallery card's computed style.
-2. Screenshot `/latest-updates` grid before/after.
-3. `npx playwright test tests/e2e/posts.e2e.spec.ts` (the archive listing spec).
+**Task 6: Repo-wide verification sweep**
 
-## Out of scope
+- `grep -ri "mapsnational\|maps national\|muslim americans" src/ scripts/ tests/`
+  — every remaining hit must be one of: brand.ts values, an in-code env
+  default, seed/content files, test fixtures pinned to seeded content, or
+  showroom gallery data. Anything else gets fixed.
+- Full gate: `npm run lint`, `npx tsc --noEmit`, `npm run build`,
+  `npm run test:int`, e2e if chrome files changed.
+- Scope: S.
 
-- No Payload config, field, or block-schema change -> **no migration needed**
-  (unlike the `variant` work, this is presentational only).
-- The Featured Galleries block is not touched; it is the reference the archive
-  moves toward.
-- The home page's polaroid/compact variant choice is content, set in admin.
+**Task 7: Rewrite `docs/new-site-checklist.md`**
 
-## Global verification (all phases)
+- New shape: (1) fill `src/utilities/brand.ts`, (2) set env vars
+  (`NEXT_PUBLIC_OUTSETA_DOMAIN` for the new tenant, `RAILWAY_PROJECT_ID`,
+  domains), (3) drop in asset files (4 logos + og.webp + favicons) and update
+  the `dims` object, (4) swap `tokens.css` values, (5) replace content
+  (seed-pages/seedNav/prose/tests/migrations baseline — the fork-time list
+  from Architecture decisions), (6) Railway setup (unchanged section).
+- Update `docs/brand-audit-2026-07-16.md` header to note findings are now
+  centralized (audit stays as the historical record).
+- Scope: S (docs only).
 
-- `npx tsc --noEmit` clean.
-- `npx eslint` on every touched file clean.
-- Visual check in BOTH themes (the archive card uses themed `bg-card`; the
-  gallery print is deliberately always-white, so they must be compared in dark
-  mode too).
-- Nothing pushed: local verification only, per the usual "test local first" rule.
+### Checkpoint: Phase 5 (FINAL)
+
+- Checklist's "swap" section is ~1 config file + env + assets + tokens.
+- All CI gates green locally. Human review before any push (standing rule).
+
+## Risks and Mitigations
+
+| Risk                                                               | Impact | Mitigation                                                                         |
+| ------------------------------------------------------------------ | ------ | ---------------------------------------------------------------------------------- |
+| Refactor changes prod output subtly (footer markup, meta tags)     | High   | Values move verbatim; diff rendered HTML of footer + view-source meta before/after |
+| brand.ts pulls a client dep into the Payload config graph          | High   | Plain data only; `npm run generate:types` in Phase 1 verification catches it       |
+| `NEXT_PUBLIC_` var not inlined where expected                      | Med    | Keep in-code MAPS default so a missing var is a no-op, not a breakage              |
+| Logo rename misses a reference (CSS, seed data, gallery)           | Med    | Phase 3 grep for `maps-logo`/`maps-OG` across the whole repo, not just src/        |
+| Schema-touching change (Team.ts description) trips migration guard | Low    | Admin `description` is UI-only, no schema change; generate:types confirms          |
+
+## Open questions
+
+None blocking — this whole plan runs on MAPS's current values. The old
+fork-plan's org-input questions (name, colors, logo, domain, content, Railway
+account) move to the rewritten checklist as "what the new org fills in."

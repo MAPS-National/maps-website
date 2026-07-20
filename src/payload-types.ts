@@ -1640,7 +1640,7 @@ export interface Team {
   id: number;
   name: string;
   /**
-   * Primary role, e.g. "President, MAPS Texas".
+   * Primary role, e.g. "Executive Director".
    */
   jobTitle?: string | null;
   /**
