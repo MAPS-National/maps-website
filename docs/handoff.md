@@ -48,10 +48,10 @@ PowerShell script). A Git Bash shell is available if you want POSIX syntax.
 cp .env.example .env      # then fill DATABASE_URL, PAYLOAD_SECRET, S3_* (MinIO block)
 npm install               # npm, not pnpm — see gotchas
 npm run dev               # http://localhost:3000
-npm run ensure:admin      # creates a local admin login
 ```
 
-Then open `/admin` and log in. In development the DB schema auto-syncs — no
+Then open `/admin` and create the first user (or script it:
+`ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run ensure:admin`). In development the DB schema auto-syncs — no
 migrations needed locally.
 
 ## How the site actually works
@@ -163,7 +163,7 @@ the migration guard, and end-to-end tests.
 | `CLAUDE.md` (repo root) | Deep architecture notes + gotchas (written for AI agents, but accurate and the most detailed thing here) |
 | [`adr/`](./adr/) | Why the big decisions were made |
 | [`brand-audit-2026-07-16.md`](./brand-audit-2026-07-16.md) | Historical record of where brand strings used to be hardcoded |
-| `README.md` | Upstream Payload Website Template reference — how the underlying template's features work (draft preview, live preview, access control, revalidation). Generic, not about this project specifically. |
+| `README.md` | Project front door: prerequisites, quick start, branch flow. Links to the upstream template README for how its features work (draft preview, live preview, access control, revalidation). |
 
 ## Known deliberate limits
 
