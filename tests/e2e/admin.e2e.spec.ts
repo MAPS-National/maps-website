@@ -73,7 +73,13 @@ test.describe('Admin Panel', () => {
     await page.locator('.tabs-field__tab-button', { hasText: 'Content' }).click()
     await page.getByRole('button', { name: 'Add Layout' }).click()
     await page.locator('.blocks-drawer__block', { hasText: 'Call to Action' }).click()
-    await page.getByRole('button', { name: 'Publish changes' }).click()
+    // A click that lands while a draft autosave is in flight is silently dropped
+    // (the doc stays Draft and the public route 404s), so retry until the admin
+    // reports it published.
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Publish changes' }).click()
+      await expect(page.getByTitle('Status: Published')).toBeVisible({ timeout: 3000 })
+    }).toPass({ timeout: 20000 })
 
     // Slug auto-generates from the title once saved.
     await expect(page.locator('#field-slug')).not.toHaveValue('')
