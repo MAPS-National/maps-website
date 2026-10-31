@@ -26,6 +26,9 @@ export const OutsetaScript: React.FC = () => {
         __html: `
   window.o_options = {
     domain: '${OUTSETA_DOMAIN}',
+    // Force English in every embed (signup, login, profile); otherwise Outseta
+    // auto-translates to the visitor's browser language.
+    translationLang: 'en',
     load: 'auth,customForm,emailList,leadCapture,nocode,profile,support',
     monitorDom: true,
     tokenStorage: 'cookie',

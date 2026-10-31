@@ -111,7 +111,9 @@ jobs:
   e2e:
     name: e2e (playwright)
     needs: quality
-    runs-on: ubuntu-latest
+    # Pinned: Playwright 1.58 can't install chromium on ubuntu-latest (26.04).
+    # Return to ubuntu-latest once @playwright/test supports 26.04.
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:16
